@@ -1,13 +1,9 @@
-cpu_model,gpu_model,ram_gb,storage_type,resolution,graphics_preset,shadow_quality,texture_quality,anti_aliasing,vsync,on_off,average_fps,frame_time_std,stutter_count
-Intel i5-12400F,RTX 3060,16,1920x1080,High,68.4
-AMD Ryzen 5 5600X,RX 6700 XT,16,1920x1080,Ultra,75.1
-Intel i7-11700K,RTX 3070,32,2560x1440,High,82.7
-AMD Ryzen 7 5800X,RTX 3080,32,3840x2160,Ultra,65.3
-Intel i5-11400F,GTX 1660 Super,8,1920x1080,Medium,55.2
-AMD Ryzen 5 3600,RTX 2060,16,1920x1080,High,60.5
-Intel i9-11900K,RTX 3090,64,3840x2160,Ultra,72.4
-AMD Ryzen 9 5900X,RX 6800 XT,32,2560x1440,High,78.9
-Intel i7-10700K,RTX 2080 Super,16,2560x1440,Ultra,70.6
-AMD Ryzen 5 5600G,GTX 1650,8,1920x1080,Low,48.3
-Intel i3-10100F,GTX 1050 Ti,8,1920x1080,Low,42.7
-AMD Ryzen 3 3300X,RX 5500 XT,8,1920x1080,Medium,50.1
+cpu_benchmark_score,gpu_benchmark_score,ram_benchmark_score,storage_type,resolution,graphics_preset,game_cpu_benchmark_score,game_gpu_benchmark_score,game_ram_benchmark_score,expected_fps,shadow_quality,texture_quality,anti_aliasing,vsync,on_off,average_fps,frame_time_std,stutter_count
+Intel i5-12400F,RTX 3060,16,HDD,1920x1080,High,8000,5000,2000,68.4
+AMD Ryzen 5 5600X,RX 6700 XT,16,HDD,1920x1080,Ultra,5000,3500,3000,75.1
+Intel i7-11700K,RTX 3070,32,HDD,2560x1440,High,10000,7000,4000,82.7
+AMD Ryzen 7 5800X,RTX 3080,32,HDD,3840x2160,Ultra,8100,3210,5012,65.3
+Intel i5-11400F,GTX 1660 Super,8,HDD,1920x1080,Medium,9123,5812,2392,55.2
+AMD Ryzen 5 3600,RTX 2060,16,HDD,1920x1080,High,5912,1592,3488,60.5
+Intel i9-11900K,RTX 3090,64,HDD,3840x2160,Ultra,1429,692,302,72.4
+AMD Ryzen 9 5900X,RX 6800 XT,32,HDD,2560x1440,High,12394,5618,6182,78.9

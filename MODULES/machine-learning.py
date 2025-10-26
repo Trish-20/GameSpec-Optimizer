@@ -17,3 +17,9 @@ df_in = df_in.drop(columns=['resolution', 'cpu_model', 'gpu_model'])
 prediction = model.predict(df_in)[0]
 
 print(json.dumps({"predicted_fps": prediction}))
+
+
+# flask tutorial: https://www.youtube.com/watch?v=0nr6TPKlrN0
+# PREDICTIVE ML TUTORIAL: https://www.youtube.com/watch?v=rcXAb1eKZ_I&list=PLTgRMOcmRb3OhlETr90y_hIMpQLR-DyLz&index=2
+
+# needed data: gpu and cpu benchmark scores, ram size
