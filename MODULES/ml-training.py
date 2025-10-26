@@ -5,10 +5,14 @@ import joblib
 
 # Load CSV
 try:
-    df = pd.read_csv('../CSV DATAS/benchmark_data.csv')
+    df = pd.read_csv('./CSV DATAS/benchmark_data.csv')
 except FileNotFoundError:
     print("Error: Dataset file not found. Please check the file path.")
     exit()
+
+print("First 5 rows of the dataset:\n", df.head())
+print("\nDataset Information:\n")
+print(df.info())
 
 # Preprocess: encode categorical fields, convert resolution string to width & height numeric
 df['width'] = df['resolution'].apply(lambda x: int(x.split('x')[0]))
