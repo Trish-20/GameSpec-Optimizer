@@ -1,0 +1,5 @@
+cpu_model,gpu_model,ram_gb,storage_type,resolution,graphics_preset,shadow_quality,texture_quality,anti_aliasing,vsync,on_off,average_fps,frame_time_std,stutter_count
+cpu_model,gpu_model,ram_gb,resolution,graphics_preset,average_fps
+Intel i5-12400F,RTX 3060,16,1920x1080,High,68.4
+AMD Ryzen 5 5600X,RX 6700 XT,16,1920x1080,Ultra,75.1
+Intel i7-11700K,RTX 3070,32,2560x1440,High,82.7
