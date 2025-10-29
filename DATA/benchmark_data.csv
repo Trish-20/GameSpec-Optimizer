@@ -1,4 +1,4 @@
-cpu_benchmark_score,gpu_benchmark_score,ram_benchmark_score,storage_type,resolution,graphics_preset,game_cpu_benchmark_score,game_gpu_benchmark_score,game_ram_benchmark_score,expected_fps,shadow_quality,texture_quality,anti_aliasing,vsync,on_off,average_fps,frame_time_std,stutter_count
+cpu_benchmark_score,gpu_benchmark_score,ram_benchmark_score,storage_type,resolution,graphics_preset,game_cpu_benchmark_score,game_gpu_benchmark_score,game_ram_benchmark_score,expected_fps,shadow_quality,texture_quality,anti_aliasing,vsync
 Intel i5-12400F,RTX 3060,16,HDD,1920x1080,High,8000,5000,2000,68.4
 AMD Ryzen 5 5600X,RX 6700 XT,16,HDD,1920x1080,Ultra,5000,3500,3000,75.1
 Intel i7-11700K,RTX 3070,32,HDD,2560x1440,High,10000,7000,4000,82.7
