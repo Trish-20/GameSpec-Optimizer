@@ -1,0 +1,9 @@
+cpu_model,cpu_score,cores,threads
+Intel i3-12100F,14200,4,8
+Intel i5-12400F,19700,6,12
+Intel i7-11700K,25200,8,16
+Intel i9-11900K,28200,8,16
+AMD Ryzen 5 5600X,22500,6,12
+AMD Ryzen 7 5800X,29000,8,16
+AMD Ryzen 9 5900X,34900,12,24
+AMD Ryzen 5 3600,17800,6,12
