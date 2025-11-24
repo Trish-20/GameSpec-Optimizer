@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import numpy as np
 import joblib
-# Load CSV
+
 try:
     df = pd.read_csv('./DATA/benchmark-data.csv')
 except FileNotFoundError:
@@ -15,17 +15,17 @@ print("First 5 rows of the dataset:\n", df.head())
 print("\nDataset Information:\n")
 print(df.info())
 
-# Preprocess
+# Preproc
 try:
-    # Convert categorical columns to numeric
+    # categ to numeric column conversion
     df['graphics_preset'] = df['graphics_preset'].map({'Low': 0, 'Medium': 1, 'High': 2, 'Ultra': 3})
     df['shadow_quality'] = df['shadow_quality'].map({'Low': 0, 'Medium': 1, 'High': 2, 'Ultra': 3})
     df['texture_quality'] = df['texture_quality'].map({'Low': 0, 'Medium': 1, 'High': 2, 'Ultra': 3})
     df['vsync'] = df['vsync'].map({'On': 1, 'Off': 0})
     df['anti_aliasing'] = df['anti_aliasing'].map({'Off': 0, 'FXAA': 1, 'TAA': 2})
     
-    # Create performance ratio features (user hardware vs game minimum requirements)
-    # These ratios help the model understand relative performance
+    # direct comparison of user hardware to game reqs, creating performance ratio
+    # to check how high or how low the user's hardware stands against the game's minimum requirements
     df['cpu_ratio'] = df['cpu_score'] / df['game_cpu_min']
     df['gpu_ratio'] = df['gpu_score'] / df['game_gpu_min']
     df['ram_ratio'] = df['ram_score'] / df['game_ram_min']
@@ -41,18 +41,31 @@ try:
 except Exception as e:
     print(f"Error data conversion: {e}")
 
-# Drop game_title and now-redundant columns (we have ratios instead)
-df = df.drop(columns=['game_title', 'res_width', 'res_height'], errors='ignore')
+# Drop game_title (replacement is min_gpu, cpu, etc.) and redundant columns (replaced by ratios and total px)
+df = df.drop(columns=[
+    'game_title', 
+    'res_width', 'res_height'  # Replaced by total_pixels
+], errors='ignore')
 
 # Separate features (X) and target (y)
 X = df.drop(columns=['expected_fps'])
 y = df['expected_fps']
 
-# Split the dataset into training and testing (80/20 split)
+# 8:2 split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Initialize and train the Random Forest Regressor
-model = RandomForestRegressor(n_estimators=200, random_state=42)
+# Parameter tuning
+model = RandomForestRegressor(
+    n_estimators=700,        # More trees for ensemble stability
+    max_depth=40,            # Proven optimal depth
+    min_samples_split=3,     # Proven optimal split threshold
+    min_samples_leaf=1,      # Allow single-sample leaves for edge cases
+    max_features=0.7,        # Use 70% of features (more than sqrt for richer splits)
+    min_impurity_decrease=0.00005,  # Lower threshold to allow more beneficial splits
+    max_samples=0.8,         # Bootstrap 80% of data per tree for diversity
+    random_state=42,
+    n_jobs=-1                # Use all CPU cores for faster training
+)
 model.fit(X_train, y_train)
 
 # Predict on test data
