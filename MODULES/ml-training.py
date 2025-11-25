@@ -98,16 +98,4 @@ for i in range(min(10, len(y_test))):
     predicted = y_pred[i]
     error = abs(actual - predicted)
     print(f"{actual:10.1f} | {predicted:13.1f} | {error:5.1f}")
-    
-# Feature importance
-feature_importance = pd.DataFrame({
-    'feature': X.columns,
-    'importance': model.feature_importances_
-}).sort_values('importance', ascending=False)
 
-print("\nTop 10 Most Important Features:")
-print(feature_importance.head(10).to_string(index=False))
-
-# Save model for later use
-# joblib.dump(model, './models/gamespec_optimizer.pkl')
-# print("\nModel training complete and saved as gamespec_optimizer.pkl")
