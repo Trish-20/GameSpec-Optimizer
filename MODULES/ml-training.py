@@ -3,7 +3,6 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import numpy as np
-import joblib
 
 try:
     df = pd.read_csv('./DATA/benchmark-data.csv')
@@ -41,18 +40,18 @@ try:
 except Exception as e:
     print(f"Error data conversion: {e}")
 
-# Drop game_title (replacement is min_gpu, cpu, etc.) and redundant columns (replaced by ratios and total px)
+# Drop game_title (replacement is min_gpu, cpu, etc.) and redundant columns (replaced by total px)
 df = df.drop(columns=[
     'game_title', 
-    'res_width', 'res_height'  # Replaced by total_pixels
+    'res_width', 'res_height'
 ], errors='ignore')
 
-# Separate features (X) and target (y)
-X = df.drop(columns=['expected_fps'])
+# Separate features (x) and target (y)
+x = df.drop(columns=['expected_fps'])
 y = df['expected_fps']
 
 # 8:2 split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=45)
 
 # Parameter tuning
 model = RandomForestRegressor(
@@ -63,20 +62,20 @@ model = RandomForestRegressor(
     max_features=0.7,        # Use 70% of features (more than sqrt for richer splits)
     min_impurity_decrease=0.00005,  # Lower threshold to allow more beneficial splits
     max_samples=0.8,         # Bootstrap 80% of data per tree for diversity
-    random_state=42,
+    random_state=45,
     n_jobs=-1                # Use all CPU cores for faster training
 )
-model.fit(X_train, y_train)
+model.fit(x_train, y_train)
 
 # Predict on test data
-y_pred = model.predict(X_test)
+y_pred = model.predict(x_test)
 
 # Evaluate model performance
 mae = mean_absolute_error(y_test, y_pred)
 mse = mean_squared_error(y_test, y_pred)
 rmse = np.sqrt(mse)
 r2 = r2_score(y_test, y_pred)
-cvs = -cross_val_score(model, X, y, cv=5, scoring='neg_mean_absolute_error', n_jobs=-1)
+cvs = -cross_val_score(model, x, y, cv=5, scoring='neg_mean_absolute_error', n_jobs=-1)
 
 # Calculate MAPE (Mean Absolute Percentage Error) for better interpretation
 mape = np.mean(np.abs((y_test - y_pred) / y_test)) * 100
