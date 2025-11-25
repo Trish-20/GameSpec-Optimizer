@@ -51,7 +51,7 @@ x = df.drop(columns=['expected_fps'])
 y = df['expected_fps']
 
 # 8:2 split
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=45)
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=44)
 
 # Parameter tuning
 model = RandomForestRegressor(
@@ -62,7 +62,7 @@ model = RandomForestRegressor(
     max_features=0.7,        # Use 70% of features (more than sqrt for richer splits)
     min_impurity_decrease=0.00005,  # Lower threshold to allow more beneficial splits
     max_samples=0.8,         # Bootstrap 80% of data per tree for diversity
-    random_state=45,
+    random_state=44,
     n_jobs=-1                # Use all CPU cores for faster training
 )
 model.fit(x_train, y_train)
@@ -75,10 +75,9 @@ mae = mean_absolute_error(y_test, y_pred)
 mse = mean_squared_error(y_test, y_pred)
 rmse = np.sqrt(mse)
 r2 = r2_score(y_test, y_pred)
+mape = np.mean(np.abs((y_test - y_pred) / y_test)) * 100 # Percentage of MAE
 cvs = -cross_val_score(model, x, y, cv=5, scoring='neg_mean_absolute_error', n_jobs=-1)
 
-# Calculate MAPE (Mean Absolute Percentage Error) for better interpretation
-mape = np.mean(np.abs((y_test - y_pred) / y_test)) * 100
 
 print("\nModel Performance Metrics:")
 print(f"Mean Absolute Error (MAE): {mae:.2f} FPS")
