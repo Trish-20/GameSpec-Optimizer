@@ -1,12 +1,12 @@
 import pandas as pd
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import numpy as np
 
 try:
     df = pd.read_csv('./DATA/benchmark-data.csv')
-except FileNotFoundError:
+except FileNotFoundError: 
     print("Error: Dataset file not found. Please check the file path.")
     exit()
 
@@ -53,17 +53,16 @@ y = df['expected_fps']
 # 8:2 split
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=44)
 
-# Parameter tuning
-model = RandomForestRegressor(
-    n_estimators=700,        # More trees for ensemble stability
-    max_depth=40,            # Proven optimal depth
-    min_samples_split=3,     # Proven optimal split threshold
-    min_samples_leaf=1,      # Allow single-sample leaves for edge cases
-    max_features=0.7,        # Use 70% of features (more than sqrt for richer splits)
-    min_impurity_decrease=0.00005,  # Lower threshold to allow more beneficial splits
-    max_samples=0.8,         # Bootstrap 80% of data per tree for diversity
-    random_state=44,
-    n_jobs=-1                # Use all CPU cores for faster training
+# Gradient Boosting - builds trees sequentially, each correcting previous errors
+model = GradientBoostingRegressor(
+    n_estimators=500,           # Number of boosting stages
+    max_depth=10,               # Shallower trees (boosting corrects errors iteratively)
+    learning_rate=0.05,         # How much each tree contributes
+    min_samples_split=5,        # Min samples to split a node
+    min_samples_leaf=2,         # Min samples in leaf nodes
+    subsample=0.8,              # Use 80% of data per tree (reduces overfitting)
+    max_features=0.7,           # Use 70% of features per split
+    random_state=44
 )
 model.fit(x_train, y_train)
 
