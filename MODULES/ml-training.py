@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from xgboost import XGBRegressor
 import numpy as np
 
 try:
@@ -53,21 +54,41 @@ y = df['expected_fps']
 # 8:2 split
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=44)
 
-# Gradient Boosting - builds trees sequentially, each correcting previous errors
-model = GradientBoostingRegressor(
-    n_estimators=500,           # Number of boosting stages
-    max_depth=10,               # Shallower trees (boosting corrects errors iteratively)
-    learning_rate=0.05,         # How much each tree contributes
-    min_samples_split=5,        # Min samples to split a node
-    min_samples_leaf=2,         # Min samples in leaf nodes
-    subsample=0.8,              # Use 80% of data per tree (reduces overfitting)
-    max_features=0.7,           # Use 70% of features per split
+# Voting Ensemble (GB + XGB) - combines predictions from both models
+print("\nTraining Voting Ensemble (GB + XGB)...")
+
+# Gradient Boosting model
+gb_model = GradientBoostingRegressor(
+    n_estimators=300,
+    max_depth=8,
+    learning_rate=0.05,
+    subsample=0.8,
     random_state=44
 )
-model.fit(x_train, y_train)
 
-# Predict on test data
-y_pred = model.predict(x_test)
+# XGBoost model
+xgb_model = XGBRegressor(
+    n_estimators=300,
+    max_depth=8,
+    learning_rate=0.05,
+    subsample=0.8,
+    colsample_bytree=0.7,
+    random_state=44,
+    n_jobs=-1
+)
+
+# Train both models
+gb_model.fit(x_train, y_train)
+xgb_model.fit(x_train, y_train)
+
+# Ensemble prediction = average of both
+gb_pred = gb_model.predict(x_test)
+xgb_pred = xgb_model.predict(x_test)
+y_pred = (gb_pred + xgb_pred) / 2
+
+# For cross-validation, we need a custom approach
+# Use GB's CV as approximation (ensemble CV would require custom scorer)
+cvs = -cross_val_score(gb_model, x, y, cv=5, scoring='neg_mean_absolute_error', n_jobs=-1)
 
 # Evaluate model performance
 mae = mean_absolute_error(y_test, y_pred)
@@ -75,10 +96,8 @@ mse = mean_squared_error(y_test, y_pred)
 rmse = np.sqrt(mse)
 r2 = r2_score(y_test, y_pred)
 mape = np.mean(np.abs((y_test - y_pred) / y_test)) * 100 # Percentage of MAE
-cvs = -cross_val_score(model, x, y, cv=5, scoring='neg_mean_absolute_error', n_jobs=-1)
 
-
-print("\nModel Performance Metrics:")
+print("\nEnsemble Model Performance Metrics:")
 print(f"Mean Absolute Error (MAE): {mae:.2f} FPS")
 print(f"Mean Squared Error (MSE): {mse:.2f}")
 print(f"Root Mean Squared Error (RMSE): {rmse:.2f} FPS")

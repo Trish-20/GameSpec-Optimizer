@@ -2,6 +2,8 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.svm import SVR
+from sklearn.preprocessing import StandardScaler
 from xgboost import XGBRegressor
 import numpy as np
 import time
@@ -151,6 +153,95 @@ print(f"MAPE: {xgb_mape:.2f}%")
 print(f"Training Time: {xgb_time:.2f}s")
 
 
+# ===== MODEL 4: SUPPORT VECTOR MACHINE (SVR) =====
+# WHY: Finds optimal hyperplane to separate data points.
+#      Good for smaller datasets, handles non-linear with kernels.
+#      Requires feature scaling for best performance.
+print("\n" + "=" * 60)
+print("MODEL 4: SUPPORT VECTOR REGRESSOR (SVR)")
+print("=" * 60)
+print("WHY: Finds optimal boundary/hyperplane for predictions.")
+print("     Uses kernel trick to handle non-linear relationships.")
+print("     Works well when feature count is high relative to samples.")
+print("     RBF kernel captures complex patterns like GPU bottlenecks.")
+print("-" * 60)
+
+# SVR requires feature scaling
+scaler = StandardScaler()
+x_train_scaled = scaler.fit_transform(x_train)
+x_test_scaled = scaler.transform(x_test)
+
+start = time.time()
+svr_model = SVR(
+    kernel='rbf',           # Radial Basis Function for non-linear
+    C=100,                  # Regularization (higher = less regularization)
+    gamma='scale',          # Kernel coefficient
+    epsilon=0.1             # Margin of tolerance
+)
+svr_model.fit(x_train_scaled, y_train)
+svr_time = time.time() - start
+
+svr_pred = svr_model.predict(x_test_scaled)
+svr_mae = mean_absolute_error(y_test, svr_pred)
+svr_rmse = np.sqrt(mean_squared_error(y_test, svr_pred))
+svr_r2 = r2_score(y_test, svr_pred)
+svr_mape = np.mean(np.abs((y_test - svr_pred) / y_test)) * 100
+
+print(f"MAE:  {svr_mae:.2f} FPS")
+print(f"RMSE: {svr_rmse:.2f} FPS")
+print(f"R²:   {svr_r2:.3f} ({svr_r2*100:.1f}%)")
+print(f"MAPE: {svr_mape:.2f}%")
+print(f"Training Time: {svr_time:.2f}s")
+
+
+# ===== MODEL 5: VOTING ENSEMBLE (GB + XGB) =====
+# WHY: Combines predictions from multiple different models.
+#      Each model has different strengths/weaknesses.
+#      Averaging reduces individual model errors.
+print("\n" + "=" * 60)
+print("MODEL 5: VOTING ENSEMBLE (GB + XGB)")
+print("=" * 60)
+print("WHY: Combines 2 boosting algorithms into one predictor.")
+print("     GB: Sequential error correction, captures subtle patterns.")
+print("     XGB: Regularized boosting, handles edge cases well.")
+print("     Final prediction = average of both models.")
+print("-" * 60)
+
+start = time.time()
+
+# Train individual models for ensemble
+ens_gb = GradientBoostingRegressor(
+    n_estimators=300, max_depth=8, learning_rate=0.05,
+    subsample=0.8, random_state=44
+)
+ens_xgb = XGBRegressor(
+    n_estimators=300, max_depth=8, learning_rate=0.05,
+    subsample=0.8, colsample_bytree=0.7, random_state=44, n_jobs=-1
+)
+
+# Fit all models
+ens_gb.fit(x_train, y_train)
+ens_xgb.fit(x_train, y_train)
+
+# Ensemble prediction = average of both
+ens_pred_gb = ens_gb.predict(x_test)
+ens_pred_xgb = ens_xgb.predict(x_test)
+ensemble_pred = (ens_pred_gb + ens_pred_xgb) / 2
+
+ensemble_time = time.time() - start
+
+ensemble_mae = mean_absolute_error(y_test, ensemble_pred)
+ensemble_rmse = np.sqrt(mean_squared_error(y_test, ensemble_pred))
+ensemble_r2 = r2_score(y_test, ensemble_pred)
+ensemble_mape = np.mean(np.abs((y_test - ensemble_pred) / y_test)) * 100
+
+print(f"MAE:  {ensemble_mae:.2f} FPS")
+print(f"RMSE: {ensemble_rmse:.2f} FPS")
+print(f"R²:   {ensemble_r2:.3f} ({ensemble_r2*100:.1f}%)")
+print(f"MAPE: {ensemble_mape:.2f}%")
+print(f"Training Time: {ensemble_time:.2f}s")
+
+
 # ===== COMPARISON SUMMARY =====
 print("\n" + "=" * 60)
 print("COMPARISON SUMMARY")
@@ -160,15 +251,19 @@ print("-" * 75)
 print(f"{'Random Forest':<25} {rf_mae:>10.2f} {rf_rmse:>10.2f} {rf_r2:>10.3f} {rf_mape:>9.2f}% {rf_time:>9.2f}s")
 print(f"{'Gradient Boosting':<25} {gb_mae:>10.2f} {gb_rmse:>10.2f} {gb_r2:>10.3f} {gb_mape:>9.2f}% {gb_time:>9.2f}s")
 print(f"{'XGBoost':<25} {xgb_mae:>10.2f} {xgb_rmse:>10.2f} {xgb_r2:>10.3f} {xgb_mape:>9.2f}% {xgb_time:>9.2f}s")
+print(f"{'SVR (RBF Kernel)':<25} {svr_mae:>10.2f} {svr_rmse:>10.2f} {svr_r2:>10.3f} {svr_mape:>9.2f}% {svr_time:>9.2f}s")
+print(f"{'Voting Ensemble':<25} {ensemble_mae:>10.2f} {ensemble_rmse:>10.2f} {ensemble_r2:>10.3f} {ensemble_mape:>9.2f}% {ensemble_time:>9.2f}s")
 
 # Find best model
-best_mae = min(rf_mae, gb_mae, xgb_mae)
-if best_mae == rf_mae:
-    winner = "Random Forest"
-elif best_mae == gb_mae:
-    winner = "Gradient Boosting"
-else:
-    winner = "XGBoost"
+all_maes = {
+    'Random Forest': rf_mae,
+    'Gradient Boosting': gb_mae,
+    'XGBoost': xgb_mae,
+    'SVR (RBF Kernel)': svr_mae,
+    'Voting Ensemble': ensemble_mae
+}
+winner = min(all_maes, key=all_maes.get)
+best_mae = all_maes[winner]
 
 print("-" * 75)
 print(f"🏆 BEST MODEL (lowest MAE): {winner} with {best_mae:.2f} FPS error")
