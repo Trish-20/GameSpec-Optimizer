@@ -57,18 +57,18 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_
 # Voting Ensemble (GB + XGB) - combines predictions from both models
 print("\nTraining Voting Ensemble (GB + XGB)...")
 
-# Gradient Boosting model
+# Gradient Boosting model - optimized parameters
 gb_model = GradientBoostingRegressor(
-    n_estimators=300,
+    n_estimators=300,           # Optimal: avoids overfitting and under, 300 is over and 150 is under, 250 is slightly worse
     max_depth=8,
-    learning_rate=0.05,
+    learning_rate=0.05,         # Optimal: balanced convergence, 0.1 is dum, 0.03 is dum2
     subsample=0.8,
     random_state=44
 )
 
-# XGBoost model
+# XGBoost model - aligned with GB optimal settings
 xgb_model = XGBRegressor(
-    n_estimators=300,
+    n_estimators=400,           # Matched with GB
     max_depth=8,
     learning_rate=0.05,
     subsample=0.8,

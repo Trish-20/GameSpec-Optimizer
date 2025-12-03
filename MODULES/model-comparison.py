@@ -86,7 +86,7 @@ print("-" * 60)
 
 start = time.time()
 gb_model = GradientBoostingRegressor(
-    n_estimators=500,           # Number of boosting stages
+    n_estimators=200,           # Number of boosting stages
     max_depth=10,               # Shallower trees (boosting corrects errors iteratively)
     learning_rate=0.05,         # How much each tree contributes (lower = more trees needed)
     min_samples_split=5,
@@ -127,10 +127,10 @@ print("-" * 60)
 
 start = time.time()
 xgb_model = XGBRegressor(
-    n_estimators=500,
+    n_estimators=300,           # XGB handles more trees due to regularization
     max_depth=10,
     learning_rate=0.05,
-    subsample=0.8,
+    subsample=0.8,  
     colsample_bytree=0.7,       # Similar to max_features
     reg_alpha=0.1,              # L1 regularization (reduces overfitting)
     reg_lambda=1.0,             # L2 regularization
@@ -209,13 +209,13 @@ print("-" * 60)
 
 start = time.time()
 
-# Train individual models for ensemble
+# Train individual models for ensemble - using optimized parameters
 ens_gb = GradientBoostingRegressor(
     n_estimators=300, max_depth=8, learning_rate=0.05,
     subsample=0.8, random_state=44
 )
 ens_xgb = XGBRegressor(
-    n_estimators=300, max_depth=8, learning_rate=0.05,
+    n_estimators=400, max_depth=8, learning_rate=0.05,
     subsample=0.8, colsample_bytree=0.7, random_state=44, n_jobs=-1
 )
 
