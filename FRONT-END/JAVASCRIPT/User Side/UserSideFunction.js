@@ -1,58 +1,136 @@
-// Fake example game data
-const games = [
-    { title: "Cyberpunk 2077", cpu: "i5", gpu: "GTX 1060", ram: 8 },
-    { title: "Valorant", cpu: "i3", gpu: "GTX 750", ram: 4 },
-    { title: "GTA V", cpu: "i5", gpu: "GTX 660", ram: 8 },
-    { title: "Red Dead Redemption 2", cpu: "i7", gpu: "RTX 2070", ram: 16 },
-    { title: "Minecraft", cpu: "i3", gpu: "Integrated", ram: 4 },
-    { title: "Elden Ring", cpu: "i5", gpu: "RTX 3060", ram: 16 },
-    { title: "The Witcher 3", cpu: "i5", gpu: "GTX 970", ram: 8 }
-];
+// Games will be loaded from CSV via PHP API
+let games = [];
+
+// Load games from CSV
+async function loadGamesFromCSV() {
+    try {
+        const response = await fetch('../../../MODULES/api/get-games.php');
+        games = await response.json();
+        return games;
+    } catch (error) {
+        console.error('Error loading games:', error);
+        return [];
+    }
+}
 
 // --- SIDEBAR CONTROL ---
 function toggleSidebar() {
     document.body.classList.toggle('sidebar-open');
 }
 
-// --- TAB NAVIGATION ---
+// --- BROWSE GAMES: Initialize and Load Games ---
+async function initBrowseGames() {
+    await loadGamesFromCSV();
+    loadGameGrid();
+}
+
+function loadGameGrid() {
+    const grid = document.getElementById('gameGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    
+    games.forEach(game => {
+        const card = document.createElement('div');
+        card.className = 'game-card';
+        card.dataset.title = game.title.toLowerCase();
+        
+        card.innerHTML = `
+            <div class="game-image">
+                🎮
+            </div>
+            <div class="game-name">${game.title}</div>
+        `;
+        
+        card.onclick = () => selectGame(game.title_raw);
+        grid.appendChild(card);
+    });
+}
+
+function filterGames() {
+    const searchTerm = document.getElementById('gameSearch')?.value.toLowerCase() || '';
+    const genreFilter = document.getElementById('genreFilter')?.value || '';
+    
+    const cards = document.querySelectorAll('.game-card');
+    
+    cards.forEach(card => {
+        const title = card.dataset.title;
+        
+        const matchesSearch = title.includes(searchTerm);
+        // Genre filter disabled for now since CSV doesn't have genre data
+        const matchesGenre = !genreFilter || true;
+        
+        card.style.display = (matchesSearch && matchesGenre) ? 'block' : 'none';
+    });
+}
+
+function selectGame(title) {
+    // Navigate to FPS prediction with selected game
+    window.location.href = `fps-prediction.php?game=${encodeURIComponent(title)}`;
+}
+
+// --- GAME DROPDOWN: Load for FPS Prediction ---
+async function loadGameDropdown() {
+    await loadGamesFromCSV();
+    
+    const select = document.getElementById('selectedGame');
+    if (!select) return;
+    
+    select.innerHTML = '<option value="">Select a Game</option>';
+    
+    games.forEach(game => {
+        select.innerHTML += `<option value="${game.title_raw}">${game.title}</option>`;
+    });
+    
+    // Check if game was passed via URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const preselectedGame = urlParams.get('game');
+    if (preselectedGame) {
+        select.value = preselectedGame;
+    }
+}
+
+// --- LEGACY: TAB NAVIGATION (for old UserSide.html) ---
 function showTab(tabName, button) {
-    // 1. Hide all tabs and show the selected tab
     document.querySelectorAll('.tab').forEach(tab => tab.style.display = "none");
     document.getElementById(tabName).style.display = "block";
     
-    // 2. Set the active state on the button
     document.querySelectorAll('.sidebar button').forEach(btn => btn.classList.remove('active'));
     if (button) {
         button.classList.add('active');
     }
 }
 
-// --- GAME DATA LOADING ---
-function loadGames() {
+// --- LEGACY: Load games for old structure ---
+async function loadGames() {
+    await loadGamesFromCSV();
+    
     const div = document.getElementById('gameList');
     const select = document.getElementById('selectedGame');
     
-    // Clear existing content and set placeholder
-    div.innerHTML = '';
-    select.innerHTML = '<option value="">Select a Game</option>';
-
-    games.forEach(game => {
-        // Create game card
-        div.innerHTML += `
-            <div class="game-box">
-                <strong>${game.title}</strong>
-                <p>CPU: ${game.cpu}</p>
-                <p>GPU: ${game.gpu}</p>
-                <p>RAM: ${game.ram} GB</p>
-            </div>
-        `;
-        // Populate game selection dropdown
-        select.innerHTML += `<option value="${game.title}">${game.title}</option>`;
-    });
+    if (div) {
+        div.innerHTML = '';
+        games.forEach(game => {
+            div.innerHTML += `
+                <div class="game-box">
+                    <strong>${game.title}</strong>
+                    <p>CPU: ${game.cpu_model}</p>
+                    <p>GPU: ${game.gpu_model}</p>
+                    <p>RAM: ${game.ram_model}</p>
+                </div>
+            `;
+        });
+    }
     
-    // Set initial tab and active state on load
+    if (select) {
+        select.innerHTML = '<option value="">Select a Game</option>';
+        games.forEach(game => {
+            select.innerHTML += `<option value="${game.title_raw}">${game.title}</option>`;
+        });
+    }
+    
     const initialButton = document.querySelector('.sidebar button');
-    showTab('browse', initialButton); 
+    if (initialButton) showTab('browse', initialButton);
 }
 
 // --- SIMPLE HARDWARE SCORING (For demonstration only) ---

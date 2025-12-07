@@ -17,6 +17,8 @@ body {
     min-height: 100vh;
     box-sizing: border-box;
     transition: margin-left 0.3s ease, width 0.3s ease;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ---------- SIDEBAR (Initial State) ---------- */
@@ -172,12 +174,36 @@ body {
 }
 
 /* ---------- GAME GRID CONTAINER ---------- */
+#gameGrid {
+    display: grid;
+    /* Fixed 6 columns per row */
+    grid-template-columns: repeat(6, 1fr);
+    gap: 20px;
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Responsive: adjust columns on smaller screens */
+@media (max-width: 1400px) {
+    #gameGrid { grid-template-columns: repeat(5, 1fr); }
+}
+@media (max-width: 1200px) {
+    #gameGrid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 900px) {
+    #gameGrid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 600px) {
+    #gameGrid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Legacy gameList support */
 #gameList {
     display: grid;
-    /* This creates a responsive grid: minimum column size 250px, max 1 fraction unit */
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
-    gap: 30px; /* Increased gap for better spacing */
-    padding: 20px; /* Added padding around the grid */
+    gap: 30px;
+    padding: 20px;
     width: 100%;
     box-sizing: border-box;
 }
@@ -222,4 +248,178 @@ body {
     font-size: 0.9em;
     margin: 3px 0;
     color: #475569;
+}
+
+/* ---------- BROWSE GAMES - FIXED TOP SECTION ---------- */
+.browse-top-section {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: linear-gradient(135deg, #2c2f33, #3a3f47);
+    padding: 20px 30px;
+    margin: -30px -30px 0 -30px;
+    width: calc(100% + 60px);
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.browse-top-section h2 {
+    text-align: center;
+    margin: 0 0 20px 0;
+    color: #ffffff;
+}
+
+/* ---------- SEARCH & FILTER CONTAINER ---------- */
+.search-filter-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    position: relative;
+    width: 400px;
+    max-width: 100%;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 45px 12px 15px;
+    border-radius: 25px;
+    border: none;
+    font-size: 16px;
+    background: rgba(255,255,255,0.95);
+    color: #1e293b;
+    box-sizing: border-box;
+}
+
+.search-box input:focus {
+    outline: 2px solid #6366f1;
+}
+
+.search-box .search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+}
+
+.genre-filter select {
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: none;
+    font-size: 16px;
+    background: rgba(255,255,255,0.95);
+    color: #1e293b;
+    cursor: pointer;
+    min-width: 150px;
+}
+
+.genre-filter select:focus {
+    outline: 2px solid #6366f1;
+}
+
+/* ---------- SCROLLABLE GAME SECTION ---------- */
+.game-section {
+    padding-top: 20px;
+    overflow-y: auto;
+}
+
+/* ---------- GAME CARD (New Design) ---------- */
+.game-card {
+    background: rgba(255,255,255,0.95);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.game-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+}
+
+.game-card .game-image {
+    width: 100%;
+    height: 150px;
+    background: linear-gradient(135deg, #334155, #1e293b);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 48px;
+}
+
+.game-card .game-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.game-card .game-name {
+    padding: 12px;
+    text-align: center;
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 14px;
+    background: #ffffff;
+}
+
+/* ---------- SIDEBAR NAVIGATION LINKS ---------- */
+.sidebar .nav-btn {
+    display: block;
+    width: 100%;
+    padding: 12px 0;
+    margin: 10px 0;
+    background: #3a3f47;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.sidebar .nav-btn:hover {
+    background: #565d66;
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.sidebar .nav-btn.active {
+    background: #6c7279;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* ---------- PAGE CONTAINER ---------- */
+.page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+}
+
+.page-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #ffffff;
+}
+
+/* ---------- FOOTER ---------- */
+.site-footer {
+    text-align: center;
+    padding: 20px;
+    color: #94a3b8;
+    font-size: 14px;
+    margin-top: auto;
+    width: 100%;
+    box-sizing: border-box;
 }
