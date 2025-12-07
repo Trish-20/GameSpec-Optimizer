@@ -206,15 +206,115 @@ function scoreGPU(gpu) {
     return 4;
 }
 
-// --- BENCHMARK FUNCTIONALITY ---
+// --- HARDWARE BENCHMARK FUNCTIONALITY ---
+async function initHardwareBenchmark() {
+    // Pre-load CPU and GPU data
+    await Promise.all([loadCPUsFromCSV(), loadGPUsFromCSV()]);
+}
+
+function loadHardwareOptions() {
+    const hardwareType = document.getElementById('hardwareType').value;
+    const hardwareSelect = document.getElementById('hardwareSelect');
+    
+    if (!hardwareType) {
+        hardwareSelect.innerHTML = '<option value="">First select a hardware type above</option>';
+        hardwareSelect.disabled = true;
+        return;
+    }
+    
+    hardwareSelect.disabled = false;
+    
+    if (hardwareType === 'cpu') {
+        hardwareSelect.innerHTML = '<option value="">Select a CPU</option>';
+        cpus.forEach(cpu => {
+            hardwareSelect.innerHTML += `<option value="${cpu.score}" data-name="${cpu.model}">${cpu.model} (${cpu.cores}C/${cpu.threads}T)</option>`;
+        });
+    } else if (hardwareType === 'gpu') {
+        hardwareSelect.innerHTML = '<option value="">Select a GPU</option>';
+        gpus.forEach(gpu => {
+            hardwareSelect.innerHTML += `<option value="${gpu.score}" data-name="${gpu.model}">${gpu.model}</option>`;
+        });
+    } else if (hardwareType === 'ram') {
+        hardwareSelect.innerHTML = '<option value="">Select RAM Size</option>';
+        const ramOptions = [
+            { size: 4, score: 1000 },
+            { size: 8, score: 2000 },
+            { size: 16, score: 4000 },
+            { size: 32, score: 8000 },
+            { size: 64, score: 16000 }
+        ];
+        ramOptions.forEach(ram => {
+            hardwareSelect.innerHTML += `<option value="${ram.score}" data-name="${ram.size} GB">${ram.size} GB DDR4/DDR5</option>`;
+        });
+    }
+}
+
+function getBenchmarkScore() {
+    const hardwareType = document.getElementById('hardwareType').value;
+    const hardwareSelect = document.getElementById('hardwareSelect');
+    
+    if (!hardwareType) {
+        return alert('Please select a hardware type first.');
+    }
+    
+    if (!hardwareSelect.value) {
+        return alert('Please select a hardware model.');
+    }
+    
+    const score = parseInt(hardwareSelect.value);
+    const selectedOption = hardwareSelect.options[hardwareSelect.selectedIndex];
+    const name = selectedOption.dataset.name || selectedOption.text;
+    
+    // Determine score rating
+    let rating = '';
+    let ratingClass = '';
+    
+    if (hardwareType === 'cpu') {
+        if (score >= 40000) { rating = 'Excellent'; ratingClass = 'excellent'; }
+        else if (score >= 25000) { rating = 'Great'; ratingClass = 'great'; }
+        else if (score >= 15000) { rating = 'Good'; ratingClass = 'good'; }
+        else if (score >= 8000) { rating = 'Average'; ratingClass = 'average'; }
+        else { rating = 'Entry Level'; ratingClass = 'entry'; }
+    } else if (hardwareType === 'gpu') {
+        if (score >= 25000) { rating = 'Excellent'; ratingClass = 'excellent'; }
+        else if (score >= 15000) { rating = 'Great'; ratingClass = 'great'; }
+        else if (score >= 10000) { rating = 'Good'; ratingClass = 'good'; }
+        else if (score >= 5000) { rating = 'Average'; ratingClass = 'average'; }
+        else { rating = 'Entry Level'; ratingClass = 'entry'; }
+    } else if (hardwareType === 'ram') {
+        if (score >= 8000) { rating = 'Excellent'; ratingClass = 'excellent'; }
+        else if (score >= 4000) { rating = 'Great'; ratingClass = 'great'; }
+        else if (score >= 2000) { rating = 'Good'; ratingClass = 'good'; }
+        else { rating = 'Entry Level'; ratingClass = 'entry'; }
+    }
+    
+    const typeLabel = hardwareType.toUpperCase();
+    
+    document.getElementById('benchResult').innerHTML = `
+        <div class="bench-score-card ${ratingClass}">
+            <div class="bench-type">${typeLabel}</div>
+            <div class="bench-name">${name}</div>
+            <div class="bench-score">${score.toLocaleString()}</div>
+            <div class="bench-label">Benchmark Score</div>
+            <div class="bench-rating">${rating}</div>
+        </div>
+    `;
+}
+
+// --- LEGACY BENCHMARK (for old structure) ---
 function runBenchmark() {
-    const cpuScore = scoreCPU(document.getElementById("cpu").value);
-    const gpuScore = scoreGPU(document.getElementById("gpu").value);
-    // Limit RAM score to a max of 10 for balancing the total score
-    const ramScore = Math.min(10, document.getElementById("ram").value / 4); 
+    const cpuEl = document.getElementById("cpu");
+    const gpuEl = document.getElementById("gpu");
+    const ramEl = document.getElementById("ram");
+    
+    if (!cpuEl || !gpuEl || !ramEl) return;
+    
+    const cpuScore = scoreCPU(cpuEl.value);
+    const gpuScore = scoreGPU(gpuEl.value);
+    const ramScore = Math.min(10, ramEl.value / 4);
 
     const total = Math.round(cpuScore + gpuScore + ramScore);
-    const maxScore = 30; // 10 (CPU) + 10 (GPU) + 10 (RAM)
+    const maxScore = 30;
     
     document.getElementById("benchResult").innerText = 
         `Your System Score: ${total}/${maxScore}`;
@@ -248,23 +348,28 @@ function predictFPS() {
     
     const quality = document.getElementById("graphicsQuality").value;
     
-    // Calculate performance ratios
-    const cpuRatio = cpuScore / selectedGame.cpu_benchmark;
-    const gpuRatio = gpuScore / selectedGame.gpu_benchmark;
-    const ramRatio = ramScore / selectedGame.ram_benchmark;
+    // Simple benchmark comparison: user hardware vs game requirements
+    const cpuOK = cpuScore >= selectedGame.cpu_benchmark;
+    const gpuOK = gpuScore >= selectedGame.gpu_benchmark;
+    const ramOK = ramScore >= selectedGame.ram_benchmark;
     
-    // Simple checks
-    const cpuOK = cpuRatio >= 1;
-    const gpuOK = gpuRatio >= 1;
-    const ramOK = ramRatio >= 1;
+    // Identify bottlenecks (hardware below game requirements)
+    const bottlenecks = [];
+    if (!cpuOK) bottlenecks.push({ type: 'CPU', name: cpuName, userScore: cpuScore, required: selectedGame.cpu_benchmark });
+    if (!gpuOK) bottlenecks.push({ type: 'GPU', name: gpuName, userScore: gpuScore, required: selectedGame.gpu_benchmark });
+    if (!ramOK) bottlenecks.push({ type: 'RAM', name: `${ramGB} GB`, userScore: ramScore, required: selectedGame.ram_benchmark });
     
-    // Calculate estimated FPS (simple placeholder)
-    let baseFPS = 60;
-    const minRatio = Math.min(cpuRatio, gpuRatio, ramRatio);
-    const avgRatio = (cpuRatio + gpuRatio + ramRatio) / 3;
-    
-    // Bottleneck-aware calculation
-    baseFPS = Math.round(60 * Math.min(minRatio, 2) * 0.7 + 60 * avgRatio * 0.3);
+    // Calculate estimated FPS based on how many requirements are met
+    let baseFPS;
+    if (bottlenecks.length === 0) {
+        baseFPS = 90; // All requirements met
+    } else if (bottlenecks.length === 1) {
+        baseFPS = 50; // One component below
+    } else if (bottlenecks.length === 2) {
+        baseFPS = 35; // Two components below
+    } else {
+        baseFPS = 20; // All components below
+    }
     
     // Quality multiplier
     const qualityMult = { low: 1.5, medium: 1.0, high: 0.6 };
@@ -275,12 +380,6 @@ function predictFPS() {
     let fpsClass = 'fps-ok';
     if (estimatedFPS >= 60) fpsClass = 'fps-good';
     else if (estimatedFPS < 45) fpsClass = 'fps-bad';
-    
-    // Identify bottlenecks
-    const bottlenecks = [];
-    if (!cpuOK) bottlenecks.push({ type: 'CPU', name: cpuName, ratio: cpuRatio, score: cpuScore, required: selectedGame.cpu_benchmark });
-    if (!gpuOK) bottlenecks.push({ type: 'GPU', name: gpuName, ratio: gpuRatio, score: gpuScore, required: selectedGame.gpu_benchmark });
-    if (!ramOK) bottlenecks.push({ type: 'RAM', name: `${ramGB} GB`, ratio: ramRatio, score: ramScore, required: selectedGame.ram_benchmark });
     
     // Build results HTML
     let html = '';
@@ -297,10 +396,10 @@ function predictFPS() {
     if (estimatedFPS < 45 && bottlenecks.length > 0) {
         html += `
             <div class="result-section danger">
-                <h4>⚠️ Performance Bottlenecks</h4>
+                <h4>Performance Bottlenecks</h4>
                 <ul class="bottleneck-list">
                     ${bottlenecks.map(b => `
-                        <li>❌ ${b.type}: ${b.name} (${Math.round(b.ratio * 100)}% of required)</li>
+                        <li>${b.type}: ${b.name} - Your score: ${b.userScore.toLocaleString()} | Required: ${b.required.toLocaleString()}</li>
                     `).join('')}
                 </ul>
             </div>
@@ -317,7 +416,7 @@ function predictFPS() {
                 <div class="bar-item">
                     <div class="bar-label">
                         <span>CPU</span>
-                        <span>${cpuOK ? '✓ Pass' : '✗ Below'}</span>
+                        <span>${cpuOK ? 'Pass' : 'Below'}</span>
                     </div>
                     <div class="bar-row">
                         <span class="bar-model-name">Your: ${cpuName}</span>
@@ -336,7 +435,7 @@ function predictFPS() {
                 <div class="bar-item">
                     <div class="bar-label">
                         <span>GPU</span>
-                        <span>${gpuOK ? '✓ Pass' : '✗ Below'}</span>
+                        <span>${gpuOK ? 'Pass' : 'Below'}</span>
                     </div>
                     <div class="bar-row">
                         <span class="bar-model-name">Your: ${gpuName}</span>
@@ -355,7 +454,7 @@ function predictFPS() {
                 <div class="bar-item">
                     <div class="bar-label">
                         <span>RAM</span>
-                        <span>${ramOK ? '✓ Pass' : '✗ Below'}</span>
+                        <span>${ramOK ? 'Pass' : 'Below'}</span>
                     </div>
                     <div class="bar-row">
                         <span class="bar-model-name">Your: ${ramGB} GB</span>
@@ -395,7 +494,7 @@ function predictFPS() {
                 </ul>
             </div>
         `;
-    } else if (estimatedFPS < 45) {
+    } else if (estimatedFPS < 50) {
         // Suggest turning DOWN settings
         html += `
             <div class="result-section warning">
@@ -413,10 +512,10 @@ function predictFPS() {
         `;
     }
     
-    // 5. Hardware Upgrade Suggestions (if FPS < 45)
-    if (estimatedFPS < 45 && bottlenecks.length > 0) {
+    // 5. Hardware Upgrade Suggestions (if FPS < 50)
+    if (estimatedFPS < 50 && bottlenecks.length > 0) {
         html += `<div class="result-section danger">
-            <h4>🔧 Recommended Hardware Upgrades</h4>
+            <h4>Recommended Hardware Upgrades</h4>
         `;
         
         // For each bottleneck category, suggest 3 alternatives
@@ -428,7 +527,7 @@ function predictFPS() {
                 if (betterCPUs.length > 0) {
                     html += `
                         <div class="upgrade-category">
-                            <h5>🔲 CPU Alternatives:</h5>
+                            <h5>CPU Alternatives:</h5>
                             <div class="upgrade-options">
                                 ${betterCPUs.map(c => `
                                     <div class="upgrade-option">
@@ -449,7 +548,7 @@ function predictFPS() {
                 if (betterGPUs.length > 0) {
                     html += `
                         <div class="upgrade-category">
-                            <h5>🎴 GPU Alternatives:</h5>
+                            <h5>GPU Alternatives:</h5>
                             <div class="upgrade-options">
                                 ${betterGPUs.map(g => `
                                     <div class="upgrade-option">
@@ -470,7 +569,7 @@ function predictFPS() {
                 if (ramOptions.length > 0) {
                     html += `
                         <div class="upgrade-category">
-                            <h5>💾 RAM Alternatives:</h5>
+                            <h5>RAM Alternatives:</h5>
                             <div class="upgrade-options">
                                 ${ramOptions.map(r => `
                                     <div class="upgrade-option">

@@ -14,17 +14,22 @@
     <div class="page-container">
         <h2>Hardware Benchmark</h2>
         <div class="tab-card">
-            <label for="cpu">Enter CPU Model:</label>
-            <input id="cpu" type="text" placeholder="e.g., i5-12400F">
+            <label for="hardwareType">Choose a Hardware Type:</label>
+            <select id="hardwareType" onchange="loadHardwareOptions()">
+                <option value="">Select Hardware Type</option>
+                <option value="cpu">CPU</option>
+                <option value="gpu">GPU</option>
+                <option value="ram">RAM</option>
+            </select>
             
-            <label for="gpu">Enter GPU Model:</label>
-            <input id="gpu" type="text" placeholder="e.g., RTX 3060">
+            <label for="hardwareSelect">Select Hardware:</label>
+            <select id="hardwareSelect" disabled>
+                <option value="">First select a hardware type above</option>
+            </select>
             
-            <label for="ram">Enter RAM (GB):</label>
-            <input id="ram" type="number" placeholder="e.g., 16">
+            <button onclick="getBenchmarkScore()">Get Benchmark Score</button>
             
-            <button onclick="runBenchmark()">Get Benchmark Score</button>
-            <h3 id="benchResult"></h3>
+            <div id="benchResult" class="benchmark-result"></div>
         </div>
     </div>
 
@@ -35,6 +40,10 @@
 <script>
     // Set active state for current page
     document.querySelector('[data-page="benchmark"]')?.classList.add('active');
+    // Initialize hardware benchmark
+    if (typeof initHardwareBenchmark === 'function') {
+        initHardwareBenchmark();
+    }
 </script>
 </body>
 </html>

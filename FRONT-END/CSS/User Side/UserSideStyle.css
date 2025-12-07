@@ -34,6 +34,28 @@ body {
     transition: left 0.3s ease;
     overflow-y: auto; /* Allows scrolling if content is long */
     z-index: 10;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar h2 {
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    color: #ffffff;
+    text-align: center;
+    border-bottom: 2px solid #6366f1;
+    padding-bottom: 15px;
+}
+
+/* Hidden Admin Button */
+.hidden-admin-btn {
+    margin-top: auto;
+    width: calc(100% + 40px);
+    margin-left: -20px;
+    margin-bottom: -20px;
+    height: 60px;
+    cursor: default;
+    background: transparent;
 }
 
 /* --- SIDEBAR OPEN STATE (Controlled by JS) --- */
@@ -746,6 +768,75 @@ body {
 .upgrade-option .score {
     font-weight: 600;
     color: #059669;
+}
+
+/* ---------- HARDWARE BENCHMARK RESULTS ---------- */
+.benchmark-result {
+    margin-top: 20px;
+}
+
+.bench-score-card {
+    text-align: center;
+    padding: 25px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1e293b, #334155);
+    color: white;
+}
+
+.bench-score-card .bench-type {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.8;
+    margin-bottom: 5px;
+}
+
+.bench-score-card .bench-name {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.bench-score-card .bench-score {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.bench-score-card .bench-label {
+    font-size: 14px;
+    opacity: 0.7;
+    margin-top: 5px;
+}
+
+.bench-score-card .bench-rating {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    background: rgba(255,255,255,0.2);
+}
+
+.bench-score-card.excellent {
+    background: linear-gradient(135deg, #059669, #10b981);
+}
+
+.bench-score-card.great {
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
+}
+
+.bench-score-card.good {
+    background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+}
+
+.bench-score-card.average {
+    background: linear-gradient(135deg, #d97706, #f59e0b);
+}
+
+.bench-score-card.entry {
+    background: linear-gradient(135deg, #64748b, #94a3b8);
 }
 
 /* Responsive */
