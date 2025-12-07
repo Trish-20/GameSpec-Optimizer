@@ -423,3 +423,339 @@ body {
     width: 100%;
     box-sizing: border-box;
 }
+
+/* ---------- FPS PREDICTION LAYOUT ---------- */
+.fps-prediction-container {
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.fps-prediction-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #ffffff;
+}
+
+.fps-layout {
+    display: flex;
+    gap: 30px;
+    width: 100%;
+    min-height: 600px;
+}
+
+/* Input Panel (Left Side) */
+.fps-input-panel {
+    flex: 0 0 350px;
+    background: rgba(255,255,255,0.95);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.fps-input-panel h3 {
+    color: #1e293b;
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    text-align: center;
+    border-bottom: 2px solid #334155;
+    padding-bottom: 10px;
+}
+
+.fps-input-panel label {
+    display: block;
+    color: #1e293b;
+    font-size: 14px;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.fps-input-panel select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.fps-input-panel button {
+    background: #334155;
+    color: white;
+    border: none;
+    padding: 14px;
+    width: 100%;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    margin-top: 25px;
+    transition: all 0.3s ease;
+}
+
+.fps-input-panel button:hover {
+    background: #1e293b;
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Results Panel (Right Side) */
+.fps-results-panel {
+    flex: 1;
+    background: rgba(255,255,255,0.95);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    overflow-y: auto;
+}
+
+.results-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #475569;
+}
+
+.results-placeholder .placeholder-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.results-placeholder p {
+    font-size: 16px;
+    text-align: center;
+    color: #475569;
+}
+
+/* FPS Display */
+.fps-display {
+    text-align: center;
+    padding: 20px;
+    margin-bottom: 25px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1e293b, #334155);
+    color: white;
+}
+
+.fps-display .fps-value {
+    font-size: 72px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.fps-display .fps-label {
+    font-size: 24px;
+    opacity: 0.8;
+    margin-top: 5px;
+}
+
+.fps-display.fps-good { background: linear-gradient(135deg, #059669, #10b981); }
+.fps-display.fps-ok { background: linear-gradient(135deg, #d97706, #f59e0b); }
+.fps-display.fps-bad { background: linear-gradient(135deg, #dc2626, #ef4444); }
+
+/* Section Cards */
+.result-section {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid #334155;
+}
+
+.result-section h4 {
+    color: #1e293b;
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.result-section p,
+.result-section span {
+    color: #334155;
+}
+
+.result-section.warning { border-left-color: #f59e0b; }
+.result-section.danger { border-left-color: #ef4444; }
+.result-section.success { border-left-color: #10b981; }
+
+/* Bar Chart */
+.bar-chart {
+    margin: 15px 0;
+}
+
+.bar-item {
+    margin-bottom: 15px;
+}
+
+.bar-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.bar-model-name {
+    flex: 0 0 180px;
+    font-size: 12px;
+    color: #475569;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bar-container {
+    flex: 1;
+    height: 24px;
+    background: #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    min-width: 150px;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: 12px;
+    transition: width 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    min-width: 50px;
+}
+
+.bar-fill.user { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.bar-fill.game { background: linear-gradient(90deg, #64748b, #94a3b8); }
+
+.bar-legend {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 15px;
+    font-size: 13px;
+    color: #1e293b;
+}
+
+.bar-legend span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #1e293b;
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.legend-dot.user { background: #3b82f6; }
+.legend-dot.game { background: #64748b; }
+
+/* Bottleneck List */
+.bottleneck-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.bottleneck-list li {
+    padding: 10px;
+    background: #fef2f2;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    color: #991b1b;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Suggestions */
+.suggestion-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.suggestion-list li {
+    padding: 10px;
+    background: #f0fdf4;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    color: #166534;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.suggestion-list.downgrade li {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+/* Upgrade Options */
+.upgrade-category {
+    margin-bottom: 20px;
+}
+
+.upgrade-category h5 {
+    color: #1e293b;
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.upgrade-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.upgrade-option {
+    padding: 12px;
+    background: #eff6ff;
+    border-radius: 8px;
+    border: 1px solid #bfdbfe;
+    font-size: 13px;
+    color: #1e40af;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.upgrade-option .score {
+    font-weight: 600;
+    color: #059669;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .fps-layout {
+        flex-direction: column;
+    }
+    
+    .fps-input-panel {
+        flex: none;
+        width: 100%;
+    }
+}

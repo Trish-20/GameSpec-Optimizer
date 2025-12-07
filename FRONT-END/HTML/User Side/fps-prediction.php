@@ -11,31 +11,56 @@
 <?php include 'header.php'; ?>
 
 <div class="content">
-    <div class="page-container">
+    <div class="fps-prediction-container">
         <h2>FPS Prediction</h2>
-        <div class="tab-card">
-            <label for="selectedGame">Select a Game:</label>
-            <select id="selectedGame">
-                <option value="">Select a Game</option>
-            </select>
+        
+        <div class="fps-layout">
+            <!-- LEFT SIDE: Input Panel -->
+            <div class="fps-input-panel">
+                <h3>Hardware Configuration</h3>
+                
+                <label for="selectedGame">Select a Game:</label>
+                <select id="selectedGame">
+                    <option value="">Select a Game</option>
+                </select>
 
-            <label for="cpu2">Enter CPU Model:</label>
-            <input id="cpu2" type="text" placeholder="e.g., i5-12400F">
+                <label for="cpuSelect">Select CPU:</label>
+                <select id="cpuSelect">
+                    <option value="">Select a CPU</option>
+                </select>
+                
+                <label for="gpuSelect">Select GPU:</label>
+                <select id="gpuSelect">
+                    <option value="">Select a GPU</option>
+                </select>
+                
+                <label for="ramSelect">Select RAM:</label>
+                <select id="ramSelect">
+                    <option value="">Select RAM</option>
+                    <option value="4">4 GB</option>
+                    <option value="8">8 GB</option>
+                    <option value="16">16 GB</option>
+                    <option value="32">32 GB</option>
+                    <option value="64">64 GB</option>
+                </select>
+                
+                <label for="graphicsQuality">Graphics Quality:</label>
+                <select id="graphicsQuality">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+                
+                <button onclick="predictFPS()">Analyze Performance</button>
+            </div>
             
-            <label for="gpu2">Enter GPU Model:</label>
-            <input id="gpu2" type="text" placeholder="e.g., RTX 3060">
-            
-            <label for="ram2">Enter RAM (GB):</label>
-            <input id="ram2" type="number" placeholder="e.g., 16">
-            
-            <label for="graphicsQuality">Graphics Quality:</label>
-            <select id="graphicsQuality">
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-            </select>
-            <button onclick="predictFPS()">Predict FPS</button>
-            <h3 id="fpsResult"></h3>
+            <!-- RIGHT SIDE: Results Panel -->
+            <div class="fps-results-panel" id="fpsResultsPanel">
+                <div class="results-placeholder">
+                    <div class="placeholder-icon">📊</div>
+                    <p>Configure your hardware and click "Analyze Performance" to see results</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -46,9 +71,9 @@
 <script>
     // Set active state for current page
     document.querySelector('[data-page="predict"]')?.classList.add('active');
-    // Load games for dropdown
-    if (typeof loadGameDropdown === 'function') {
-        loadGameDropdown();
+    // Load dropdowns
+    if (typeof loadFPSPredictionDropdowns === 'function') {
+        loadFPSPredictionDropdowns();
     }
 </script>
 </body>
