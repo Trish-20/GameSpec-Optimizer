@@ -1,0 +1,225 @@
+/* ---------- BODY & BACKGROUND ---------- */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    background: linear-gradient(135deg, #2c2f33, #3a3f47, #4e555f); /* Cozy gradient */
+    min-height: 100vh;
+    color: #ffffff;
+    transition: margin-left 0.3s ease; /* For smooth content push */
+}
+
+/* ---------- CONTENT AREA (Initial State) ---------- */
+.content {
+    margin-left: 0;
+    padding: 30px;
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+    transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+/* ---------- SIDEBAR (Initial State) ---------- */
+.sidebar {
+    width: 200px;
+    background: linear-gradient(180deg, #1e293b, #0f172a);
+    color: white;
+    padding: 20px;
+    height: 100vh;
+    position: fixed;
+    left: -200px; /* Hidden off-screen initially */
+    top: 0;
+    transition: left 0.3s ease;
+    overflow-y: auto; /* Allows scrolling if content is long */
+    z-index: 10;
+}
+
+/* --- SIDEBAR OPEN STATE (Controlled by JS) --- */
+.sidebar-open .sidebar {
+    left: 0; /* Slide in */
+}
+
+.sidebar-open .content {
+    margin-left: 200px; /* Push content to the right */
+    width: calc(100% - 200px);
+}
+
+/* ---------- SIDEBAR TOGGLE BUTTON ---------- */
+.sidebar-toggle {
+    position: fixed;
+    top: 15px;
+    left: 15px; /* Initial position when sidebar is closed */
+    z-index: 20; 
+    background: #334155;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: left 0.3s ease, background 0.3s ease;
+}
+
+.sidebar-open .sidebar-toggle {
+    left: 215px; /* Move button to the right when sidebar is open */
+}
+
+.sidebar-toggle:hover {
+    background: #1e293b;
+}
+
+
+/* ---------- SIDEBAR BUTTONS ---------- */
+.sidebar button {
+    width: 100%;
+    padding: 12px 0;
+    margin: 10px 0;
+    background: #3a3f47;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.sidebar button:hover {
+    background: #565d66;
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.sidebar button.active {
+    background: #6c7279;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* ---------- TAB HEADER ---------- */
+.tab h2 {
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 25px;
+    color: #ffffff;
+}
+
+/* ---------- TAB CARD CONTAINER (Used for Benchmark/Prediction Forms) ---------- */
+.tab-card {
+    background: rgba(255,255,255,0.95); /* cozy look */
+    padding: 20px; 
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    max-width: 450px; 
+    width: 90%; 
+    margin: 20px auto; 
+    box-sizing: border-box;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tab-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+/* ---------- INPUT LABELS ---------- */
+.tab-card label {
+    display: block;
+    color: #1e293b;
+    font-size: 14px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/* ---------- INPUTS & SELECTS (Standardized) ---------- */
+.tab-card input,
+.tab-card select {
+    width: 100%; 
+    padding: 10px; 
+    margin-bottom: 12px; 
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+/* ---------- TAB CARD BUTTONS ---------- */
+.tab-card button {
+    background: #334155;
+    color: white;
+    border: none;
+    padding: 12px; 
+    width: 100%;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.tab-card button:hover {
+    background: #1e293b;
+    transform: scale(1.01); 
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+
+/* ---------- RESULT TEXT ---------- */
+.tab-card h3 {
+    margin-top: 15px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    text-align: center;
+}
+
+/* ---------- GAME GRID CONTAINER ---------- */
+#gameList {
+    display: grid;
+    /* This creates a responsive grid: minimum column size 250px, max 1 fraction unit */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+    gap: 30px; /* Increased gap for better spacing */
+    padding: 20px; /* Added padding around the grid */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ---------- GAME CARDS ---------- */
+.game-box {
+    background: rgba(255,255,255,0.95);
+    padding: 20px; 
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    
+    /* Key for the hover effect */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    border-left: 5px solid #334155; /* Changed color to match theme */
+    width: 100%;
+    box-sizing: border-box;
+    color: #1e293b; 
+    
+    /* Ensure the content inside the box is neatly stacked */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.game-box:hover {
+    /* Only the box transforms, not the container */
+    transform: translateY(-5px) scale(1.02); /* Slight lift and scale */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25); /* More pronounced shadow on hover */
+    border-left-color: #565d66; /* Visual feedback on hover */
+}
+
+/* Ensure the text is readable within the card */
+.game-box strong {
+    font-size: 1.1em;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #1e293b;
+}
+
+.game-box p {
+    font-size: 0.9em;
+    margin: 3px 0;
+    color: #475569;
+}

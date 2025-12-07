@@ -1,0 +1,53 @@
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        display: flex;
+    }
+
+    .sidebar {
+        width: 200px;
+        background: #222;
+        color: white;
+        padding: 20px;
+        height: 100vh;
+    }
+
+    .sidebar button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        background: #444;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    .sidebar button:hover {
+        background: #666;
+    }
+
+    .content {
+        flex: 1;
+        padding: 20px;
+    }
+
+    form {
+        margin-bottom: 20px;
+    }
+
+    input {
+        display: block;
+        width: 300px;
+        margin-bottom: 10px;
+        padding: 8px;
+    }
+
+    button {
+        padding: 10px 20px;
+        cursor: pointer;
+    }
+
+    #result-section {
+        margin-top: 30px;
+        display: none;
+    }

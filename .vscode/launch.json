@@ -8,7 +8,7 @@
             "name": "Run Program",
             "request": "launch",
             "type": "chrome",
-            "url": "http://localhost:8080/GameSpec-Optimizer/HTML/test-frontend.html",
+            "url": "http://localhost:8080/GameSpec-Optimizer/FRONT-END/HTML/UserSide.html",
             "webRoot": "${workspaceFolder}"
         },
         {
