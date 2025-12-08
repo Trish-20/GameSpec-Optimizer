@@ -448,9 +448,9 @@ function predictFPS() {
     // Calculate estimated FPS based on how many requirements are met
     let baseFPS;
     if (bottlenecks.length === 0) {
-        baseFPS = 90; // All requirements met
+        baseFPS = 60; // All requirements met
     } else if (bottlenecks.length === 1) {
-        baseFPS = 50; // One component below
+        baseFPS = 45; // One component below
     } else if (bottlenecks.length === 2) {
         baseFPS = 35; // Two components below
     } else {
@@ -465,7 +465,7 @@ function predictFPS() {
     const perfMult = { battery: 0.85, balanced: 1.0, performance: 1.15 };
     
     let estimatedFPS = Math.round(baseFPS * qualityMult[quality] * perfMult[performanceMode]);
-    estimatedFPS = Math.max(10, Math.min(estimatedFPS, 240)); // Clamp between 10-240
+    estimatedFPS = Math.max(10, Math.min(estimatedFPS, 240));
     
     // Determine FPS status
     let fpsClass = 'fps-ok';
