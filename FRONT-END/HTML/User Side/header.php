@@ -32,7 +32,7 @@
         // Navigate to admin after 3 clicks
         if (adminClickCount >= 3) {
             adminClickCount = 0;
-            window.location.href = '../Admin Side/game-management.php';
+            window.location.href = '../Admin Side/dashboard-admin.php';
         }
 
         console.log(`Admin click count: ${adminClickCount}`);

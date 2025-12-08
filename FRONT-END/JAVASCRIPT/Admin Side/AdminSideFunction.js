@@ -253,3 +253,143 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// --- DASHBOARD FUNCTIONS ---
+async function loadDashboardData() {
+    try {
+        // Load all data
+        const [gamesRes, cpusRes, gpusRes] = await Promise.all([
+            fetch('../../../MODULES/api/get-games.php'),
+            fetch('../../../MODULES/api/get-cpus.php'),
+            fetch('../../../MODULES/api/get-gpus.php')
+        ]);
+        
+        const games = await gamesRes.json();
+        const cpus = await cpusRes.json();
+        const gpus = await gpusRes.json();
+        
+        // Calculate statistics
+        const totalGames = games.length;
+        const totalCPUs = cpus.length;
+        const totalGPUs = gpus.length;
+        
+        // Ensure scores are numbers
+        const avgCPUScore = cpus.length > 0 
+            ? Math.round(cpus.reduce((sum, cpu) => sum + (parseInt(cpu.score) || 0), 0) / cpus.length)
+            : 0;
+        
+        const avgGPUScore = gpus.length > 0 
+            ? Math.round(gpus.reduce((sum, gpu) => sum + (parseInt(gpu.score) || 0), 0) / gpus.length)
+            : 0;
+        
+        const topGPU = gpus.length > 0 ? gpus[0].model : 'N/A';
+        
+        // Update stat cards (check if elements exist)
+        const setStatValue = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        };
+        
+        setStatValue('totalGames', totalGames);
+        setStatValue('totalCPUs', totalCPUs);
+        setStatValue('totalGPUs', totalGPUs);
+        setStatValue('avgCPUScore', avgCPUScore.toLocaleString());
+        setStatValue('avgGPUScore', avgGPUScore.toLocaleString());
+        setStatValue('topGPU', topGPU.length > 15 ? topGPU.substring(0, 15) + '...' : topGPU);
+        
+        // Populate tables
+        populateGamesTable(games);
+        populateCPUsTable(cpus);
+        populateGPUsTable(gpus);
+        
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+    }
+}
+
+function populateGamesTable(games) {
+    const tbody = document.querySelector('#gamesTable tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    games.slice(0, 10).forEach(game => {
+        const ramGB = game.ram_benchmark ? Math.round(game.ram_benchmark / 250) : 'N/A';
+        tbody.innerHTML += `
+            <tr>
+                <td>${game.title}</td>
+                <td>${game.cpu_model || 'N/A'}</td>
+                <td>${game.gpu_model || 'N/A'}</td>
+                <td>${ramGB} GB</td>
+            </tr>
+        `;
+    });
+}
+
+function populateCPUsTable(cpus) {
+    const tbody = document.querySelector('#cpusTable tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    cpus.slice(0, 10).forEach(cpu => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${cpu.model}</td>
+                <td>${cpu.score.toLocaleString()}</td>
+            </tr>
+        `;
+    });
+}
+
+function populateGPUsTable(gpus) {
+    const tbody = document.querySelector('#gpusTable tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    gpus.slice(0, 10).forEach(gpu => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${gpu.model}</td>
+                <td>${gpu.score.toLocaleString()}</td>
+            </tr>
+        `;
+    });
+}
+
+// --- REPORT DOWNLOAD FUNCTIONS ---
+function downloadReport(type) {
+    const baseUrl = '../../../MODULES/api/';
+    
+    switch(type) {
+        case 'games':
+            downloadCSV(baseUrl + 'export-games.php', 'game-requirements-report.csv');
+            break;
+        case 'cpus':
+            downloadCSV(baseUrl + 'export-cpus.php', 'cpu-benchmarks-report.csv');
+            break;
+        case 'gpus':
+            downloadCSV(baseUrl + 'export-gpus.php', 'gpu-benchmarks-report.csv');
+            break;
+        case 'all':
+            downloadCSV(baseUrl + 'export-games.php', 'game-requirements-report.csv');
+            setTimeout(() => downloadCSV(baseUrl + 'export-cpus.php', 'cpu-benchmarks-report.csv'), 500);
+            setTimeout(() => downloadCSV(baseUrl + 'export-gpus.php', 'gpu-benchmarks-report.csv'), 1000);
+            break;
+    }
+}
+
+function downloadCSV(url, filename) {
+    fetch(url)
+        .then(response => response.blob())
+        .then(blob => {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        })
+        .catch(error => {
+            console.error('Download failed:', error);
+            alert('Failed to download report. Please try again.');
+        });
+}

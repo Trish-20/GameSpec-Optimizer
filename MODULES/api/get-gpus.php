@@ -10,9 +10,14 @@ if (($handle = fopen($csvFile, 'r')) !== FALSE) {
     while (($row = fgetcsv($handle)) !== FALSE) {
         if (!empty($row[0]) && !empty($row[1])) {
             
+            // Only include Desktop GPUs
             $category = isset($row[8]) ? strtolower($row[8]) : '';
-            if (strpos($category, 'workstation') !== false || 
-                strpos($row[0], 'Quadro') !== false || 
+            if ($category !== 'desktop') {
+                continue;
+            }
+            
+            // Exclude workstation GPUs
+            if (strpos($row[0], 'Quadro') !== false || 
                 strpos($row[0], 'Tesla') !== false ||
                 strpos($row[0], 'TITAN') !== false ||
                 strpos($row[0], 'RTX A') !== false) {
@@ -33,9 +38,6 @@ if (($handle = fopen($csvFile, 'r')) !== FALSE) {
 usort($gpus, function($a, $b) {
     return $b['score'] - $a['score'];
 });
-
-// Limit to top 100 most common gaming GPUs
-$gpus = array_slice($gpus, 0, 100);
 
 echo json_encode($gpus);
 ?>
