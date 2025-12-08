@@ -104,39 +104,125 @@ async function loadFPSPredictionDropdowns() {
         loadGPUsFromCSV()
     ]);
     
-    // Populate game dropdown
-    const gameSelect = document.getElementById('selectedGame');
-    if (gameSelect) {
-        gameSelect.innerHTML = '<option value="">Select a Game</option>';
-        games.forEach(game => {
-            gameSelect.innerHTML += `<option value="${game.title_raw}">${game.title}</option>`;
-        });
+    // Initialize searchable dropdowns
+    initSearchDropdown('game', games, game => game.title, game => game.title_raw);
+    initSearchDropdown('cpu', cpus, cpu => cpu.model, cpu => cpu.score);
+    initSearchDropdown('gpu', gpus, gpu => gpu.model, gpu => gpu.score);
+    
+    // Check if game was passed via URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const preselectedGame = urlParams.get('game');
+    if (preselectedGame) {
+        const game = games.find(g => g.title_raw === preselectedGame);
+        if (game) {
+            document.getElementById('gameSearch').value = game.title;
+            document.getElementById('selectedGame').value = preselectedGame;
+        }
+    }
+}
+
+// --- SEARCHABLE DROPDOWN FUNCTIONALITY ---
+function initSearchDropdown(type, data, getLabel, getValue) {
+    const searchInput = document.getElementById(`${type}Search`);
+    const hiddenInput = document.getElementById(type === 'game' ? 'selectedGame' : `${type}Select`);
+    const dropdownList = document.getElementById(`${type}DropdownList`);
+    const dropdown = document.getElementById(`${type}Dropdown`);
+    
+    if (!searchInput || !dropdownList || !dropdown) return;
+    
+    let highlightedIndex = -1;
+    let isSelecting = false; // Flag to prevent reopening on selection
+    
+    // Populate initial list
+    function populateList(filter = '') {
+        const filtered = data.filter(item => 
+            getLabel(item).toLowerCase().includes(filter.toLowerCase())
+        ).slice(0, 50); // Limit to 50 results for performance
         
-        // Check if game was passed via URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const preselectedGame = urlParams.get('game');
-        if (preselectedGame) {
-            gameSelect.value = preselectedGame;
+        dropdownList.innerHTML = '';
+        highlightedIndex = -1;
+        
+        if (filtered.length === 0) {
+            dropdownList.innerHTML = '<div class="no-results">No results found</div>';
+            return;
+        }
+        
+        filtered.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = 'dropdown-item';
+            div.textContent = getLabel(item);
+            div.dataset.value = getValue(item);
+            div.dataset.index = index;
+            
+            div.addEventListener('mousedown', (e) => {
+                e.preventDefault(); // Prevent input blur
+                selectItem(item);
+            });
+            
+            dropdownList.appendChild(div);
+        });
+    }
+    
+    function selectItem(item) {
+        isSelecting = true;
+        searchInput.value = getLabel(item);
+        hiddenInput.value = getValue(item);
+        dropdown.classList.remove('active');
+        searchInput.blur(); // Remove focus from input
+        setTimeout(() => { isSelecting = false; }, 100);
+    }
+    
+    function highlightItem(index) {
+        const items = dropdownList.querySelectorAll('.dropdown-item');
+        items.forEach(item => item.classList.remove('highlighted'));
+        
+        if (index >= 0 && index < items.length) {
+            items[index].classList.add('highlighted');
+            items[index].scrollIntoView({ block: 'nearest' });
+            highlightedIndex = index;
         }
     }
     
-    // Populate CPU dropdown
-    const cpuSelect = document.getElementById('cpuSelect');
-    if (cpuSelect) {
-        cpuSelect.innerHTML = '<option value="">Select a CPU</option>';
-        cpus.forEach(cpu => {
-            cpuSelect.innerHTML += `<option value="${cpu.score}">${cpu.model} (${cpu.cores}C/${cpu.threads}T)</option>`;
-        });
-    }
+    // Event listeners
+    searchInput.addEventListener('focus', () => {
+        if (isSelecting) return; // Don't reopen if we just selected
+        populateList(searchInput.value);
+        dropdown.classList.add('active');
+    });
     
-    // Populate GPU dropdown
-    const gpuSelect = document.getElementById('gpuSelect');
-    if (gpuSelect) {
-        gpuSelect.innerHTML = '<option value="">Select a GPU</option>';
-        gpus.forEach(gpu => {
-            gpuSelect.innerHTML += `<option value="${gpu.score}">${gpu.model}</option>`;
-        });
-    }
+    searchInput.addEventListener('input', () => {
+        populateList(searchInput.value);
+        hiddenInput.value = ''; // Clear selection when typing
+        dropdown.classList.add('active');
+    });
+    
+    searchInput.addEventListener('keydown', (e) => {
+        const items = dropdownList.querySelectorAll('.dropdown-item');
+        
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            highlightItem(Math.min(highlightedIndex + 1, items.length - 1));
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            highlightItem(Math.max(highlightedIndex - 1, 0));
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (highlightedIndex >= 0 && items[highlightedIndex]) {
+                const value = items[highlightedIndex].dataset.value;
+                const item = data.find(d => String(getValue(d)) === String(value));
+                if (item) selectItem(item);
+            }
+        } else if (e.key === 'Escape') {
+            dropdown.classList.remove('active');
+        }
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target)) {
+            dropdown.classList.remove('active');
+        }
+    });
 }
 
 // --- GAME DROPDOWN: Load for FPS Prediction (legacy) ---
@@ -325,22 +411,22 @@ function predictFPS() {
     const game = document.getElementById("selectedGame").value;
     if (!game) return alert("Please select a game first.");
 
-    const cpuSelect = document.getElementById("cpuSelect");
-    const gpuSelect = document.getElementById("gpuSelect");
+    const cpuScore = document.getElementById("cpuSelect").value;
+    const gpuScore = document.getElementById("gpuSelect").value;
     const ramSelect = document.getElementById("ramSelect");
     
-    if (!cpuSelect.value) return alert("Please select a CPU.");
-    if (!gpuSelect.value) return alert("Please select a GPU.");
+    if (!cpuScore) return alert("Please select a CPU.");
+    if (!gpuScore) return alert("Please select a GPU.");
     if (!ramSelect.value) return alert("Please select RAM.");
 
-    const cpuScore = parseInt(cpuSelect.value);
-    const gpuScore = parseInt(gpuSelect.value);
+    const cpuScoreNum = parseInt(cpuScore);
+    const gpuScoreNum = parseInt(gpuScore);
     const ramGB = parseInt(ramSelect.value);
-    const ramScore = ramGB * 250;
+    const ramScoreNum = ramGB * 250;
 
-    // Get selected hardware names
-    const cpuName = cpuSelect.options[cpuSelect.selectedIndex].text;
-    const gpuName = gpuSelect.options[gpuSelect.selectedIndex].text;
+    // Get selected hardware names from search inputs
+    const cpuName = document.getElementById("cpuSearch").value || 'Selected CPU';
+    const gpuName = document.getElementById("gpuSearch").value || 'Selected GPU';
 
     // Find selected game requirements
     const selectedGame = games.find(g => g.title_raw === game);
@@ -349,15 +435,15 @@ function predictFPS() {
     const quality = document.getElementById("graphicsQuality").value;
     
     // Simple benchmark comparison: user hardware vs game requirements
-    const cpuOK = cpuScore >= selectedGame.cpu_benchmark;
-    const gpuOK = gpuScore >= selectedGame.gpu_benchmark;
-    const ramOK = ramScore >= selectedGame.ram_benchmark;
+    const cpuOK = cpuScoreNum >= selectedGame.cpu_benchmark;
+    const gpuOK = gpuScoreNum >= selectedGame.gpu_benchmark;
+    const ramOK = ramScoreNum >= selectedGame.ram_benchmark;
     
     // Identify bottlenecks (hardware below game requirements)
     const bottlenecks = [];
-    if (!cpuOK) bottlenecks.push({ type: 'CPU', name: cpuName, userScore: cpuScore, required: selectedGame.cpu_benchmark });
-    if (!gpuOK) bottlenecks.push({ type: 'GPU', name: gpuName, userScore: gpuScore, required: selectedGame.gpu_benchmark });
-    if (!ramOK) bottlenecks.push({ type: 'RAM', name: `${ramGB} GB`, userScore: ramScore, required: selectedGame.ram_benchmark });
+    if (!cpuOK) bottlenecks.push({ type: 'CPU', name: cpuName, userScore: cpuScoreNum, required: selectedGame.cpu_benchmark });
+    if (!gpuOK) bottlenecks.push({ type: 'GPU', name: gpuName, userScore: gpuScoreNum, required: selectedGame.gpu_benchmark });
+    if (!ramOK) bottlenecks.push({ type: 'RAM', name: `${ramGB} GB`, userScore: ramScoreNum, required: selectedGame.ram_benchmark });
     
     // Calculate estimated FPS based on how many requirements are met
     let baseFPS;
@@ -412,7 +498,7 @@ function predictFPS() {
     }
     
     // 3. Bar Chart Comparison
-    const maxScore = Math.max(cpuScore, gpuScore, ramScore, selectedGame.cpu_benchmark, selectedGame.gpu_benchmark, selectedGame.ram_benchmark);
+    const maxScore = Math.max(cpuScoreNum, gpuScoreNum, ramScoreNum, selectedGame.cpu_benchmark, selectedGame.gpu_benchmark, selectedGame.ram_benchmark);
     
     html += `
         <div class="result-section">
@@ -426,7 +512,7 @@ function predictFPS() {
                     <div class="bar-row">
                         <span class="bar-model-name">Your: ${cpuName}</span>
                         <div class="bar-container">
-                            <div class="bar-fill user" style="width: ${(cpuScore / maxScore) * 100}%">${cpuScore}</div>
+                            <div class="bar-fill user" style="width: ${(cpuScoreNum / maxScore) * 100}%">${cpuScoreNum}</div>
                         </div>
                     </div>
                     <div class="bar-row">
@@ -445,7 +531,7 @@ function predictFPS() {
                     <div class="bar-row">
                         <span class="bar-model-name">Your: ${gpuName}</span>
                         <div class="bar-container">
-                            <div class="bar-fill user" style="width: ${(gpuScore / maxScore) * 100}%">${gpuScore}</div>
+                            <div class="bar-fill user" style="width: ${(gpuScoreNum / maxScore) * 100}%">${gpuScoreNum}</div>
                         </div>
                     </div>
                     <div class="bar-row">
@@ -464,7 +550,7 @@ function predictFPS() {
                     <div class="bar-row">
                         <span class="bar-model-name">Your: ${ramGB} GB</span>
                         <div class="bar-container">
-                            <div class="bar-fill user" style="width: ${(ramScore / maxScore) * 100}%">${ramScore}</div>
+                            <div class="bar-fill user" style="width: ${(ramScoreNum / maxScore) * 100}%">${ramScoreNum}</div>
                         </div>
                     </div>
                     <div class="bar-row">
@@ -595,6 +681,3 @@ function predictFPS() {
     // Display results
     document.getElementById("fpsResultsPanel").innerHTML = html;
 }
-
-// Initialize the application
-loadGames();

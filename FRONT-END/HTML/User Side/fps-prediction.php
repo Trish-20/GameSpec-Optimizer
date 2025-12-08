@@ -19,20 +19,26 @@
             <div class="fps-input-panel">
                 <h3>Hardware Configuration</h3>
                 
-                <label for="selectedGame">Select a Game:</label>
-                <select id="selectedGame">
-                    <option value="">Select a Game</option>
-                </select>
+                <label>Select a Game:</label>
+                <div class="search-dropdown" id="gameDropdown">
+                    <input type="text" class="search-input" id="gameSearch" placeholder="Search games..." autocomplete="off">
+                    <input type="hidden" id="selectedGame">
+                    <div class="dropdown-list" id="gameDropdownList"></div>
+                </div>
 
-                <label for="cpuSelect">Select CPU:</label>
-                <select id="cpuSelect">
-                    <option value="">Select a CPU</option>
-                </select>
+                <label>Select CPU:</label>
+                <div class="search-dropdown" id="cpuDropdown">
+                    <input type="text" class="search-input" id="cpuSearch" placeholder="Search CPUs..." autocomplete="off">
+                    <input type="hidden" id="cpuSelect">
+                    <div class="dropdown-list" id="cpuDropdownList"></div>
+                </div>
                 
-                <label for="gpuSelect">Select GPU:</label>
-                <select id="gpuSelect">
-                    <option value="">Select a GPU</option>
-                </select>
+                <label>Select GPU:</label>
+                <div class="search-dropdown" id="gpuDropdown">
+                    <input type="text" class="search-input" id="gpuSearch" placeholder="Search GPUs..." autocomplete="off">
+                    <input type="hidden" id="gpuSelect">
+                    <div class="dropdown-list" id="gpuDropdownList"></div>
+                </div>
                 
                 <label for="ramSelect">Select RAM:</label>
                 <select id="ramSelect">
