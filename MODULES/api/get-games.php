@@ -18,7 +18,8 @@ if (($handle = fopen($csvFile, 'r')) !== FALSE) {
             'hasBloom' => (int)$row[7],
             'hasAntiAlias' => (int)$row[8],
             'hasShadows' => (int)$row[9],
-            'hasVSync' => (int)$row[10]
+            'hasVSync' => (int)$row[10],
+            'image' => isset($row[11]) ? $row[11] : ''
         ];
     }
     fclose($handle);

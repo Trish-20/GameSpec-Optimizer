@@ -35,9 +35,11 @@ function loadGameGrid() {
         card.className = 'game-card';
         card.dataset.title = game.title.toLowerCase();
         
+        const imageUrl = game.image ? `../../RES/${game.image}` : '';
+        
         card.innerHTML = `
-            <div class="game-image">
-                🎮
+            <div class="game-image" ${imageUrl ? `style="background-image: url('${imageUrl}')"` : ''}>
+                ${!imageUrl ? '🎮' : ''}
             </div>
             <div class="game-name">${game.title}</div>
         `;
