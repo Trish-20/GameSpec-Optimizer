@@ -373,7 +373,12 @@ function predictFPS() {
     
     // Quality multiplier
     const qualityMult = { low: 1.5, medium: 1.0, high: 0.6 };
-    let estimatedFPS = Math.round(baseFPS * qualityMult[quality]);
+    
+    // Performance mode multiplier
+    const performanceMode = document.getElementById("performanceMode").value;
+    const perfMult = { battery: 0.85, balanced: 1.0, performance: 1.15 };
+    
+    let estimatedFPS = Math.round(baseFPS * qualityMult[quality] * perfMult[performanceMode]);
     estimatedFPS = Math.max(10, Math.min(estimatedFPS, 240)); // Clamp between 10-240
     
     // Determine FPS status

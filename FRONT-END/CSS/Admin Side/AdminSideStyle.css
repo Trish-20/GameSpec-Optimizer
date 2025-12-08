@@ -3,18 +3,44 @@ body {
     margin: 0;
     font-family: Arial, sans-serif;
     display: flex;
+    flex-direction: column;
     background: linear-gradient(135deg, #2c2f33, #3a3f47, #4e555f);
     min-height: 100vh;
     color: #ffffff;
     transition: margin-left 0.3s ease;
 }
 
+/* ---------- TOP HEADER BAR ---------- */
+.top-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background: linear-gradient(90deg, #1e293b, #334155);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    border-bottom: 2px solid #6366f1;
+}
+
+.top-header .app-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #6366f1;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
 /* ---------- CONTENT AREA ---------- */
 .content {
     margin-left: 0;
+    margin-top: 50px;
     padding: 30px;
     width: 100%;
-    min-height: 100vh;
+    min-height: calc(100vh - 50px);
     box-sizing: border-box;
     transition: margin-left 0.3s ease, width 0.3s ease;
     display: flex;
@@ -27,10 +53,10 @@ body {
     background: linear-gradient(180deg, #1e293b, #0f172a);
     color: white;
     padding: 20px;
-    height: 100vh;
+    height: calc(100vh - 50px);
     position: fixed;
     left: -200px;
-    top: 0;
+    top: 50px;
     transition: left 0.3s ease;
     overflow-y: auto;
     z-index: 10;
@@ -71,7 +97,7 @@ body {
 /* ---------- SIDEBAR TOGGLE BUTTON ---------- */
 .sidebar-toggle {
     position: fixed;
-    top: 15px;
+    top: 65px;
     left: 15px;
     z-index: 20;
     background: #334155;

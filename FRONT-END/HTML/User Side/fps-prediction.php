@@ -51,6 +51,13 @@
                     <option value="high">High</option>
                 </select>
                 
+                <label for="performanceMode">Performance Mode:</label>
+                <select id="performanceMode">
+                    <option value="battery">Battery Saver</option>
+                    <option value="balanced" selected>Balanced</option>
+                    <option value="performance">Performance</option>
+                </select>
+                
                 <button onclick="predictFPS()">Analyze Performance</button>
             </div>
             

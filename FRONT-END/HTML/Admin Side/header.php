@@ -1,4 +1,9 @@
-<!-- Admin Header Component -->
+<!-- Top Header Bar -->
+<div class="top-header">
+    <span class="app-title">GameSpec Optimizer</span>
+</div>
+
+<!-- Sidebar Component -->
 <div class="sidebar">
     <h2>Admin Panel</h2>
     <a href="game-management.php" class="nav-btn" data-page="games">Game Management</a>

@@ -1,4 +1,9 @@
-<!-- Header Component -->
+<!-- Top Header Bar -->
+<div class="top-header">
+    <span class="app-title">GameSpec Optimizer</span>
+</div>
+
+<!-- Sidebar Component -->
 <div class="sidebar">
     <h2>User Panel</h2>
     <a href="browse-games.php" class="nav-btn" data-page="browse">Browse Games</a>
