@@ -115,3 +115,17 @@ for i in range(min(10, len(y_test))):
     error = abs(actual - predicted)
     print(f"{actual:10.1f} | {predicted:13.1f} | {error:5.1f}")
 
+# Save trained models for prediction use
+import joblib
+import os
+
+model_dir = os.path.dirname(os.path.abspath(__file__))
+joblib.dump(gb_model, os.path.join(model_dir, 'gb_model.joblib'))
+joblib.dump(xgb_model, os.path.join(model_dir, 'xgb_model.joblib'))
+joblib.dump(list(x.columns), os.path.join(model_dir, 'feature_columns.joblib'))
+
+print("\nModels saved successfully:")
+print(f"  - gb_model.joblib")
+print(f"  - xgb_model.joblib")
+print(f"  - feature_columns.joblib")
+

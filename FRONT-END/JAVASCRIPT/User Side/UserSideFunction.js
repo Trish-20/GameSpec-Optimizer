@@ -474,6 +474,11 @@ function predictFPS() {
     if (estimatedFPS >= 60) fpsClass = 'fps-good';
     else if (estimatedFPS < 45) fpsClass = 'fps-bad';
     
+
+    // fetch the model
+    // expected input: game_title,game_cpu_min,game_gpu_min,game_ram_min,cpu_score,gpu_score,ram_score,res_width,res_height,graphics_preset,shadow_quality,texture_quality,anti_aliasing,vsync,performance_mode,expected_fps
+    
+
     // Build results HTML
     let html = '';
     
