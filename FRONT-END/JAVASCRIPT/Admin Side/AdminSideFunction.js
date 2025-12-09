@@ -13,6 +13,7 @@ function showTab(tabName) {
 let adminGames = [];
 let adminCPUs = [];
 let adminGPUs = [];
+let adminRAMs = [];
 
 // --- LOAD GAMES FOR ADMIN ---
 async function loadAdminGames() {
@@ -74,12 +75,14 @@ function deleteGame(index) {
 // --- LOAD HARDWARE FOR ADMIN ---
 async function loadAdminHardware() {
     try {
-        const [cpuRes, gpuRes] = await Promise.all([
+        const [cpuRes, gpuRes, ramRes] = await Promise.all([
             fetch('../../../MODULES/api/get-cpus.php'),
-            fetch('../../../MODULES/api/get-gpus.php')
+            fetch('../../../MODULES/api/get-gpus.php'),
+            fetch('../../../MODULES/api/get-ram.php')
         ]);
         adminCPUs = await cpuRes.json();
         adminGPUs = await gpuRes.json();
+        adminRAMs = await ramRes.json();
         displayHardwareLists();
     } catch (error) {
         console.error('Error loading hardware:', error);
@@ -121,6 +124,23 @@ function displayHardwareLists() {
         });
         if (adminGPUs.length > 20) {
             gpuList.innerHTML += `<p style="text-align:center;color:#64748b;">... and ${adminGPUs.length - 20} more</p>`;
+        }
+    }
+    
+    // Display RAMs
+    const ramList = document.getElementById('ramList');
+    if (ramList) {
+        ramList.innerHTML = '';
+        adminRAMs.slice(0, 20).forEach((ram, index) => {
+            ramList.innerHTML += `
+                <div class="data-item">
+                    <span class="item-name">${ram.capacity}GB DDR4-${ram.speed}</span>
+                    <span class="item-score">${ram.score}</span>
+                </div>
+            `;
+        });
+        if (adminRAMs.length > 20) {
+            ramList.innerHTML += `<p style="text-align:center;color:#64748b;">... and ${adminRAMs.length - 20} more</p>`;
         }
     }
 }
