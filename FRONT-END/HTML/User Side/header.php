@@ -1,5 +1,7 @@
 <!-- Top Header Bar -->
 <div class="top-header">
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
     <span class="app-title">GameSpec Optimizer</span>
 </div>
 
@@ -14,7 +16,6 @@
     <div class="hidden-admin-btn" onclick="handleAdminClick()"></div>
 </div>
 
-<button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
 
 <script>
     let adminClickCount = 0;

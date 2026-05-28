@@ -1,3 +1,56 @@
+// ========== MODAL DIALOG SYSTEM ==========
+function showModal(title, message, onConfirm = null) {
+    let modalOverlay = document.getElementById('appModal');
+    
+    // Create modal if it doesn't exist
+    if (!modalOverlay) {
+        const html = `
+            <div id="appModal" class="modal-overlay">
+                <div class="modal-dialog">
+                    <div class="modal-header">
+                        <h2 id="modalTitle">Modal</h2>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body" id="modalBody">
+                        Message goes here
+                    </div>
+                    <div class="modal-footer">
+                        <button class="modal-btn modal-btn-primary" id="modalConfirmBtn" onclick="closeModal()">OK</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', html);
+        modalOverlay = document.getElementById('appModal');
+    }
+    
+    // Set content
+    document.getElementById('modalTitle').textContent = title || 'Notification';
+    document.getElementById('modalBody').textContent = message || '';
+    
+    // Setup confirm button
+    const confirmBtn = document.getElementById('modalConfirmBtn');
+    confirmBtn.onclick = function() {
+        closeModal();
+        if (onConfirm) onConfirm();
+    };
+    
+    // Show modal
+    modalOverlay.classList.add('active');
+    
+    // Close on overlay click
+    modalOverlay.addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+}
+
+function closeModal() {
+    const modal = document.getElementById('appModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
 // Games will be loaded from CSV via PHP API
 let games = [];
 
@@ -342,11 +395,11 @@ function getBenchmarkScore() {
     const hardwareSelect = document.getElementById('hardwareSelect');
     
     if (!hardwareType) {
-        return alert('Please select a hardware type first.');
+        return showModal('Warning', 'Please select a hardware type first.');
     }
     
     if (!hardwareSelect.value) {
-        return alert('Please select a hardware model.');
+        return showModal('Warning', 'Please select a hardware model.');
     }
     
     const score = parseInt(hardwareSelect.value);
@@ -411,15 +464,15 @@ function runBenchmark() {
 // --- FPS PREDICTION FUNCTIONALITY (Placeholder for ML model) ---
 function predictFPS() {
     const game = document.getElementById("selectedGame").value;
-    if (!game) return alert("Please select a game first.");
+    if (!game) return showModal('Warning', 'Please select a game first.');
 
     const cpuScore = document.getElementById("cpuSelect").value;
     const gpuScore = document.getElementById("gpuSelect").value;
     const ramSelect = document.getElementById("ramSelect");
     
-    if (!cpuScore) return alert("Please select a CPU.");
-    if (!gpuScore) return alert("Please select a GPU.");
-    if (!ramSelect.value) return alert("Please select RAM.");
+    if (!cpuScore) return showModal('Warning', 'Please select a CPU.');
+    if (!gpuScore) return showModal('Warning', 'Please select a GPU.');
+    if (!ramSelect.value) return showModal('Warning', 'Please select RAM.');
 
     const cpuScoreNum = parseInt(cpuScore);
     const gpuScoreNum = parseInt(gpuScore);
@@ -432,7 +485,7 @@ function predictFPS() {
 
     // Find selected game requirements
     const selectedGame = games.find(g => g.title_raw === game);
-    if (!selectedGame) return alert("Game not found.");
+    if (!selectedGame) return showModal('Error', 'Game not found.');
     
     const quality = document.getElementById("graphicsQuality").value;
     

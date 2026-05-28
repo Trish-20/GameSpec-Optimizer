@@ -1,3 +1,56 @@
+// ========== MODAL DIALOG SYSTEM ==========
+function showModal(title, message, onConfirm = null) {
+    let modalOverlay = document.getElementById('appModal');
+    
+    // Create modal if it doesn't exist
+    if (!modalOverlay) {
+        const html = `
+            <div id="appModal" class="modal-overlay">
+                <div class="modal-dialog">
+                    <div class="modal-header">
+                        <h2 id="modalTitle">Modal</h2>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body" id="modalBody">
+                        Message goes here
+                    </div>
+                    <div class="modal-footer">
+                        <button class="modal-btn modal-btn-primary" id="modalConfirmBtn" onclick="closeModal()">OK</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', html);
+        modalOverlay = document.getElementById('appModal');
+    }
+    
+    // Set content
+    document.getElementById('modalTitle').textContent = title || 'Notification';
+    document.getElementById('modalBody').textContent = message || '';
+    
+    // Setup confirm button
+    const confirmBtn = document.getElementById('modalConfirmBtn');
+    confirmBtn.onclick = function() {
+        closeModal();
+        if (onConfirm) onConfirm();
+    };
+    
+    // Show modal
+    modalOverlay.classList.add('active');
+    
+    // Close on overlay click
+    modalOverlay.addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+}
+
+function closeModal() {
+    const modal = document.getElementById('appModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
 // --- SIDEBAR CONTROL ---
 function toggleSidebar() {
     document.body.classList.toggle('sidebar-open');
@@ -68,7 +121,7 @@ function editGame(index) {
 
 function deleteGame(index) {
     if (confirm('Are you sure you want to delete this game?')) {
-        alert('Game deleted! (Backend integration pending)');
+        showModal('Success', 'Game deleted! (Backend integration pending)');
     }
 }
 
@@ -242,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (gameForm) {
         gameForm.addEventListener("submit", function(e) {
             e.preventDefault();
-            alert("Game added/updated! (Backend integration pending)");
+            showModal('Success', 'Game added/updated! (Backend integration pending)');
         });
     }
 
@@ -251,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (cpuForm) {
         cpuForm.addEventListener("submit", function(e) {
             e.preventDefault();
-            alert("CPU saved! (Backend integration pending)");
+            showModal('Success', 'CPU saved! (Backend integration pending)');
         });
     }
 
@@ -260,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (gpuForm) {
         gpuForm.addEventListener("submit", function(e) {
             e.preventDefault();
-            alert("GPU saved! (Backend integration pending)");
+            showModal('Success', 'GPU saved! (Backend integration pending)');
         });
     }
 
@@ -269,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (ramForm) {
         ramForm.addEventListener("submit", function(e) {
             e.preventDefault();
-            alert("RAM saved! (Backend integration pending)");
+            showModal('Success', 'RAM saved! (Backend integration pending)');
         });
     }
 });
@@ -410,6 +463,6 @@ function downloadCSV(url, filename) {
         })
         .catch(error => {
             console.error('Download failed:', error);
-            alert('Failed to download report. Please try again.');
+            showModal('Error', 'Failed to download report. Please try again.');
         });
 }
