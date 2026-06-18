@@ -1,5 +1,6 @@
 <!-- Top Header Bar -->
 <div class="top-header">
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
     <span class="app-title">GameSpec Optimizer</span>
 </div>
 
@@ -14,8 +15,6 @@
     <!-- Hidden user side access -->
     <div class="hidden-user-btn" onclick="handleUserClick()"></div>
 </div>
-
-<button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
 
 <script>
     let userClickCount = 0;
