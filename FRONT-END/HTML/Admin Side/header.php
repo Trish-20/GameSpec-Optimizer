@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <!-- Top Header Bar -->
 <div class="top-header">
     <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
@@ -7,14 +9,25 @@
 <!-- Sidebar Component -->
 <div class="sidebar">
     <h2>Admin Panel</h2>
-    <a href="dashboard-admin.php" class="nav-btn" data-page="dashboard">Dashboard</a>
-    <a href="game-management.php" class="nav-btn" data-page="games">Game Management</a>
-    <a href="hardware-management.php" class="nav-btn" data-page="hardware">Hardware Management</a>
-    <a href="ml-training.php" class="nav-btn" data-page="ml">ML Training</a>
-    
-    <!-- Hidden user side access -->
-    <div class="hidden-user-btn" onclick="handleUserClick()"></div>
-</div>
+        
+   <a href="dashboard-admin.php" class="nav-btn" data-page="dashboard">
+    <i class="fas fa-chart-pie nav-icon"></i> Dashboard
+    </a>
+
+    <a href="game-management.php" class="nav-btn" data-page="games">
+        <i class="fas fa-gamepad nav-icon"></i> Game Management
+    </a>
+
+    <a href="hardware-management.php" class="nav-btn" data-page="hardware">
+        <i class="fas fa-server nav-icon"></i> Hardware Management
+    </a>
+
+    <a href="ml-training.php" class="nav-btn" data-page="ml">
+        <i class="fas fa-brain nav-icon"></i> ML Training
+    </a> 
+        <!-- Hidden user side access -->
+        <div class="hidden-user-btn" onclick="handleUserClick()"></div>
+    </div>
 
 <script>
     let userClickCount = 0;

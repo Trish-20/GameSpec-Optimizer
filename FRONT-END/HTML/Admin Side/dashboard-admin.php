@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../CSS/Admin Side/AdminSideStyle.css">
 </head>
 <body class="sidebar-open">
@@ -14,80 +15,108 @@
     <div class="page-container">
         <h2>Admin Dashboard</h2>
         
-        <!-- Statistics Cards -->
         <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">🎮</div>
-                <div class="stat-info">
-                    <span class="stat-value" id="totalGames">--</span>
-                    <span class="stat-label">Total Games</span>
-                </div>
+    
+    <div class="stat-card">
+        <div class="stat-header-row">
+            <div class="stat-icon">
+                <i class="fas fa-gamepad"></i>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon">💻</div>
-                <div class="stat-info">
-                    <span class="stat-value" id="totalCPUs">--</span>
-                    <span class="stat-label">Total CPUs</span>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">🖥️</div>
-                <div class="stat-info">
-                    <span class="stat-value" id="totalGPUs">--</span>
-                    <span class="stat-label">Total GPUs</span>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📊</div>
-                <div class="stat-info">
-                    <span class="stat-value" id="avgCPUScore">--</span>
-                    <span class="stat-label">Avg CPU Score</span>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📈</div>
-                <div class="stat-info">
-                    <span class="stat-value" id="avgGPUScore">--</span>
-                    <span class="stat-label">Avg GPU Score</span>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">🏆</div>
-                <div class="stat-info">
-                    <span class="stat-value" id="topGPU">--</span>
-                    <span class="stat-label">Top GPU</span>
-                </div>
-            </div>
+            <span class="stat-label">Total Games</span>
         </div>
+        <div class="stat-info">
+            <span class="stat-value" id="totalGames">--</span>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-header-row">
+            <div class="stat-icon">
+                <i class="fas fa-microchip"></i>
+            </div>
+            <span class="stat-label">Total CPUs</span>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value" id="totalCPUs">--</span>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-header-row">
+            <div class="stat-icon">
+                <i class="fas fa-video"></i>
+            </div>
+            <span class="stat-label">Total GPUs</span>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value" id="totalGPUs">--</span>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-header-row">
+            <div class="stat-icon">
+                <i class="fas fa-chart-bar"></i>
+            </div>
+            <span class="stat-label">Avg CPU Score</span>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value" id="avgCPUScore">--</span>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-header-row">
+            <div class="stat-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <span class="stat-label">Avg GPU Score</span>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value" id="avgGPUScore">--</span>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-header-row">
+            <div class="stat-icon">
+                <i class="fas fa-crown"></i>
+            </div>
+            <span class="stat-label">Top GPU</span>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value" id="topGPU" title="Loading top hardware configuration...">--</span>
+        </div>
+    </div>
+    
+</div>
         
-        <!-- Generate Reports Section -->
         <div class="admin-card">
-            <h3>Generate Reports</h3>
-            <p>Download CSV reports for data backup or analysis.</p>
-            <div class="report-buttons">
-                <button onclick="downloadReport('games')" class="report-btn">
-                    <span class="btn-icon">🎮</span>
-                    Game Requirements Report
-                </button>
-                <button onclick="downloadReport('cpus')" class="report-btn">
-                    <span class="btn-icon">💻</span>
-                    CPU Benchmarks Report
-                </button>
-                <button onclick="downloadReport('gpus')" class="report-btn">
-                    <span class="btn-icon">🖥️</span>
-                    GPU Benchmarks Report
-                </button>
-                <button onclick="downloadReport('all')" class="report-btn primary">
-                    <span class="btn-icon">📦</span>
-                    Download All Reports
-                </button>
-            </div>
-        </div>
+    <div class="report-text-group">
+        <h3>Generate Reports</h3>
+        <p>Download CSV reports for data backup or system analysis.</p>
+    </div>
+    
+    <div class="report-buttons">
+        <button onclick="downloadReport('games')" class="report-btn">
+            <i class="fas fa-gamepad btn-icon"></i> Game Requirements
+        </button>
+        <button onclick="downloadReport('cpus')" class="report-btn">
+            <i class="fas fa-microchip btn-icon"></i> CPU Benchmarks
+        </button>
+        <button onclick="downloadReport('gpus')" class="report-btn">
+            <i class="fas fa-video btn-icon"></i> GPU Benchmarks
+        </button>
+        <button onclick="downloadReport('all')" class="report-btn primary">
+            <i class="fas fa-box-open btn-icon"></i> Download All
+        </button>
+
         
-        <!-- Data Tables Section -->
+    </div>
+</div>
+        
         <div class="tables-grid">
-            <!-- Games Table -->
-            <div class="admin-card table-card">
+            <div class="admin-card table-card full-width-table">
                 <h3>Recent Games</h3>
                 <div class="table-container">
                     <table id="gamesTable">
@@ -99,15 +128,12 @@
                                 <th>RAM</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Populated by JS -->
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
             
-            <!-- CPUs Table -->
-            <div class="admin-card table-card">
+            <div class="admin-card tables-card half-width-table">
                 <h3>Top CPUs</h3>
                 <div class="table-container">
                     <table id="cpusTable">
@@ -117,15 +143,12 @@
                                 <th>Score</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Populated by JS -->
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
             
-            <!-- GPUs Table -->
-            <div class="admin-card table-card">
+            <div class="admin-card tables-card half-width-table">
                 <h3>Top GPUs</h3>
                 <div class="table-container">
                     <table id="gpusTable">
@@ -135,9 +158,7 @@
                                 <th>Score</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Populated by JS -->
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
@@ -149,9 +170,10 @@
 
 <script src="../../JAVASCRIPT/Admin Side/AdminSideFunction.js"></script>
 <script>
+    // Initialize current system navigation state highlight tags
     document.querySelector('[data-page="dashboard"]')?.classList.add('active');
     
-    // Load dashboard data
+    // Automatically query background engines for card analytics
     if (typeof loadDashboardData === 'function') {
         loadDashboardData();
     }
