@@ -18,7 +18,7 @@
         <div class="search-filter-container">
             <div class="search-box">
                 <input type="text" id="gameSearch" placeholder="Search games..." oninput="filterGames()">
-                <span class="search-icon">🔍</span>
+                <span class="search-icon"><i class="fas fa-magnifying-glass"></i></span>
             </div>
             
             <div class="genre-filter">

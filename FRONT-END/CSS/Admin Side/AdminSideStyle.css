@@ -1,4 +1,6 @@
 /* ---------- CORE CSS VARIABLES ---------- */
+@import url('../shared/CustomScrollbar.css');
+
 :root {
     --bg-main: #16161a;         /* Matte dark charcoal panel */
     --bg-sidebar: #111114;      /* Deep canvas background for sidebar layer */
@@ -21,7 +23,7 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     display: flex;
     flex-direction: column;
-    background-color: #2d2d35; 
+    background-color: var(--bg-main);
     min-height: 100vh;
     color: var(--color-text-main);
     transition: margin-left 0.3s ease;
@@ -66,7 +68,7 @@ body {
 
 /* ---------- SIDEBAR LAYOUT ---------- */
 .sidebar {
-    width: 240px;
+    width: 254px;
     background-color: var(--bg-sidebar);
     color: #a0a0a5;
     padding: 24px 16px;
@@ -91,7 +93,7 @@ body {
     letter-spacing: 1.5px;
     padding-bottom: 8px;
     margin-bottom: 12px;
-    margin-top: 20px;
+    margin-top: 0px;
 }
 
 /* Hidden User Button */
@@ -198,6 +200,7 @@ body {
     color: var(--color-text-main);
     font-size: 26px;
     font-weight: 700;
+    margin-top: -11px;
 }
 
 /* ---------- PREMIUM GLOBAL ADMIN CARDS ---------- */
@@ -207,6 +210,7 @@ body {
     border-radius: 16px;
     color: var(--color-text-main);
     border: 1px solid rgba(255, 255, 255, 0.03);
+    margin-bottom: 30px;
 }
 
 .admin-card h3 {
@@ -340,46 +344,6 @@ body {
     z-index: 2;              /* Keeps headers stacked above scrolling row cells */
 }
 
-/* ==========================================================================
-   CUSTOM DARK DASHBOARD SCROLLBARS
-   ========================================================================== */
-
-/* --- 1. Modern Browsers (Chrome, Safari, Edge, Opera) --- */
-
-/* Targets the scrollbar area inside your specific table containers */
-.table-container::-webkit-scrollbar {
-    width: 8px;               /* Width of the vertical scrollbar */
-    height: 8px;              /* Height of the horizontal scrollbar (if any) */
-}
-
-/* The track (background) of the scrollbar */
-.table-container::-webkit-scrollbar-track {
-    background: var(--bg-sidebar); /* Blends perfectly into your container background */
-    border-radius: 12px;
-}
-
-/* The draggable handle (thumb) */
-.table-container::-webkit-scrollbar-thumb {
-    background: #2e2f3a;      /* Dark, subtle charcoal color */
-    border-radius: 12px;      /* Matches your container rounded corners */
-    border: 2px solid var(--bg-sidebar); /* Creates an invisible padding effect */
-}
-
-/* Changes color gracefully when the user hovers or clicks it */
-.table-container::-webkit-scrollbar-thumb:hover {
-    background: var(--color-brand); /* Uses your Electric Lime color on hover! */
-}
-
-
-/* --- 2. Firefox Fallback Support --- */
-@supports (scrollbar-width: thin) {
-    .table-container {
-        scrollbar-width: thin;
-        /* Format: [Thumb Color] [Track Color] */
-        scrollbar-color: #2e2f3a var(--bg-sidebar); 
-    }
-}
-
 /* ---------- PREMIUM METRICS STATS GRID ---------- */
 .stats-grid {
     display: grid;
@@ -393,10 +357,10 @@ body {
     border-radius: 16px;
     padding: 20px;
     display: flex;
-    flex-direction: column; /* Stack layout implementation */
-    align-items: flex-start;
-    justify-content: space-between;
-    min-height: 124px;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    min-height: 88px;
     border: 1px solid rgba(255, 255, 255, 0.02);
     box-sizing: border-box;
 }
@@ -411,14 +375,15 @@ body {
     background: rgba(181, 255, 61, 0.08);
     color: var(--color-brand);
     border-radius: 10px;
-    margin-bottom: 12px;
+    flex-shrink: 0;
 }
 
-.stat-info {
+.stat-body {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
-    width: 100%;
+    gap: 4px;
+    min-width: 0;
+    flex: 1;
 }
 
 .stat-value {
@@ -437,7 +402,6 @@ body {
     color: var(--color-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.6px;
-    margin-top: 5px;
 }
 
 

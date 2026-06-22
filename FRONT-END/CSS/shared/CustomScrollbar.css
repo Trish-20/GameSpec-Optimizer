@@ -1,0 +1,89 @@
+/* ==========================================================================
+   UNIFIED CUSTOM DARK SCROLLBARS (Admin + User)
+   ========================================================================== */
+
+:root {
+    --scroll-track: #111114;
+    --scroll-thumb: #3b3b4d;
+    --scroll-thumb-hover: #b5ff3d;
+}
+
+/* Scrollable regions across both sides */
+.sidebar,
+.table-container,
+.data-list,
+.log-container,
+.modal-dialog,
+.game-section,
+.search-dropdown .dropdown-list,
+.fps-results-panel,
+.custom-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+}
+
+/* WebKit (Chrome, Safari, Edge, Opera) */
+.sidebar::-webkit-scrollbar,
+.table-container::-webkit-scrollbar,
+.data-list::-webkit-scrollbar,
+.log-container::-webkit-scrollbar,
+.modal-dialog::-webkit-scrollbar,
+.game-section::-webkit-scrollbar,
+.search-dropdown .dropdown-list::-webkit-scrollbar,
+.fps-results-panel::-webkit-scrollbar,
+.custom-scroll::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+.sidebar::-webkit-scrollbar-track,
+.table-container::-webkit-scrollbar-track,
+.data-list::-webkit-scrollbar-track,
+.log-container::-webkit-scrollbar-track,
+.modal-dialog::-webkit-scrollbar-track,
+.game-section::-webkit-scrollbar-track,
+.search-dropdown .dropdown-list::-webkit-scrollbar-track,
+.fps-results-panel::-webkit-scrollbar-track,
+.custom-scroll::-webkit-scrollbar-track {
+    background: var(--scroll-track);
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb,
+.table-container::-webkit-scrollbar-thumb,
+.data-list::-webkit-scrollbar-thumb,
+.log-container::-webkit-scrollbar-thumb,
+.modal-dialog::-webkit-scrollbar-thumb,
+.game-section::-webkit-scrollbar-thumb,
+.search-dropdown .dropdown-list::-webkit-scrollbar-thumb,
+.fps-results-panel::-webkit-scrollbar-thumb,
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: var(--scroll-thumb);
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover,
+.table-container::-webkit-scrollbar-thumb:hover,
+.data-list::-webkit-scrollbar-thumb:hover,
+.log-container::-webkit-scrollbar-thumb:hover,
+.modal-dialog::-webkit-scrollbar-thumb:hover,
+.game-section::-webkit-scrollbar-thumb:hover,
+.search-dropdown .dropdown-list::-webkit-scrollbar-thumb:hover,
+.fps-results-panel::-webkit-scrollbar-thumb:hover,
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--scroll-thumb-hover);
+}
+
+.sidebar::-webkit-scrollbar-button,
+.table-container::-webkit-scrollbar-button,
+.data-list::-webkit-scrollbar-button,
+.log-container::-webkit-scrollbar-button,
+.modal-dialog::-webkit-scrollbar-button,
+.game-section::-webkit-scrollbar-button,
+.search-dropdown .dropdown-list::-webkit-scrollbar-button,
+.fps-results-panel::-webkit-scrollbar-button,
+.custom-scroll::-webkit-scrollbar-button {
+    display: none;
+    height: 0;
+    width: 0;
+}

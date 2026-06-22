@@ -18,73 +18,61 @@
         <div class="stats-grid">
     
     <div class="stat-card">
-        <div class="stat-header-row">
-            <div class="stat-icon">
-                <i class="fas fa-gamepad"></i>
-            </div>
-            <span class="stat-label">Total Games</span>
+        <div class="stat-icon">
+            <i class="fas fa-gamepad"></i>
         </div>
-        <div class="stat-info">
+        <div class="stat-body">
+            <span class="stat-label">Total Games</span>
             <span class="stat-value" id="totalGames">--</span>
         </div>
     </div>
     
     <div class="stat-card">
-        <div class="stat-header-row">
-            <div class="stat-icon">
-                <i class="fas fa-microchip"></i>
-            </div>
-            <span class="stat-label">Total CPUs</span>
+        <div class="stat-icon">
+            <i class="fas fa-microchip"></i>
         </div>
-        <div class="stat-info">
+        <div class="stat-body">
+            <span class="stat-label">Total CPUs</span>
             <span class="stat-value" id="totalCPUs">--</span>
         </div>
     </div>
     
     <div class="stat-card">
-        <div class="stat-header-row">
-            <div class="stat-icon">
-                <i class="fas fa-video"></i>
-            </div>
-            <span class="stat-label">Total GPUs</span>
+        <div class="stat-icon">
+            <i class="fas fa-video"></i>
         </div>
-        <div class="stat-info">
+        <div class="stat-body">
+            <span class="stat-label">Total GPUs</span>
             <span class="stat-value" id="totalGPUs">--</span>
         </div>
     </div>
     
     <div class="stat-card">
-        <div class="stat-header-row">
-            <div class="stat-icon">
-                <i class="fas fa-chart-bar"></i>
-            </div>
-            <span class="stat-label">Avg CPU Score</span>
+        <div class="stat-icon">
+            <i class="fas fa-chart-bar"></i>
         </div>
-        <div class="stat-info">
+        <div class="stat-body">
+            <span class="stat-label">Avg CPU Score</span>
             <span class="stat-value" id="avgCPUScore">--</span>
         </div>
     </div>
     
     <div class="stat-card">
-        <div class="stat-header-row">
-            <div class="stat-icon">
-                <i class="fas fa-chart-line"></i>
-            </div>
-            <span class="stat-label">Avg GPU Score</span>
+        <div class="stat-icon">
+            <i class="fas fa-chart-line"></i>
         </div>
-        <div class="stat-info">
+        <div class="stat-body">
+            <span class="stat-label">Avg GPU Score</span>
             <span class="stat-value" id="avgGPUScore">--</span>
         </div>
     </div>
     
     <div class="stat-card">
-        <div class="stat-header-row">
-            <div class="stat-icon">
-                <i class="fas fa-crown"></i>
-            </div>
-            <span class="stat-label">Top GPU</span>
+        <div class="stat-icon">
+            <i class="fas fa-crown"></i>
         </div>
-        <div class="stat-info">
+        <div class="stat-body">
+            <span class="stat-label">Top GPU</span>
             <span class="stat-value" id="topGPU" title="Loading top hardware configuration...">--</span>
         </div>
     </div>

@@ -1,17 +1,27 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <!-- Top Header Bar -->
 <div class="top-header">
     <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
-
     <span class="app-title">GameSpec Optimizer</span>
 </div>
 
 <!-- Sidebar Component -->
 <div class="sidebar">
     <h2>User Panel</h2>
-    <a href="browse-games.php" class="nav-btn" data-page="browse">Browse Games</a>
-    <a href="fps-prediction.php" class="nav-btn" data-page="predict">FPS Prediction</a>
-    <a href="hardware-benchmark.php" class="nav-btn" data-page="benchmark">Hardware Benchmark</a>
-    
+
+    <a href="browse-games.php" class="nav-btn" data-page="browse">
+        <i class="fas fa-th-large nav-icon"></i> Browse Games
+    </a>
+
+    <a href="fps-prediction.php" class="nav-btn" data-page="predict">
+        <i class="fas fa-tachometer-alt nav-icon"></i> FPS Prediction
+    </a>
+
+    <a href="hardware-benchmark.php" class="nav-btn" data-page="benchmark">
+        <i class="fas fa-microchip nav-icon"></i> Hardware Benchmark
+    </a>
+
     <!-- Hidden admin access -->
     <div class="hidden-admin-btn" onclick="handleAdminClick()"></div>
 </div>
