@@ -4,3 +4,8 @@
 # PREDICTIVE ML TUTORIAL: https://www.youtube.com/watch?v=rcXAb1eKZ_I&list=PLTgRMOcmRb3OhlETr90y_hIMpQLR-DyLz&index=2
 
 # needed data: gpu and cpu benchmark scores, ram size
+
+# Graphical settings studies on effects on frame rate:
+https://ph.pollub.pl/index.php/jcsi/article/view/7482/5139 - impact of texture and effects (ambient occlusion and motion blur #search keyword) on frame rate
+https://dl.acm.org/doi/epdf/10.1145/3804493 - impact of texture, vfx, and lighting on frame rate
+https://dev.epicgames.com/documentation/unreal-engine/bloom-in-unreal-engine - bloom
