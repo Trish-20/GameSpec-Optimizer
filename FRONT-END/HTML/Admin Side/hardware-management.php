@@ -16,7 +16,7 @@
         
         <div class="hardware-grid">
             <!-- CPU Management -->
-            <div class="admin-card">
+            <div class="admin-card hardware-card">
                 <h3>CPU Management</h3>
                 <form id="cpuForm">
                     <label for="cpuModel">CPU Model:</label>
@@ -25,13 +25,18 @@
                     <label for="cpuScore">Benchmark Score:</label>
                     <input type="number" id="cpuScore" placeholder="e.g., 35000" required>
                     
-                    <button type="submit">Save CPU</button>
+                    <div class="form-action-row">
+                        <button type="submit" class="btn-primary">Save CPU</button>
+                    </div>
                 </form>
+
+                <hr>
+                
                 <div id="cpuList" class="data-list"></div>
             </div>
             
             <!-- GPU Management -->
-            <div class="admin-card">
+            <div class="admin-card hardware-card">
                 <h3>GPU Management</h3>
                 <form id="gpuForm">
                     <label for="gpuModel">GPU Model:</label>
@@ -40,13 +45,18 @@
                     <label for="gpuScore">Benchmark Score:</label>
                     <input type="number" id="gpuScore" placeholder="e.g., 28000" required>
                     
-                    <button type="submit">Save GPU</button>
+                   <div class="form-action-row">
+                        <button type="submit" class="btn-primary">Save CPU</button>
+                    </div>
                 </form>
+
+                <hr>
+
                 <div id="gpuList" class="data-list"></div>
             </div>
             
             <!-- RAM Management -->
-            <div class="admin-card">
+            <div class="admin-card hardware-card">
                 <h3>RAM Management</h3>
                 <form id="ramForm">
                     <label for="ramModel">RAM Model:</label>
@@ -55,8 +65,13 @@
                     <label for="ramScore">Benchmark Score:</label>
                     <input type="number" id="ramScore" placeholder="e.g., 8000" required>
                     
-                    <button type="submit">Save RAM</button>
+                    <div class="form-action-row">
+                        <button type="submit" class="btn-primary">Save CPU</button>
+                    </div>
                 </form>
+
+                <hr>
+
                 <div id="ramList" class="data-list"></div>
             </div>
         </div>

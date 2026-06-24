@@ -28,7 +28,7 @@
             </select>
             
             <button onclick="getBenchmarkScore()">Get Benchmark Score</button>
-            
+
             <div id="benchResult" class="benchmark-result"></div>
         </div>
     </div>

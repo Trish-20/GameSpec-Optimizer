@@ -14,45 +14,56 @@
     <div class="page-container">
         <h2>Machine Learning Training</h2>
         
-        <div class="admin-card">
-            <h3>Model Status</h3>
-            <div class="status-grid">
-                <div class="status-item">
-                    <span class="status-label">Current Model:</span>
-                    <span class="status-value" id="modelName">Voting Ensemble (GB + XGB)</span>
+        <div class="training-grid">
+            <div class="admin-card">
+                <h3>Model Status</h3>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <span class="status-label">Current Model:</span>
+                        <span class="status-value" id="modelName">Voting Ensemble (GB + XGB)</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Last Trained:</span>
+                        <span class="status-value" id="lastTrained">--</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Training Data:</span>
+                        <span class="status-value" id="dataCount">6,000 rows</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Model Accuracy (MAE):</span>
+                        <span class="status-value" id="modelAccuracy">~10.94</span>
+                    </div>
                 </div>
-                <div class="status-item">
-                    <span class="status-label">Last Trained:</span>
-                    <span class="status-value" id="lastTrained">--</span>
+            </div>
+            
+        <div class="admin-card training-card">
+                <div class="training-header">
+                    <h3>Machine learning training</h3>
+                    <div class="action-buttons">
+                        <button onclick="updateTrainingData()" class="report-btn">
+                            <i class="fas fa-sync-alt"></i> Update Training Data
+                        </button>
+                        <button onclick="generateData()" class="report-btn">
+                            <i class="fas fa-database"></i> Generate Training Data
+                        </button>
+                        <button onclick="retrainModel()" class="report-btn">
+                            <i class="fas fa-cogs"></i> Retrain Model
+                        </button>
+                        <button onclick="exportModel()" class="report-btn">
+                            <i class="fas fa-file-export"></i> Export
+                        </button>
+                    </div>
+
                 </div>
-                <div class="status-item">
-                    <span class="status-label">Training Data:</span>
-                    <span class="status-value" id="dataCount">6,000 rows</span>
-                </div>
-                <div class="status-item">
-                    <span class="status-label">Model Accuracy (MAE):</span>
-                    <span class="status-value" id="modelAccuracy">~10.94</span>
+
+                <div id="trainingLog" class="log-container">
+                    <p class="log-entry">System ready. Select an action above.</p>
                 </div>
             </div>
         </div>
-        
-        <div class="admin-card">
-            <h3>Training Actions</h3>
-            <div class="action-buttons">
-                <button onclick="updateTrainingData()" class="btn-secondary">Update Training Data</button>
-                <button onclick="generateData()" class="btn-secondary">Generate Training Data</button>
-                <button onclick="retrainModel()" class="btn-primary">Retrain Model</button>
-                <button onclick="exportModel()" class="btn-secondary">Export</button>
-            </div>
-            <div id="trainingOutput" class="training-output"></div>
-        </div>
-        
-        <div class="admin-card">
-            <h3>Training Log</h3>
-            <div id="trainingLog" class="log-container">
-                <p class="log-entry">System ready. Select an action above.</p>
-            </div>
-        </div>
+
+
     </div>
 
     <?php include 'footer.php'; ?>

@@ -79,33 +79,38 @@
     
 </div>
         
-        <div class="admin-card">
-    <div class="report-text-group">
-        <h3>Generate Reports</h3>
-        <p>Download CSV reports for data backup or system analysis.</p>
-    </div>
-    
-    <div class="report-buttons">
-        <button onclick="downloadReport('games')" class="report-btn">
-            <i class="fas fa-gamepad btn-icon"></i> Game Requirements
-        </button>
-        <button onclick="downloadReport('cpus')" class="report-btn">
-            <i class="fas fa-microchip btn-icon"></i> CPU Benchmarks
-        </button>
-        <button onclick="downloadReport('gpus')" class="report-btn">
-            <i class="fas fa-video btn-icon"></i> GPU Benchmarks
-        </button>
-        <button onclick="downloadReport('all')" class="report-btn primary">
-            <i class="fas fa-box-open btn-icon"></i> Download All
-        </button>
+        <div class="admin-card reports-card">
+            <div class="report-text-group">
+                <h3>Generate Reports</h3>
+                <p>Download CSV reports for data backup or system analysis.</p>
+                <hr> 
+            </div>
 
-        
-    </div>
+            <div class="report-buttons">
+                <button onclick="downloadReport('games')" class="report-btn">
+                    <i class="fas fa-gamepad btn-icon"></i> Game Requirements
+                </button>
+                <button onclick="downloadReport('cpus')" class="report-btn">
+                    <i class="fas fa-microchip btn-icon"></i> CPU Benchmarks
+                </button>
+                <button onclick="downloadReport('gpus')" class="report-btn">
+                    <i class="fas fa-video btn-icon"></i> GPU Benchmarks
+                </button>
+                <button onclick="downloadReport('all')" class="report-btn primary">
+                    <i class="fas fa-box-open btn-icon"></i> Download All
+                </button>
+
+                
+            </div>
 </div>
         
         <div class="tables-grid">
-            <div class="admin-card table-card full-width-table">
+            <div class="admin-card games-table full-width-table">
                 <h3>Recent Games</h3>
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="gameSearch" placeholder="Search games..." onkeyup="filterGameList()">
+                    </div>
                 <div class="table-container">
                     <table id="gamesTable">
                         <thead>
@@ -121,7 +126,7 @@
                 </div>
             </div>
             
-            <div class="admin-card tables-card half-width-table">
+            <div class="admin-card cpus-table half-width-table">
                 <h3>Top CPUs</h3>
                 <div class="table-container">
                     <table id="cpusTable">
@@ -136,7 +141,7 @@
                 </div>
             </div>
             
-            <div class="admin-card tables-card half-width-table">
+            <div class="admin-card games-card half-width-table">
                 <h3>Top GPUs</h3>
                 <div class="table-container">
                     <table id="gpusTable">

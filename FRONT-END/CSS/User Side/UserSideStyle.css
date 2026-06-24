@@ -506,6 +506,8 @@ body {
 /* ---------- FPS PREDICTION LAYOUT ---------- */
 .fps-prediction-container {
     width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
     padding: 20px;
     box-sizing: border-box;
 }
@@ -514,23 +516,16 @@ body {
     text-align: center;
     margin-bottom: 25px;
     color: var(--color-text-main);
-    margin-top: -28px;
 }
 
-.fps-layout {
-    display: flex;
-    gap: 30px;
-    width: 100%;
-    min-height: 600px;
-}
-
-/* Input Panel (Left Side) */
+/* Input Panel (single unified card) */
 .fps-input-panel {
-    flex: 0 0 350px;
+    width: 100%;
     background: var(--bg-card);
     padding: 25px;
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.03);
+    box-sizing: border-box;
 }
 
 .fps-input-panel h3 {
@@ -659,16 +654,17 @@ body {
     transform: translateY(-1px);
 }
 
-/* Results Panel (Right Side) */
+/* Results area (integrated inside form card) */
 .fps-results-panel {
-    flex: 1;
-    background: var(--bg-card);
-    padding: 25px;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.03);
-    overflow-y: auto;
-    overflow-x: hidden;
-    max-height: 600px;
+    width: 100%;
+    margin-top: 16px;
+    box-sizing: border-box;
+}
+
+.fps-results-panel:not(:has(.results-placeholder)) {
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    margin-top: 20px;
 }
 
 .results-placeholder {
@@ -676,57 +672,153 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    padding: 24px 12px;
     color: var(--color-text-muted);
+    text-align: center;
 }
 
 .results-placeholder .placeholder-icon {
-    font-size: 80px;
-    margin-bottom: 20px;
-    opacity: 0.5;
-}
-
-.results-placeholder p {
-    font-size: 16px;
-    text-align: center;
-    color: var(--color-text-muted);
-}
-
-/* FPS Display */
-.fps-display {
-    text-align: center;
-    padding: 20px;
-    margin-bottom: 25px;
-    border-radius: 16px;
-    background: var(--bg-card-sub);
-    color: var(--color-text-main);
-    border: 1px solid var(--border-color);
-}
-
-.fps-display .fps-value {
-    font-size: 72px;
-    font-weight: 700;
-    line-height: 1;
+    font-size: 36px;
+    margin-bottom: 12px;
+    opacity: 0.45;
     color: var(--color-brand);
 }
 
-.fps-display .fps-label {
-    font-size: 24px;
-    opacity: 0.8;
-    margin-top: 5px;
+.results-placeholder p {
+    font-size: 14px;
+    text-align: center;
     color: var(--color-text-muted);
+    margin: 0;
+    line-height: 1.5;
 }
 
-.fps-display.fps-good { background: linear-gradient(135deg, #059669, #10b981); }
-.fps-display.fps-ok { background: linear-gradient(135deg, #d97706, #f59e0b); }
-.fps-display.fps-bad { background: linear-gradient(135deg, #dc2626, #ef4444); }
+/* ---------- SHARED RESULT SCORE CARD (Benchmark + FPS) ---------- */
+.bench-score-card,
+.fps-display {
+    text-align: center;
+    padding: 28px 24px 24px;
+    border-radius: 14px;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #ffffff;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+.bench-score-card .result-type,
+.fps-display .result-type {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: rgba(255, 255, 255, 0.75);
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.bench-score-card .result-name,
+.fps-display .result-name {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 22px;
+    color: #ffffff;
+    line-height: 1.35;
+    max-width: 100%;
+    word-break: break-word;
+}
+
+.bench-score-card .result-score,
+.fps-display .result-score {
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--color-brand);
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.bench-score-card .result-label,
+.fps-display .result-label {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.bench-score-card .result-badge,
+.fps-display .result-badge {
+    display: inline-block;
+    padding: 8px 22px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    background: rgba(0, 0, 0, 0.22);
+    color: #ffffff;
+    backdrop-filter: blur(4px);
+}
+
+/* Benchmark rating gradients */
+.bench-score-card.excellent,
+.fps-display.fps-good {
+    background: linear-gradient(160deg, #047857 0%, #059669 45%, #10b981 100%);
+}
+
+.bench-score-card.excellent .result-badge,
+.fps-display.fps-good .result-badge {
+    color: #bbf7d0;
+}
+
+.bench-score-card.great {
+    background: linear-gradient(160deg, #0369a1 0%, #0284c7 45%, #0ea5e9 100%);
+}
+
+.bench-score-card.great .result-badge {
+    color: #bae6fd;
+}
+
+.bench-score-card.good {
+    background: linear-gradient(160deg, #5b21b6 0%, #7c3aed 45%, #8b5cf6 100%);
+}
+
+.bench-score-card.good .result-badge {
+    color: #ddd6fe;
+}
+
+.bench-score-card.average,
+.fps-display.fps-ok {
+    background: linear-gradient(160deg, #b45309 0%, #d97706 45%, #f59e0b 100%);
+}
+
+.bench-score-card.average .result-badge,
+.fps-display.fps-ok .result-badge {
+    color: #fde68a;
+}
+
+.bench-score-card.entry {
+    background: linear-gradient(160deg, #475569 0%, #64748b 45%, #94a3b8 100%);
+}
+
+.bench-score-card.entry .result-badge {
+    color: #e2e8f0;
+}
+
+.fps-display.fps-bad {
+    background: linear-gradient(160deg, #991b1b 0%, #dc2626 45%, #ef4444 100%);
+}
+
+.fps-display.fps-bad .result-badge {
+    color: #fecaca;
+}
 
 /* Section Cards */
 .result-section {
     background: var(--bg-card-sub);
     border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
+    padding: 18px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border-color);
     border-left: 4px solid var(--color-brand);
 }
 
@@ -1035,84 +1127,17 @@ body {
 /* ---------- HARDWARE BENCHMARK RESULTS ---------- */
 .benchmark-result {
     margin-top: 20px;
+    width: 100%;
 }
 
-.bench-score-card {
-    text-align: center;
-    padding: 25px;
-    border-radius: 16px;
-    background: var(--bg-card-sub);
-    color: var(--color-text-main);
-    border: 1px solid var(--border-color);
-}
-
-.bench-score-card .bench-type {
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: var(--color-text-muted);
-    margin-bottom: 5px;
-}
-
-.bench-score-card .bench-name {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 15px;
-    color: var(--color-text-main);
-}
-
-.bench-score-card .bench-score {
-    font-size: 48px;
-    font-weight: 700;
-    line-height: 1;
-    color: var(--color-brand);
-}
-
-.bench-score-card .bench-label {
-    font-size: 14px;
-    color: var(--color-text-muted);
-    margin-top: 5px;
-}
-
-.bench-score-card .bench-rating {
-    display: inline-block;
-    margin-top: 15px;
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 600;
-    background: rgba(181, 255, 61, 0.1);
-    color: var(--color-brand);
-}
-
-.bench-score-card.excellent {
-    background: linear-gradient(135deg, #059669, #10b981);
-}
-
-.bench-score-card.great {
-    background: linear-gradient(135deg, #0284c7, #0ea5e9);
-}
-
-.bench-score-card.good {
-    background: linear-gradient(135deg, #7c3aed, #8b5cf6);
-}
-
-.bench-score-card.average {
-    background: linear-gradient(135deg, #d97706, #f59e0b);
-}
-
-.bench-score-card.entry {
-    background: linear-gradient(135deg, #64748b, #94a3b8);
+.benchmark-result:not(:empty) {
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
 }
 
 /* Responsive */
 @media (max-width: 900px) {
-    .fps-layout {
-        flex-direction: column;
-    }
-    
-    .fps-input-panel {
-        flex: none;
-        width: 100%;
+    .fps-prediction-container {
+        padding: 12px;
     }
 }

@@ -14,9 +14,7 @@
     <div class="fps-prediction-container">
         <h2>FPS Prediction</h2>
         
-        <div class="fps-layout">
-            <!-- LEFT SIDE: Input Panel -->
-            <div class="fps-input-panel">
+        <div class="fps-input-panel">
                 <h3>Hardware Configuration</h3>
                 
                 <label>Select a Game:</label>
@@ -65,16 +63,14 @@
                 </select>
                 
                 <button onclick="predictFPS()">Analyze Performance</button>
-            </div>
-            
-            <!-- RIGHT SIDE: Results Panel -->
-            <div class="fps-results-panel" id="fpsResultsPanel">
-                <div class="results-placeholder">
-                    <div class="placeholder-icon">📊</div>
-                    <p>Configure your hardware and click "Analyze Performance" to see results</p>
+
+                <div class="fps-results-panel" id="fpsResultsPanel">
+                    <div class="results-placeholder">
+                        <div class="placeholder-icon"><i class="fas fa-chart-line"></i></div>
+                        <p>Configure your hardware and click "Analyze Performance" to see results</p>
+                    </div>
                 </div>
             </div>
-        </div>
     </div>
 
     <?php include 'footer.php'; ?>

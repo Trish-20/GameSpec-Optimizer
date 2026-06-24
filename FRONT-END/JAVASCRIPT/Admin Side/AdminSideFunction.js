@@ -117,6 +117,14 @@ function editGame(index) {
     document.getElementById('gameCPU').value = game.cpu_model;
     document.getElementById('gameGPU').value = game.gpu_model;
     document.getElementById('gameRAM').value = game.ram_benchmark / 250;
+
+   // Scroll the page all the way to the top smoothly
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Optional: highlight the form briefly
+    const formEl = document.getElementById('gameForm');
+    formEl.classList.add('highlight');
+    setTimeout(() => formEl.classList.remove('highlight'), 1200);
 }
 
 function deleteGame(index) {
