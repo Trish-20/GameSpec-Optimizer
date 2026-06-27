@@ -308,15 +308,97 @@ function loadGameGrid() {
         card.dataset.title = game.title.toLowerCase();
         
         const imageUrl = game.image ? `../../RES/${game.image}` : '';
-        
+
+        // Store description for hover modal
+        const description = (game.description || '').trim();
+        card.dataset.description = description;
+
         card.innerHTML = `
             <div class="game-image" ${imageUrl ? `style="background-image: url('${imageUrl}')"` : ''}>
                 ${!imageUrl ? '🎮' : ''}
             </div>
             <div class="game-name">${game.title}</div>
         `;
-        
+
         card.onclick = () => selectGame(game.title_raw);
+
+        // Tooltip-like hover (right side of card)
+        let tooltipTimer = null;
+        let tooltipEl = null;
+
+        const createTooltip = () => {
+            if (tooltipEl) return tooltipEl;
+            const desc = card.dataset.description || '';
+            const title = game.title || 'Game';
+
+            tooltipEl = document.createElement('div');
+            tooltipEl.className = 'game-hover-tooltip';
+            tooltipEl.innerHTML = `
+                <div class="tooltip-title">${title}</div>
+                <div class="tooltip-body">${desc || 'No description available.'}</div>
+            `;
+            document.body.appendChild(tooltipEl);
+
+            // Trigger sweep-in transition
+            requestAnimationFrame(() => {
+                tooltipEl?.classList.add('game-hover-tooltip--show');
+            });
+
+            return tooltipEl;
+        };
+
+        const positionTooltip = (rect) => {
+            if (!tooltipEl) return;
+
+            // Place tooltip to the right side of the card.
+            const gap = 12;
+            const minLeft = 16;
+            const minTop = 16;
+
+            let left = rect.right + gap;
+            let top = rect.top + rect.height / 2 - tooltipEl.offsetHeight / 2;
+
+            // Clamp horizontally within viewport
+            const maxLeft = window.innerWidth - tooltipEl.offsetWidth - 16;
+            left = Math.max(minLeft, Math.min(maxLeft, left));
+
+            // Clamp vertically within viewport
+            const maxTop = window.innerHeight - tooltipEl.offsetHeight - 16;
+            top = Math.max(minTop, Math.min(maxTop, top));
+
+            tooltipEl.style.left = `${left}px`;
+            tooltipEl.style.top = `${top}px`;
+        };
+
+
+
+        card.addEventListener('pointerenter', (e) => {
+            const rect = card.getBoundingClientRect();
+            tooltipTimer = setTimeout(() => {
+                createTooltip();
+                positionTooltip(rect);
+            }, 120);
+        });
+
+        card.addEventListener('pointermove', (e) => {
+            // If tooltip already exists, keep it positioned (optional lightweight)
+            if (!tooltipEl) return;
+            const rect = card.getBoundingClientRect();
+            positionTooltip(rect);
+        });
+
+        card.addEventListener('pointerleave', () => {
+            if (tooltipTimer) clearTimeout(tooltipTimer);
+            tooltipTimer = null;
+            if (tooltipEl) {
+                tooltipEl.remove();
+                tooltipEl = null;
+            }
+
+            // Remove sweep effect
+            removeHoverSweep(card);
+        });
+
         grid.appendChild(card);
     });
 }

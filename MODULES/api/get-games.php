@@ -19,7 +19,9 @@ if (($handle = fopen($csvFile, 'r')) !== FALSE) {
             'hasAntiAlias' => (int)$row[8],
             'hasShadows' => (int)$row[9],
             'hasVSync' => (int)$row[10],
-            'image' => isset($row[11]) ? $row[11] : ''
+            'image' => isset($row[11]) ? $row[11] : '',
+            // Optional description (new column in DATA/game-requirements.csv)
+            'description' => isset($row[12]) ? (string)$row[12] : ''
         ];
     }
     fclose($handle);

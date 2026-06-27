@@ -1,32 +1,32 @@
-game_title,game_cpu_model,game_cpu_benchmark,game_gpu_model,game_gpu_benchmark,game_ram_model,game_ram_benchmark,hasBloom,hasAnti-Alias,hasShadows,hasVSync,game_image
-Alan_Wake_2,Intel Core i7-10700K,16500,NVIDIA RTX 2080,10500,DDR4-3200 16GB,4000,1,1,1,1,alan_wake_2.jfif
-Apex_Legends,Intel Core i5-9600K,14200,NVIDIA GTX 1660 Super,9000,DDR4-3200 8GB,2500,1,1,1,1,apex_legends.jpg
-Assassins_Creed,Intel Core i7-9700K,17800,NVIDIA RTX 2060,11000,DDR4-3200 16GB,3500,1,1,1,1,assasins_creed.jpg
-Baldurs_Gate_3,Intel Core i5-9400F,14000,NVIDIA GTX 1650 Super,8500,DDR4-3200 12GB,3000,1,1,1,1,baldurs_gate_3.jpg
-Black_Myth_Wukong,Intel Core i7-10700,17000,NVIDIA RTX 2060,11000,DDR4-3200 16GB,4000,1,1,1,1,black_myth_wukong.jpg
-CS_GO,Intel Core i5-7500,9000,NVIDIA GTX 1050,5500,DDR4-3200 8GB,2500,0,1,1,1,csgo.jpg
-Cyberpunk_2077,Intel Core i5-9600K,14200,NVIDIA GTX 1660 Super,9000,DDR4-3200 8GB,2500,1,1,1,1,cyberpunk_2077.webp
-Destiny_2,Intel Core i5-9600K,14200,NVIDIA GTX 1660 Super,9000,DDR4-3200 8GB,2500,1,1,1,1,destiny_2.jfif
-Elden_Ring,Intel Core i5-9600K,14200,NVIDIA GTX 1660 Super,9000,DDR4-3200 16GB,3500,1,1,1,1,elden_ring.jpg
-Fortnite,Intel Core i5-8400,12000,NVIDIA GTX 1060,7500,DDR4-3200 8GB,2500,1,1,1,1,fortnite.jfif
-GTA_V,Intel Core i5-6500,10000,NVIDIA GTX 1050 Ti,6500,DDR4-3200 8GB,2500,1,1,1,1,gta_v.jpg
-Genshin_Impact,Intel Core i5-8400,12000,NVIDIA GTX 1060,7800,DDR4-3200 8GB,2500,1,1,1,1,genshin_impact.webp
-God_of_War,Intel Core i5-9600K,14500,NVIDIA GTX 1660 Super,9000,DDR4-3200 16GB,3500,1,1,1,1,god_of_war.webp
-Helldivers_2,Intel Core i5-9600K,14500,NVIDIA GTX 1660 Super,9000,DDR4-3200 16GB,3500,1,1,1,1,helldivers_2.jpg
-Hogwarts_Legacy,Intel Core i7-10700,16000,NVIDIA RTX 2070,10000,DDR4-3200 16GB,3500,1,1,1,1,hogwarts_legacy.jpg
-Horizon_Zero_Dawn,Intel Core i7-9700K,17800,NVIDIA RTX 2060,11000,DDR4-3200 16GB,3500,1,1,1,1,horizon_zero_dawn.jpg
-League_Of_Legends,Intel Core i3-8100,8000,NVIDIA GT 1030,4500,DDR4-3200 8GB,2500,1,1,1,1,league_of_legends.webp
-Lies_of_P,Intel Core i5-8600K,13500,NVIDIA GTX 1650 Super,8500,DDR4-3200 12GB,3000,1,1,1,1,lies_of_p.avif
-Minecraft,Intel Core i3-8100,8000,NVIDIA GT 1030,4000,DDR4-3200 8GB,2500,0,0,1,1,minecraft.jpg
-Overwatch,Intel Core i5-8400,12000,NVIDIA GTX 1060,8000,DDR4-3200 8GB,2500,1,1,1,1,overwatch.jpg
-PUBG,Intel Core i5-9600K,14200,NVIDIA GTX 1660 Super,9000,DDR4-3200 8GB,2500,1,1,1,1,pubg.jpg
-Palworld,Intel Core i5-8600,13000,NVIDIA GTX 1060,8000,DDR4-3200 12GB,3000,1,1,1,1,palworld.jfif
-Rainbow_Six_Siege,Intel Core i5-9600K,14200,NVIDIA GTX 1660 Super,9000,DDR4-3200 8GB,2500,1,1,1,1,rainbow_six_siege.jpg
-Red_Dead_Redemption_2,Intel Core i7-9700K,17800,NVIDIA RTX 2060,11000,DDR4-3200 16GB,3500,1,1,1,1,read_dead_redemption_2.webp
-Remnant_2,Intel Core i5-9400F,14000,NVIDIA GTX 1650 Super,8500,DDR4-3200 12GB,3000,1,1,1,1,remnant_2.jfif
-Rocket_League,Intel Core i5-7600,11000,NVIDIA GTX 1050 Ti,7000,DDR4-3200 8GB,2500,1,1,1,1,rocket_league.jfif
-Spider_Man,Intel Core i7-9700K,17800,NVIDIA RTX 2060,11000,DDR4-3200 16GB,3500,1,1,1,1,spiderman.avif
-Spider_Man_Remastered,Intel Core i7-10700,15000,NVIDIA GTX 1660 Ti,9500,DDR4-3200 16GB,3500,1,1,1,1,spiderman_remastered.webp
-The_Witcher_3,Intel Core i5-9600K,14200,NVIDIA GTX 1660 Super,9000,DDR4-3200 8GB,2500,1,1,1,1,the_witcher_3.png
-Valorant,Intel Core i3-8100,8000,NVIDIA GT 1030,5000,DDR4-3200 8GB,2500,1,1,1,1,valorant.png
-Warzone,Intel Core i7-9700K,17800,NVIDIA RTX 2070,13000,DDR4-3200 16GB,3500,1,1,1,1,warzone.jfif
+game_title,game_cpu_model,game_cpu_benchmark,game_gpu_model,game_gpu_benchmark,game_ram_model,game_ram_benchmark,hasBloom,hasAnti-Alias,hasShadows,hasVSync,game_image,game_description
+Alan_Wake_2,Intel Core i7-10700K,16500,NVIDIA RTX 2080,10500,DDR4-3200 16GB,4000,1,1,1,1,alan_wake_2.jfif,"Action thriller set in a bizarre reality-shifting narrative."
+Apex_Legends,Intel Core i5-9600K,14200,NVIDIA GTX 1660 Super,9000,DDR4-3200 8GB,2500,1,1,1,1,apex_legends.jpg,"Fast-paced hero shooter featuring squad tactics and legendary legends."
+Assassins_Creed,Intel Core i7-9700K,17800,NVIDIA RTX 2060,11000,DDR4-3200 16GB,3500,1,1,1,1,assasins_creed.jpg,"Open-world stealth action through rich historical eras and hidden blades."
+Baldurs_Gate_3,Intel Core i5-9400F,14000,NVIDIA GTX 1650 Super,8500,DDR4-3200 12GB,3000,1,1,1,1,baldurs_gate_3.jpg,"Party-based RPG with deep choices, turn-based combat, and branching stories."
+Black_Myth_Wukong,Intel Core i7-10700,17000,NVIDIA RTX 2060,11000,DDR4-3200 16GB,4000,1,1,1,1,black_myth_wukong.jpg,"Myth-inspired action RPG inspired by Journey to the West."
+CS_GO,Intel Core i5-7500,9000,NVIDIA GTX 1050,5500,DDR4-3200 8GB,2500,0,1,1,1,csgo.jpg,"Competitive first-person shooter focused on tactics, aim, and teamwork."
+Cyberpunk_2077,Intel Core i5-9600K,14200,NVIDIA GTX 1660 Super,9000,DDR4-3200 8GB,2500,1,1,1,1,cyberpunk_2077.webp,"A dystopian open-world RPG with story-driven cyberpunk adventures."
+Destiny_2,Intel Core i5-9600K,14200,NVIDIA GTX 1660 Super,9000,DDR4-3200 8GB,2500,1,1,1,1,destiny_2.jfif,"Online looter shooter with raids, missions, and evolving worlds."
+Elden_Ring,Intel Core i5-9600K,14200,NVIDIA GTX 1660 Super,9000,DDR4-3200 16GB,3500,1,1,1,1,elden_ring.jpg,"High-fantasy action RPG known for challenging combat and exploration."
+Fortnite,Intel Core i5-8400,12000,NVIDIA GTX 1060,7500,DDR4-3200 8GB,2500,1,1,1,1,fortnite.jfif,"Battle royale with building, modes, and colorful seasonal events."
+GTA_V,Intel Core i5-6500,10000,NVIDIA GTX 1050 Ti,6500,DDR4-3200 8GB,2500,1,1,1,1,gta_v.jpg,"Open-world crime sandbox with missions, chaos, and a huge world to explore."
+Genshin_Impact,Intel Core i5-8400,12000,NVIDIA GTX 1060,7800,DDR4-3200 8GB,2500,1,1,1,1,genshin_impact.webp,"Anime-style open-world adventure with elemental combat and characters."
+God_of_War,Intel Core i5-9600K,14500,NVIDIA GTX 1660 Super,9000,DDR4-3200 16GB,3500,1,1,1,1,god_of_war.webp,"Cinematic action-adventure following Kratos’ mythic journey."
+Helldivers_2,Intel Core i5-9600K,14500,NVIDIA GTX 1660 Super,9000,DDR4-3200 16GB,3500,1,1,1,1,helldivers_2.jpg,"Co-op wave shooter where you fight for super earth across hellish planets."
+Hogwarts_Legacy,Intel Core i7-10700,16000,NVIDIA RTX 2070,10000,DDR4-3200 16GB,3500,1,1,1,1,hogwarts_legacy.jpg,"Explore Hogwarts and master spells in a magical open-world RPG."
+Horizon_Zero_Dawn,Intel Core i7-9700K,17800,NVIDIA RTX 2060,11000,DDR4-3200 16GB,3500,1,1,1,1,horizon_zero_dawn.jpg,"Post-apocalyptic action RPG with machine hunter battles and deep lore."
+League_Of_Legends,Intel Core i3-8100,8000,NVIDIA GT 1030,4500,DDR4-3200 8GB,2500,1,1,1,1,league_of_legends.webp,"Team strategy MOBA with champions, lanes, and high-level tactics."
+Lies_of_P,Intel Core i5-8600K,13500,NVIDIA GTX 1650 Super,8500,DDR4-3200 12GB,3000,1,1,1,1,lies_of_p.avif,"Dark Pinocchio-inspired soulslike with weapon customization and tense fights."
+Minecraft,Intel Core i3-8100,8000,NVIDIA GT 1030,4000,DDR4-3200 8GB,2500,0,0,1,1,minecraft.jpg,"Creative and survival sandbox with building, crafting, and endless worlds."
+Overwatch,Intel Core i5-8400,12000,NVIDIA GTX 1060,8000,DDR4-3200 8GB,2500,1,1,1,1,overwatch.jpg,"Team-based FPS with roles, abilities, and objective-based gameplay."
+PUBG,Intel Core i5-9600K,14200,NVIDIA GTX 1660 Super,9000,DDR4-3200 8GB,2500,1,1,1,1,pubg.jpg,"Tactical battle royale emphasizing realism, positioning, and survival."
+Palworld,Intel Core i5-8600,13000,NVIDIA GTX 1060,8000,DDR4-3200 12GB,3000,1,1,1,1,palworld.jfif,"Creature-collection survival game with base building and battling pals."
+Rainbow_Six_Siege,Intel Core i5-9600K,14200,NVIDIA GTX 1660 Super,9000,DDR4-3200 8GB,2500,1,1,1,1,rainbow_six_siege.jpg,"Tactical multiplayer shooter with destructible environments and operator gadgets."
+Red_Dead_Redemption_2,Intel Core i7-9700K,17800,NVIDIA RTX 2060,11000,DDR4-3200 16GB,3500,1,1,1,1,read_dead_redemption_2.webp,"Epic western narrative with immersive world and story-driven missions."
+Remnant_2,Intel Core i5-9400F,14000,NVIDIA GTX 1650 Super,8500,DDR4-3200 12GB,3000,1,1,1,1,remnant_2.jfif,"Co-op action RPG with deadly worlds, weapons, and boss fights."
+Rocket_League,Intel Core i5-7600,11000,NVIDIA GTX 1050 Ti,7000,DDR4-3200 8GB,2500,1,1,1,1,rocket_league.jfif,"Arcade soccer with cars—quick matches and skill-based aerial plays."
+Spider_Man,Intel Core i7-9700K,17800,NVIDIA RTX 2060,11000,DDR4-3200 16GB,3500,1,1,1,1,spiderman.avif,"Superhero action adventure swinging through a detailed city."
+Spider_Man_Remastered,Intel Core i7-10700,15000,NVIDIA GTX 1660 Ti,9500,DDR4-3200 16GB,3500,1,1,1,1,spiderman_remastered.webp,"Enhanced superhero action adventure with improved visuals and performance."
+The_Witcher_3,Intel Core i5-9600K,14200,NVIDIA GTX 1660 Super,9000,DDR4-3200 8GB,2500,1,1,1,1,the_witcher_3.png,"Open-world RPG with monster hunting, meaningful choices, and unforgettable quests."
+Valorant,Intel Core i3-8100,8000,NVIDIA GT 1030,5000,DDR4-3200 8GB,2500,1,1,1,1,valorant.png,"Competitive tactical FPS focused on agents, abilities, and precise gunplay."
+Warzone,Intel Core i7-9700K,17800,NVIDIA RTX 2070,13000,DDR4-3200 16GB,3500,1,1,1,1,warzone.jfif,"Massive battle royale with intense firefights and loadout strategy."

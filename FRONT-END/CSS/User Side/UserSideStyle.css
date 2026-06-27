@@ -44,7 +44,7 @@ body {
 }
 
 .top-header .app-title {
-    font-size: 18px;
+    font-size: 25px;
     font-weight: 700;
     color: var(--color-text-main);
     letter-spacing: 1px;
@@ -280,6 +280,7 @@ body {
     width: 100%;
     box-sizing: border-box;
 }
+
 
 /* Responsive: adjust columns on smaller screens */
 @media (max-width: 1400px) {
@@ -1133,6 +1134,49 @@ body {
 .benchmark-result:not(:empty) {
     padding-top: 20px;
     border-top: 1px solid var(--border-color);
+}
+
+/* Hover tooltip shown on game card hover */
+.game-hover-tooltip{
+  position:fixed;
+  z-index:10050;
+  max-width:360px;
+  background: rgba(24,24,28,0.95);
+  border:1px solid var(--border-color);
+  border-radius: 12px;
+  padding:12px 14px;
+  color: var(--color-text-main);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.5);
+  /* keep Safari compatible */
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  pointer-events:none;
+  transform: translateX(-10px);
+  opacity: 0;
+  transition: transform 160ms ease, opacity 160ms ease;
+}
+
+
+.game-hover-tooltip.game-hover-tooltip--show{
+  transform: translateX(0);
+  opacity: 1;
+}
+
+@keyframes tooltipSweepIn{
+  from { transform: translateX(-12px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.game-hover-tooltip .tooltip-title{
+  font-weight:700;
+  margin-bottom:8px;
+  font-size:14px;
+}
+.game-hover-tooltip .tooltip-body{
+  color: var(--color-text-muted);
+  font-size:13px;
+  line-height:1.5;
+  white-space: normal;
 }
 
 /* Responsive */
