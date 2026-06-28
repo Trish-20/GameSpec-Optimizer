@@ -1,4 +1,7 @@
-// ========== MODAL DIALOG SYSTEM ==========
+// ============================================================================
+// 1. UI UTILITIES
+// ============================================================================
+// Modal Dialog System
 function showModal(title, message, onConfirm = null) {
     let modalOverlay = document.getElementById('appModal');
     
@@ -62,7 +65,10 @@ function showTab(tabName) {
     document.getElementById(tabName).style.display = "block";
 }
 
-// --- ADMIN DATA ---
+// ============================================================================
+// 2. STATE & BACKEND DATA FETCHING
+// ============================================================================
+// Admin data
 let adminGames = [];
 let adminCPUs = [];
 let adminGPUs = [];
@@ -206,7 +212,9 @@ function displayHardwareLists() {
     }
 }
 
-// --- ML TRAINING FUNCTIONS ---
+// ============================================================================
+// 3. ML TRAINING FUNCTIONS
+// ============================================================================
 function updateTrainingData() {
     const log = document.getElementById('trainingLog');
     const output = document.getElementById('trainingOutput');
@@ -296,7 +304,9 @@ function exportModel() {
     }
 }
 
-// --- FORM SUBMISSIONS ---
+// ============================================================================
+// 4. FORM SUBMISSIONS
+// ============================================================================
 document.addEventListener('DOMContentLoaded', function() {
     // Game Form
     const gameForm = document.getElementById("gameForm");
@@ -335,7 +345,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// --- DASHBOARD FUNCTIONS ---
+// ============================================================================
+// 5. DASHBOARD FUNCTIONS
+// ============================================================================
 async function loadDashboardData() {
     try {
         // Load all data
@@ -436,7 +448,9 @@ function populateGPUsTable(gpus) {
     });
 }
 
-// --- REPORT DOWNLOAD FUNCTIONS ---
+// ============================================================================
+// 6. REPORT DOWNLOAD FUNCTIONS
+// ============================================================================
 function downloadReport(type) {
     const baseUrl = '../../../MODULES/api/';
     
