@@ -19,7 +19,7 @@ foreach ($required as $field) {
     }
 }
 
-// Set defaults for optional fields
+// Setting defaults for proper handling
 $inputs['res_width'] = $inputs['res_width'] ?? 1920;
 $inputs['res_height'] = $inputs['res_height'] ?? 1080;
 $inputs['graphics_preset'] = $inputs['graphics_preset'] ?? 'Medium';
@@ -29,30 +29,55 @@ $inputs['anti_aliasing'] = $inputs['anti_aliasing'] ?? 'Off';
 $inputs['vsync'] = $inputs['vsync'] ?? 'Off';
 $inputs['performance_mode'] = $inputs['performance_mode'] ?? 'balanced';
 
-// Path to Python script (adjust if needed)
+// Path to Python script 
 $scriptPath = __DIR__ . '/ml-predict.py';
 
-// Escape the JSON input for shell
-$jsonInput = escapeshellarg(json_encode($inputs));
+// Uses exact Python interpreter path used by this python environment.
+// Use the project virtual environment interpreter
+$pythonCmd = __DIR__ . '/../.venv/Scripts/python.exe';
+$command = $pythonCmd . ' ' . escapeshellarg($scriptPath);
 
-// Run Python prediction script
-// Use 'python' on Windows, 'python3' on Linux/Mac
-$pythonCmd = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') ? 'python' : 'python3';
-$command = "$pythonCmd " . escapeshellarg($scriptPath) . " $jsonInput 2>&1";
+$descriptors = [
+    0 => ['pipe', 'r'],
+    1 => ['pipe', 'w'],
+    2 => ['pipe', 'w']
+];
 
-$output = shell_exec($command);
+$process = proc_open($command, $descriptors, $pipes, __DIR__);
 
-if ($output === null) {
-    die(json_encode(['success' => false, 'message' => 'Failed to execute Python script']));
+if (!is_resource($process)) {
+    die(json_encode(['success' => false, 'message' => 'Failed to start Python prediction process']));
 }
 
-// Parse and return the result
-$result = json_decode($output, true);
+$payload = json_encode($inputs);
+fwrite($pipes[0], $payload);
+fclose($pipes[0]);
+
+$stdout = stream_get_contents($pipes[1]);
+fclose($pipes[1]);
+
+$stderr = stream_get_contents($pipes[2]);
+fclose($pipes[2]);
+
+$exitCode = proc_close($process);
+
+if ($exitCode !== 0) {
+    die(json_encode([
+        'success' => false,
+        'message' => 'Python prediction process failed',
+        'exit_code' => $exitCode,
+        'stderr' => trim($stderr)
+    ]));
+}
+
+// Parse and return the result from stdout only
+$result = json_decode($stdout, true);
 if ($result === null) {
     die(json_encode([
-        'success' => false, 
+        'success' => false,
         'message' => 'Invalid response from ML model',
-        'raw_output' => $output
+        'raw_output' => $stdout,
+        'stderr' => trim($stderr)
     ]));
 }
 

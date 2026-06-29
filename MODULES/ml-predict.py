@@ -3,6 +3,32 @@ import json
 import joblib
 import numpy as np
 import os
+import pandas as pd
+
+
+def normalize_performance_mode(value):
+    mapping = {
+        'battery': -1,
+        'balanced': 0,
+        'performance': 1,
+        '-1': -1,
+        '0': 0,
+        '1': 1
+    }
+
+    if isinstance(value, (int, float)):
+        return int(value)
+
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in mapping:
+            return mapping[normalized]
+        try:
+            return int(float(normalized))
+        except ValueError:
+            return 0
+
+    return 0
 
 def predict_fps(input_data):
     """
@@ -49,14 +75,15 @@ def predict_fps(input_data):
             'texture_quality': preset_map.get(input_data.get('texture_quality', 'Medium'), 1),
             'anti_aliasing': aa_map.get(input_data.get('anti_aliasing', 'Off'), 0),
             'vsync': vsync_map.get(input_data.get('vsync', 'Off'), 0),
+            'performance_mode': normalize_performance_mode(input_data.get('performance_mode', 0)),
             'cpu_ratio': cpu_ratio,
             'gpu_ratio': gpu_ratio,
             'ram_ratio': ram_ratio,
             'total_pixels': total_pixels
         }
         
-        # Create feature array in correct column order
-        feature_array = np.array([[features[col] for col in feature_columns]])
+        # Create feature frame in correct column order
+        feature_array = pd.DataFrame([[features[col] for col in feature_columns]], columns=feature_columns)
         
         # Ensemble prediction (average of both models)
         gb_pred = gb_model.predict(feature_array)[0]
@@ -64,10 +91,10 @@ def predict_fps(input_data):
         predicted_fps = (gb_pred + xgb_pred) / 2
         
         # Apply performance mode modifier if provided
-        performance_mode = input_data.get('performance_mode', 'balanced')
-        if performance_mode == 'performance':
+        performance_mode = normalize_performance_mode(input_data.get('performance_mode', 0))
+        if performance_mode == 1:
             predicted_fps *= 1.15  # +15%
-        elif performance_mode == 'battery':
+        elif performance_mode == -1:
             predicted_fps *= 0.85  # -15%
         
         # Clamp to reasonable FPS range
@@ -75,7 +102,7 @@ def predict_fps(input_data):
         
         return {
             'success': True,
-            'predicted_fps': round(predicted_fps, 1),
+            'predicted_fps': float(round(predicted_fps, 1)),
             'performance_mode': performance_mode,
             'hardware_ratios': {
                 'cpu': round(cpu_ratio, 2),
