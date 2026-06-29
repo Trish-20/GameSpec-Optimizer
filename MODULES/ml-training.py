@@ -4,9 +4,14 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from xgboost import XGBRegressor
 import numpy as np
+import os
+import joblib
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
+dataset_path = os.path.join(script_dir, '..', 'DATA', 'benchmark-data.csv')
 
 try:
-    df = pd.read_csv('./DATA/benchmark-data.csv')
+    df = pd.read_csv(dataset_path)
 except FileNotFoundError: 
     print("Error: Dataset file not found. Please check the file path.")
     exit()
@@ -23,6 +28,11 @@ try:
     df['texture_quality'] = df['texture_quality'].map({'Low': 0, 'Medium': 1, 'High': 2, 'Ultra': 3})
     df['vsync'] = df['vsync'].map({'On': 1, 'Off': 0})
     df['anti_aliasing'] = df['anti_aliasing'].map({'Off': 0, 'FXAA': 1, 'TAA': 2})
+    if 'performance_mode' in df.columns:
+        if df['performance_mode'].dtype == object:
+            performance_mode_map = {'battery': -1, 'balanced': 0, 'performance': 1}
+            df['performance_mode'] = df['performance_mode'].map(performance_mode_map)
+        df['performance_mode'] = pd.to_numeric(df['performance_mode'], errors='coerce').fillna(0).astype(int)
     
     # direct comparison of user hardware to game reqs, creating performance ratio
     # to check how high or how low the user's hardware stands against the game's minimum requirements
@@ -116,10 +126,7 @@ for i in range(min(10, len(y_test))):
     print(f"{actual:10.1f} | {predicted:13.1f} | {error:5.1f}")
 
 # Save trained models for prediction use
-import joblib
-import os
-
-model_dir = os.path.dirname(os.path.abspath(__file__))
+model_dir = script_dir
 joblib.dump(gb_model, os.path.join(model_dir, 'gb_model.joblib'))
 joblib.dump(xgb_model, os.path.join(model_dir, 'xgb_model.joblib'))
 joblib.dump(list(x.columns), os.path.join(model_dir, 'feature_columns.joblib'))

@@ -396,7 +396,7 @@ function loadGameGrid() {
             }
 
             // Remove sweep effect
-            removeHoverSweep(card);
+            // removeHoverSweep(card); -- walang declared function, so comment out ko muna
         });
 
         grid.appendChild(card);
@@ -558,8 +558,55 @@ function runBenchmark() {
         `Your System Score: ${total}/${maxScore}`;
 }
 
-// --- FPS PREDICTION FUNCTIONALITY (Placeholder for ML model) ---
-function predictFPS() {
+// --- FPS PREDICTION FUNCTIONALITY (ML-backed + Loading Screen while predicting) ---
+let isPredictingFPS = false;
+
+function showPredictionLoading() {
+    let overlay = document.getElementById('predictionLoadingOverlay');
+
+    if (!overlay) {
+        const html = `
+            <div id="predictionLoadingOverlay" class="prediction-loading-overlay">
+                <div class="prediction-loading-card">
+                    <div class="prediction-spinner"></div>
+                    <h3>Analyzing Performance</h3>
+                    <p>Please wait while the ML model evaluates your setup.</p>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', html);
+        overlay = document.getElementById('predictionLoadingOverlay');
+    }
+
+    overlay.classList.add('active');
+    document.body.classList.add('analysis-in-progress');
+
+    const analyzeButton = document.querySelector('button[onclick="predictFPS()"]');
+    if (analyzeButton) {
+        analyzeButton.disabled = true;
+        analyzeButton.dataset.originalText = analyzeButton.textContent;
+        analyzeButton.textContent = 'Analyzing...';
+    }
+}
+
+function hidePredictionLoading() {
+    const overlay = document.getElementById('predictionLoadingOverlay');
+    if (overlay) {
+        overlay.classList.remove('active');
+    }
+
+    document.body.classList.remove('analysis-in-progress');
+
+    const analyzeButton = document.querySelector('button[onclick="predictFPS()"]');
+    if (analyzeButton) {
+        analyzeButton.disabled = false;
+        analyzeButton.textContent = analyzeButton.dataset.originalText || 'Analyze Performance';
+    }
+}
+
+async function predictFPS() {
+    if (isPredictingFPS) return;
+
     const game = document.getElementById("selectedGame").value;
     if (!game) return showModal('Warning', 'Please select a game first.');
 
@@ -571,270 +618,296 @@ function predictFPS() {
     if (!gpuScore) return showModal('Warning', 'Please select a GPU.');
     if (!ramSelect.value) return showModal('Warning', 'Please select RAM.');
 
-    const cpuScoreNum = parseInt(cpuScore);
-    const gpuScoreNum = parseInt(gpuScore);
-    const ramGB = parseInt(ramSelect.value);
+    const cpuScoreNum = parseInt(cpuScore, 10);
+    const gpuScoreNum = parseInt(gpuScore, 10);
+    const ramGB = parseInt(ramSelect.value, 10);
     const ramScoreNum = ramGB * 250;
 
-    // Get selected hardware names from search inputs
     const cpuName = document.getElementById("cpuSearch").value || 'Selected CPU';
     const gpuName = document.getElementById("gpuSearch").value || 'Selected GPU';
 
-    // Find selected game requirements
     const selectedGame = games.find(g => g.title_raw === game);
     if (!selectedGame) return showModal('Error', 'Game not found.');
-    
-    const quality = document.getElementById("graphicsQuality").value;
-    
-    // Simple benchmark comparison: user hardware vs game requirements
-    const cpuOK = cpuScoreNum >= selectedGame.cpu_benchmark;
-    const gpuOK = gpuScoreNum >= selectedGame.gpu_benchmark;
-    const ramOK = ramScoreNum >= selectedGame.ram_benchmark;
-    
-    // Identify bottlenecks (hardware below game requirements)
-    const bottlenecks = [];
-    if (!cpuOK) bottlenecks.push({ type: 'CPU', name: cpuName, userScore: cpuScoreNum, required: selectedGame.cpu_benchmark });
-    if (!gpuOK) bottlenecks.push({ type: 'GPU', name: gpuName, userScore: gpuScoreNum, required: selectedGame.gpu_benchmark });
-    if (!ramOK) bottlenecks.push({ type: 'RAM', name: `${ramGB} GB`, userScore: ramScoreNum, required: selectedGame.ram_benchmark });
-    
-    // Calculate estimated FPS based on how many requirements are met
-    let baseFPS;
-    if (bottlenecks.length === 0) {
-        baseFPS = 60; // All requirements met
-    } else if (bottlenecks.length === 1) {
-        baseFPS = 45; // One component below
-    } else if (bottlenecks.length === 2) {
-        baseFPS = 35; // Two components below
-    } else {
-        baseFPS = 20; // All components below
-    }
-    
-    // Quality multiplier
-    const qualityMult = { low: 1.5, medium: 1.0, high: 0.6 };
-    
-    // Performance mode multiplier
-    const performanceMode = document.getElementById("performanceMode").value;
-    const perfMult = { battery: 0.85, balanced: 1.0, performance: 1.15 };
-    
-    let estimatedFPS = Math.round(baseFPS * qualityMult[quality] * perfMult[performanceMode]);
-    estimatedFPS = Math.max(10, Math.min(estimatedFPS, 240));
-    
-    // Determine FPS status
-    let fpsClass = 'fps-ok';
-    if (estimatedFPS >= 60) fpsClass = 'fps-good';
-    else if (estimatedFPS < 45) fpsClass = 'fps-bad';
-    
 
-    // fetch the model
-    // expected input: game_title,game_cpu_min,game_gpu_min,game_ram_min,cpu_score,gpu_score,ram_score,res_width,res_height,graphics_preset,shadow_quality,texture_quality,anti_aliasing,vsync,performance_mode,expected_fps
-    
+    const quality = document.getElementById("graphicsQuality").value || 'medium';
+    const performanceMode = document.getElementById("performanceMode")?.value || 'balanced';
 
-    // Build results HTML
-    let html = '';
-    
-    // 1. FPS Display
-    html += `
-        <div class="fps-display ${fpsClass}">
-            <div class="fps-value">${estimatedFPS}</div>
-            <div class="fps-label">Estimated FPS</div>
-        </div>
-    `;
-    
-    // 2. Bottleneck Warning (if FPS < 45)
-    if (estimatedFPS < 45 && bottlenecks.length > 0) {
-        html += `
-            <div class="result-section danger">
-                <h4>Performance Bottlenecks</h4>
-                <ul class="bottleneck-list">
-                    ${bottlenecks.map(b => `
-                        <li>${b.type}: ${b.name} - Your score: ${b.userScore.toLocaleString()} | Required: ${b.required.toLocaleString()}</li>
-                    `).join('')}
-                </ul>
-            </div>
-        `;
-    }
-    
-    // 3. Bar Chart Comparison
-    const maxScore = Math.max(cpuScoreNum, gpuScoreNum, ramScoreNum, selectedGame.cpu_benchmark, selectedGame.gpu_benchmark, selectedGame.ram_benchmark);
-    
-    html += `
-        <div class="result-section">
-            <h4>Hardware vs Game Requirements</h4>
-            <div class="bar-chart">
-                <div class="bar-item">
-                    <div class="bar-label">
-                        <span>CPU</span>
-                        <span>${cpuOK ? 'Pass' : 'Below'}</span>
-                    </div>
-                    <div class="bar-row">
-                        <span class="bar-model-name">Your: ${cpuName}</span>
-                        <div class="bar-container">
-                            <div class="bar-fill user" style="width: ${(cpuScoreNum / maxScore) * 100}%">${cpuScoreNum}</div>
-                        </div>
-                    </div>
-                    <div class="bar-row">
-                        <span class="bar-model-name">Req: ${selectedGame.cpu_model || 'Min Required'}</span>
-                        <div class="bar-container">
-                            <div class="bar-fill game" style="width: ${(selectedGame.cpu_benchmark / maxScore) * 100}%">${selectedGame.cpu_benchmark}</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bar-item">
-                    <div class="bar-label">
-                        <span>GPU</span>
-                        <span>${gpuOK ? 'Pass' : 'Below'}</span>
-                    </div>
-                    <div class="bar-row">
-                        <span class="bar-model-name">Your: ${gpuName}</span>
-                        <div class="bar-container">
-                            <div class="bar-fill user" style="width: ${(gpuScoreNum / maxScore) * 100}%">${gpuScoreNum}</div>
-                        </div>
-                    </div>
-                    <div class="bar-row">
-                        <span class="bar-model-name">Req: ${selectedGame.gpu_model || 'Min Required'}</span>
-                        <div class="bar-container">
-                            <div class="bar-fill game" style="width: ${(selectedGame.gpu_benchmark / maxScore) * 100}%">${selectedGame.gpu_benchmark}</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bar-item">
-                    <div class="bar-label">
-                        <span>RAM</span>
-                        <span>${ramOK ? 'Pass' : 'Below'}</span>
-                    </div>
-                    <div class="bar-row">
-                        <span class="bar-model-name">Your: ${ramGB} GB</span>
-                        <div class="bar-container">
-                            <div class="bar-fill user" style="width: ${(ramScoreNum / maxScore) * 100}%">${ramScoreNum}</div>
-                        </div>
-                    </div>
-                    <div class="bar-row">
-                        <span class="bar-model-name">Req: ${selectedGame.ram_model || (selectedGame.ram_benchmark / 250) + ' GB'}</span>
-                        <div class="bar-container">
-                            <div class="bar-fill game" style="width: ${(selectedGame.ram_benchmark / maxScore) * 100}%">${selectedGame.ram_benchmark}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="bar-legend">
-                <span><span class="legend-dot user"></span> Your Hardware</span>
-                <span><span class="legend-dot game"></span> Game Requirement</span>
-            </div>
-        </div>
-    `;
-    
-    // 4. Settings Suggestions
-    if (estimatedFPS >= 60) {
-        // Suggest turning UP settings
-        html += `
-            <div class="result-section success">
-                <h4>You can improve graphics!</h4>
-                <ul class="suggestion-list">
-                    ${quality === 'low' ? '<li>Increase Graphics Quality to Medium or High</li>' : ''}
-                    ${quality === 'medium' ? '<li>Try High graphics quality</li>' : ''}
-                    <li>Enable Anti-Aliasing (MSAA 4x)</li>
-                    <li>Increase Texture Quality</li>
-                    <li>Enable Ambient Occlusion</li>
-                    <li>Increase Shadow Quality</li>
-                    ${estimatedFPS >= 100 ? '<li>Enable Ray Tracing (if supported)</li>' : ''}
-                </ul>
-            </div>
-        `;
-    } else if (estimatedFPS < 50) {
-        // Suggest turning DOWN settings
-        html += `
-            <div class="result-section warning">
-                <h4>Suggested Settings to Improve FPS</h4>
-                <ul class="suggestion-list downgrade">
-                    ${quality !== 'low' ? '<li>Lower Graphics Quality preset</li>' : ''}
-                    <li>Disable Anti-Aliasing or use FXAA</li>
-                    <li>Lower Shadow Quality</li>
-                    <li>Reduce View Distance</li>
-                    <li>Disable Motion Blur</li>
-                    <li>Lower Texture Quality</li>
-                    <li>Disable Ambient Occlusion</li>
-                </ul>
-            </div>
-        `;
-    }
-    
-    // 5. Hardware Upgrade Suggestions (if FPS < 50)
-    if (estimatedFPS < 50 && bottlenecks.length > 0) {
-        html += `<div class="result-section danger">
-            <h4>Recommended Hardware Upgrades</h4>
-        `;
-        
-        // For each bottleneck category, suggest 3 alternatives
-        bottlenecks.forEach(b => {
-            if (b.type === 'CPU' && cpus.length > 0) {
-                const betterCPUs = cpus.filter(c => c.score >= selectedGame.cpu_benchmark && c.score > cpuScore)
-                    .sort((a, b) => a.score - b.score)
-                    .slice(0, 3);
-                if (betterCPUs.length > 0) {
-                    html += `
-                        <div class="upgrade-category">
-                            <h5>CPU Alternatives:</h5>
-                            <div class="upgrade-options">
-                                ${betterCPUs.map(c => `
-                                    <div class="upgrade-option">
-                                        <span>${c.model} (${c.cores}C/${c.threads}T)</span>
-                                        <span class="score">Score: ${c.score}</span>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-            
-            if (b.type === 'GPU' && gpus.length > 0) {
-                const betterGPUs = gpus.filter(g => g.score >= selectedGame.gpu_benchmark && g.score > gpuScore)
-                    .sort((a, b) => a.score - b.score)
-                    .slice(0, 3);
-                if (betterGPUs.length > 0) {
-                    html += `
-                        <div class="upgrade-category">
-                            <h5>GPU Alternatives:</h5>
-                            <div class="upgrade-options">
-                                ${betterGPUs.map(g => `
-                                    <div class="upgrade-option">
-                                        <span>${g.model}</span>
-                                        <span class="score">Score: ${g.score}</span>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-            
-            if (b.type === 'RAM') {
-                const currentRAM = ramGB;
-                const requiredRAM = selectedGame.ram_benchmark / 250;
-                const ramOptions = [8, 16, 32, 64].filter(r => r > currentRAM && r >= requiredRAM).slice(0, 3);
-                if (ramOptions.length > 0) {
-                    html += `
-                        <div class="upgrade-category">
-                            <h5>RAM Alternatives:</h5>
-                            <div class="upgrade-options">
-                                ${ramOptions.map(r => `
-                                    <div class="upgrade-option">
-                                        <span>${r} GB DDR4/DDR5</span>
-                                        <span class="score">Score: ${r * 250}</span>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `;
-                }
-            }
+    const presetMap = {
+        low: 'Low',
+        medium: 'Medium',
+        high: 'High'
+    };
+
+    const antiAliasMap = {
+        low: 'Off',
+        medium: 'FXAA',
+        high: 'TAA'
+    };
+
+    const payload = {
+        game_title: selectedGame.title_raw || selectedGame.title || game,
+        game_cpu_min: parseInt(selectedGame.cpu_benchmark, 10),
+        game_gpu_min: parseInt(selectedGame.gpu_benchmark, 10),
+        game_ram_min: parseInt(selectedGame.ram_benchmark, 10),
+        cpu_score: cpuScoreNum,
+        gpu_score: gpuScoreNum,
+        ram_score: ramScoreNum,
+        res_width: 1920,
+        res_height: 1080,
+        graphics_preset: presetMap[quality] || 'Medium',
+        shadow_quality: presetMap[quality] || 'Medium',
+        texture_quality: presetMap[quality] || 'Medium',
+        anti_aliasing: antiAliasMap[quality] || 'Off',
+        vsync: 'Off',
+        performance_mode: performanceMode
+    };
+
+    isPredictingFPS = true;
+    showPredictionLoading();
+
+    try {
+        const response = await fetch('../../../MODULES/hardware-specs-input.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
         });
-        
-        html += `</div>`;
+
+        const result = await response.json();
+
+        if (!result.success) {
+            console.error('Prediction failed:', result);
+            return showModal('Error', result.error || 'ML prediction failed.');
+        }
+
+        const estimatedFPS = Number(result.predicted_fps) || 0;
+        const cpuOK = cpuScoreNum >= selectedGame.cpu_benchmark;
+        const gpuOK = gpuScoreNum >= selectedGame.gpu_benchmark;
+        const ramOK = ramScoreNum >= selectedGame.ram_benchmark;
+
+        const bottlenecks = [];
+        if (!cpuOK) bottlenecks.push({ type: 'CPU', name: cpuName, userScore: cpuScoreNum, required: selectedGame.cpu_benchmark });
+        if (!gpuOK) bottlenecks.push({ type: 'GPU', name: gpuName, userScore: gpuScoreNum, required: selectedGame.gpu_benchmark });
+        if (!ramOK) bottlenecks.push({ type: 'RAM', name: `${ramGB} GB`, userScore: ramScoreNum, required: selectedGame.ram_benchmark });
+
+        let fpsClass = 'fps-ok';
+        if (estimatedFPS >= 75) fpsClass = 'fps-good';
+        else if (estimatedFPS < 45) fpsClass = 'fps-bad';
+
+        let html = '';
+
+        html += `
+            <div class="fps-display ${fpsClass}">
+                <div class="fps-value">${estimatedFPS}</div>
+                <div class="fps-label">Estimated FPS</div>
+            </div>
+        `;
+
+        if (estimatedFPS < 45 && bottlenecks.length > 0) {
+            html += `
+                <div class="result-section danger">
+                    <h4>Performance Bottlenecks</h4>
+                    <ul class="bottleneck-list">
+                        ${bottlenecks.map(b => `
+                            <li>${b.type}: ${b.name} - Your score: ${b.userScore.toLocaleString()} | Required: ${b.required.toLocaleString()}</li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        const maxScore = Math.max(cpuScoreNum, gpuScoreNum, ramScoreNum, selectedGame.cpu_benchmark, selectedGame.gpu_benchmark, selectedGame.ram_benchmark);
+
+        html += `
+            <div class="result-section">
+                <h4>Hardware vs Game Requirements</h4>
+                <div class="bar-chart">
+                    <div class="bar-item">
+                        <div class="bar-label">
+                            <span>CPU</span>
+                            <span>${cpuOK ? 'Pass' : 'Below'}</span>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-model-name">Your: ${cpuName}</span>
+                            <div class="bar-container">
+                                <div class="bar-fill user" style="width: ${(cpuScoreNum / maxScore) * 100}%">${cpuScoreNum}</div>
+                            </div>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-model-name">Req: ${selectedGame.cpu_model || 'Min Required'}</span>
+                            <div class="bar-container">
+                                <div class="bar-fill game" style="width: ${(selectedGame.cpu_benchmark / maxScore) * 100}%">${selectedGame.cpu_benchmark}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bar-item">
+                        <div class="bar-label">
+                            <span>GPU</span>
+                            <span>${gpuOK ? 'Pass' : 'Below'}</span>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-model-name">Your: ${gpuName}</span>
+                            <div class="bar-container">
+                                <div class="bar-fill user" style="width: ${(gpuScoreNum / maxScore) * 100}%">${gpuScoreNum}</div>
+                            </div>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-model-name">Req: ${selectedGame.gpu_model || 'Min Required'}</span>
+                            <div class="bar-container">
+                                <div class="bar-fill game" style="width: ${(selectedGame.gpu_benchmark / maxScore) * 100}%">${selectedGame.gpu_benchmark}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bar-item">
+                        <div class="bar-label">
+                            <span>RAM</span>
+                            <span>${ramOK ? 'Pass' : 'Below'}</span>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-model-name">Your: ${ramGB} GB</span>
+                            <div class="bar-container">
+                                <div class="bar-fill user" style="width: ${(ramScoreNum / maxScore) * 100}%">${ramScoreNum}</div>
+                            </div>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-model-name">Req: ${selectedGame.ram_model || (selectedGame.ram_benchmark / 250) + ' GB'}</span>
+                            <div class="bar-container">
+                                <div class="bar-fill game" style="width: ${(selectedGame.ram_benchmark / maxScore) * 100}%">${selectedGame.ram_benchmark}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bar-legend">
+                    <span><span class="legend-dot user"></span> Your Hardware</span>
+                    <span><span class="legend-dot game"></span> Game Requirement</span>
+                </div>
+            </div>
+        `;
+
+        if (estimatedFPS >= 75) {
+            html += `
+                <div class="result-section success">
+                    <h4>You have graphics headroom</h4>
+                    <ul class="suggestion-list">
+                        <li>Increase Graphics Quality to a higher preset</li>
+                        <li>Enable Anti-Aliasing or move up to TAA</li>
+                        <li>Increase Bloom or other post-processing effects</li>
+                        <li>Increase Shadow Quality</li>
+                        <li>Increase Texture Quality</li>
+                    </ul>
+                </div>
+            `;
+        } else if (estimatedFPS >= 60) {
+            html += `
+                <div class="result-section success">
+                    <h4>You can slightly improve graphics</h4>
+                    <ul class="suggestion-list">
+                        ${quality === 'low' ? '<li>Increase Graphics Quality to Medium</li>' : ''}
+                        ${quality === 'medium' ? '<li>Try High graphics quality</li>' : ''}
+                        <li>Enable Anti-Aliasing</li>
+                        <li>Increase Texture Quality</li>
+                    </ul>
+                </div>
+            `;
+        } else if (estimatedFPS < 50) {
+            html += `
+                <div class="result-section warning">
+                    <h4>Suggested Settings to Improve FPS</h4>
+                    <ul class="suggestion-list downgrade">
+                        ${quality !== 'low' ? '<li>Lower Graphics Quality preset</li>' : ''}
+                        <li>Disable or lower Anti-Aliasing</li>
+                        <li>Lower Shadow Quality</li>
+                        <li>Reduce View Distance</li>
+                        <li>Disable Motion Blur</li>
+                        <li>Lower Texture Quality</li>
+                        <li>Disable Ambient Occlusion</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        if (estimatedFPS < 50 && bottlenecks.length > 0) {
+            html += `<div class="result-section danger">
+                <h4>Recommended Hardware Upgrades</h4>
+            `;
+
+            bottlenecks.forEach(b => {
+                if (b.type === 'CPU' && cpus.length > 0) {
+                    const betterCPUs = cpus.filter(c => c.score >= selectedGame.cpu_benchmark && c.score > cpuScoreNum)
+                        .sort((a, b) => a.score - b.score)
+                        .slice(0, 3);
+                    if (betterCPUs.length > 0) {
+                        html += `
+                            <div class="upgrade-category">
+                                <h5>CPU Alternatives:</h5>
+                                <div class="upgrade-options">
+                                    ${betterCPUs.map(c => `
+                                        <div class="upgrade-option">
+                                            <span>${c.model} (${c.cores}C/${c.threads}T)</span>
+                                            <span class="score">Score: ${c.score}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                if (b.type === 'GPU' && gpus.length > 0) {
+                    const betterGPUs = gpus.filter(g => g.score >= selectedGame.gpu_benchmark && g.score > gpuScoreNum)
+                        .sort((a, b) => a.score - b.score)
+                        .slice(0, 3);
+                    if (betterGPUs.length > 0) {
+                        html += `
+                            <div class="upgrade-category">
+                                <h5>GPU Alternatives:</h5>
+                                <div class="upgrade-options">
+                                    ${betterGPUs.map(g => `
+                                        <div class="upgrade-option">
+                                            <span>${g.model}</span>
+                                            <span class="score">Score: ${g.score}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                if (b.type === 'RAM') {
+                    const currentRAM = ramGB;
+                    const requiredRAM = selectedGame.ram_benchmark / 250;
+                    const ramOptions = [8, 16, 32, 64].filter(r => r > currentRAM && r >= requiredRAM).slice(0, 3);
+                    if (ramOptions.length > 0) {
+                        html += `
+                            <div class="upgrade-category">
+                                <h5>RAM Alternatives:</h5>
+                                <div class="upgrade-options">
+                                    ${ramOptions.map(r => `
+                                        <div class="upgrade-option">
+                                            <span>${r} GB DDR4/DDR5</span>
+                                            <span class="score">Score: ${r * 250}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            });
+            
+            html += `</div>`;
+        }
+
+        document.getElementById("fpsResultsPanel").innerHTML = html;
+    } catch (error) {
+        console.error('Prediction request failed:', error);
+        return showModal('Error', 'Failed to contact the ML prediction service.');
+    } finally {
+        isPredictingFPS = false;
+        hidePredictionLoading();
     }
-    
-    // Display results
-    document.getElementById("fpsResultsPanel").innerHTML = html;
 }
