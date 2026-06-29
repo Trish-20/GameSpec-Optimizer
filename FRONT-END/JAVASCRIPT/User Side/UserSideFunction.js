@@ -413,10 +413,34 @@ function filterGames() {
         const title = card.dataset.title;
         
         const matchesSearch = title.includes(searchTerm);
-        // Genre filter disabled for now since CSV doesn't have genre data
-        const matchesGenre = !genreFilter || true;
-        
+
+        // Filter related games when genreFilter is set.
+        // The browse-games filter uses a selector value like: action, rpg, fps, adventure, etc.
+        // Our CSV doesn't include genres, so we map selector values to keywords found in the game title/description.
+        // When genreFilter is set, we show all cards that match the selected category keyword.
+        const desc = (card.dataset.description || '').toLowerCase();
+        const titleLower = title.toLowerCase();
+
+        const filterKey = String(genreFilter).toLowerCase();
+        const categoryKeywords = {
+            action: ['action', 'adventure', 'rpg', 'myth', 'combat', 'stealth', 'open-world'],
+            rpg: ['rpg', 'adventure', 'choices', 'loot', 'fantasy', 'myth', 'exploration'],
+            fps: ['fps', 'shooter', 'legend', 'tactics', 'aim', 'competitive', 'agent', 'firefight', 'battle royale'],
+            adventure: ['adventure', 'open-world', 'story', 'journey', 'mythic', 'quest'],
+            sports: ['sports', 'soccer', 'competitive'],
+            racing: ['racing'],
+            strategy: ['strategy', 'tactics', 'team strategy', 'operator'],
+            sandbox: ['sandbox', 'survival', 'building', 'crafting', 'endless worlds']
+        };
+
+        const keywords = categoryKeywords[filterKey] || [];
+        const matchesGenre = !filterKey || keywords.length === 0
+            ? true
+            : keywords.some(k => titleLower.includes(k) || desc.includes(k));
+
+
         card.style.display = (matchesSearch && matchesGenre) ? 'block' : 'none';
+
     });
 }
 
