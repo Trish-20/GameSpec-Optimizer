@@ -1,6 +1,13 @@
-/* ---------- CORE CSS VARIABLES (Admin Palette) ---------- */
+/* ==========================================================
+   GameSpec Optimizer - USER SIDE STYLES
+   Organized for readability/performance (no selector changes)
+   ========================================================== */
+
 @import url('../shared/CustomScrollbar.css');
 
+/* ==========================================================
+   1) Theme Variables
+   ========================================================== */
 :root {
     --bg-main: #16161a;
     --bg-sidebar: #111114;
@@ -15,7 +22,9 @@
     --color-danger: #f43f5e;
 }
 
-/* ---------- BODY & BACKGROUND ---------- */
+/* ==========================================================
+   2) Base / Layout
+   ========================================================== */
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -28,7 +37,7 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* ---------- TOP HEADER BAR ---------- */
+/* Top header */
 .top-header {
     position: fixed;
     top: 0;
@@ -50,7 +59,7 @@ body {
     letter-spacing: 1px;
 }
 
-/* ---------- CONTENT AREA ---------- */
+/* Content area */
 .content {
     margin-left: 0;
     margin-top: 60px;
@@ -64,7 +73,9 @@ body {
     flex-direction: column;
 }
 
-/* ---------- SIDEBAR LAYOUT ---------- */
+/* ==========================================================
+   3) Sidebar
+   ========================================================== */
 .sidebar {
     width: 240px;
     background-color: var(--bg-sidebar);
@@ -105,7 +116,7 @@ body {
     background: transparent;
 }
 
-/* --- SIDEBAR OPEN STATE --- */
+/* Sidebar open state */
 .sidebar-open .sidebar {
     left: 0;
 }
@@ -115,7 +126,7 @@ body {
     width: calc(100% - 240px);
 }
 
-/* ---------- SIDEBAR TOGGLE BUTTON ---------- */
+/* Sidebar toggle */
 .sidebar-toggle {
     position: fixed;
     left: 16px;
@@ -135,7 +146,7 @@ body {
     color: var(--color-brand);
 }
 
-/* ---------- SIDEBAR NAVIGATION ELEMENTS ---------- */
+/* Sidebar navigation */
 .sidebar .nav-btn {
     display: flex;
     align-items: center;
@@ -184,7 +195,9 @@ body {
     color: #000000;
 }
 
-/* ---------- TAB HEADER ---------- */
+/* ==========================================================
+   4) Tabs / Form Cards
+   ========================================================== */
 .tab h2 {
     text-align: center;
     margin-top: 15px;
@@ -192,7 +205,6 @@ body {
     color: var(--color-text-main);
 }
 
-/* ---------- TAB CARD CONTAINER (Used for Benchmark/Prediction Forms) ---------- */
 .tab-card {
     background: var(--bg-card);
     padding: 24px;
@@ -211,7 +223,6 @@ body {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
-/* ---------- INPUT LABELS ---------- */
 .tab-card label {
     display: block;
     color: var(--color-text-muted);
@@ -220,7 +231,6 @@ body {
     margin-bottom: 6px;
 }
 
-/* ---------- INPUTS & SELECTS (Standardized) ---------- */
 .tab-card input,
 .tab-card select {
     width: 100%;
@@ -241,7 +251,6 @@ body {
     border-color: var(--color-brand);
 }
 
-/* ---------- TAB CARD BUTTONS ---------- */
 .tab-card button {
     background: var(--color-brand);
     color: #000000;
@@ -261,7 +270,6 @@ body {
     transform: translateY(-1px);
 }
 
-/* ---------- RESULT TEXT ---------- */
 .tab-card h3 {
     margin-top: 15px;
     font-size: 16px;
@@ -270,10 +278,11 @@ body {
     text-align: center;
 }
 
-/* ---------- GAME GRID CONTAINER ---------- */
+/* ==========================================================
+   5) Browse Games
+   ========================================================== */
 #gameGrid {
     display: grid;
-    /* Fixed 6 columns per row */
     grid-template-columns: repeat(6, 1fr);
     gap: 20px;
     padding: 20px;
@@ -281,32 +290,17 @@ body {
     box-sizing: border-box;
 }
 
-
-/* Responsive: adjust columns on smaller screens */
-@media (max-width: 1400px) {
-    #gameGrid { grid-template-columns: repeat(5, 1fr); }
-}
-@media (max-width: 1200px) {
-    #gameGrid { grid-template-columns: repeat(4, 1fr); }
-}
-@media (max-width: 900px) {
-    #gameGrid { grid-template-columns: repeat(3, 1fr); }
-}
-@media (max-width: 600px) {
-    #gameGrid { grid-template-columns: repeat(2, 1fr); }
-}
-
 /* Legacy gameList support */
 #gameList {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 30px;
     padding: 20px;
     width: 100%;
     box-sizing: border-box;
 }
 
-/* ---------- GAME CARDS ---------- */
+/* Game cards */
 .game-box {
     background: var(--bg-card);
     padding: 20px;
@@ -341,7 +335,7 @@ body {
     color: var(--color-text-muted);
 }
 
-/* ---------- BROWSE GAMES - FIXED TOP SECTION ---------- */
+/* Browse games fixed top */
 .browse-top-section {
     position: sticky;
     top: 0;
@@ -360,7 +354,7 @@ body {
     color: var(--color-text-main);
 }
 
-/* ---------- SEARCH & FILTER CONTAINER ---------- */
+/* Search & filter UI */
 .search-filter-container {
     display: flex;
     justify-content: center;
@@ -427,13 +421,12 @@ body {
     border-color: var(--color-brand);
 }
 
-/* ---------- SCROLLABLE GAME SECTION ---------- */
 .game-section {
     padding-top: 20px;
     overflow-y: auto;
 }
 
-/* ---------- GAME CARD (New Design) ---------- */
+/* New card design */
 .game-card {
     background: var(--bg-card);
     border-radius: 16px;
@@ -478,7 +471,9 @@ body {
     border-top: 1px solid var(--border-color);
 }
 
-/* ---------- PAGE CONTAINER ---------- */
+/* ==========================================================
+   6) Page Container + Footer
+   ========================================================== */
 .page-container {
     display: flex;
     flex-direction: column;
@@ -493,7 +488,6 @@ body {
     margin-top: -28px;
 }
 
-/* ---------- FOOTER ---------- */
 .site-footer {
     text-align: center;
     padding: 24px;
@@ -504,19 +498,29 @@ body {
     box-sizing: border-box;
 }
 
-/* ---------- FPS PREDICTION LAYOUT ---------- */
+/* ==========================================================
+   7) FPS Prediction
+   ========================================================== */
 .fps-prediction-container {
     width: 100%;
-    max-width: 720px;
+    max-width: 1150px;
     margin: 0 auto;
     padding: 20px;
     box-sizing: border-box;
+}
+
+.fps-layout{
+    display:grid;
+    grid-template-columns:530px 1fr;
+    gap:24px;
+    align-items:stretch;
 }
 
 .fps-prediction-container h2 {
     text-align: center;
     margin-bottom: 25px;
     color: var(--color-text-main);
+    margin-top: -15px;
 }
 
 /* Input Panel (single unified card) */
@@ -527,6 +531,7 @@ body {
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.03);
     box-sizing: border-box;
+    height: fit-content;
 }
 
 .fps-input-panel h3 {
@@ -563,7 +568,7 @@ body {
     border-color: var(--color-brand);
 }
 
-/* Search Dropdown Styles */
+/* Search Dropdown */
 .search-dropdown {
     position: relative;
     width: 100%;
@@ -655,17 +660,16 @@ body {
     transform: translateY(-1px);
 }
 
-/* Results area (integrated inside form card) */
-.fps-results-panel {
-    width: 100%;
-    margin-top: 16px;
-    box-sizing: border-box;
-}
-
-.fps-results-panel:not(:has(.results-placeholder)) {
-    padding-top: 20px;
-    border-top: 1px solid var(--border-color);
-    margin-top: 20px;
+/* Results area */
+.fps-results-panel{
+    width:100%;
+    background:var(--bg-card);
+    border:1px solid rgba(255,255,255,.03);
+    border-radius:16px;
+    padding:25px;
+    box-sizing:border-box;
+    overflow-y:auto;
+    max-height:654px;
 }
 
 .results-placeholder {
@@ -693,7 +697,9 @@ body {
     line-height: 1.5;
 }
 
-/* ---------- SHARED RESULT SCORE CARD (Benchmark + FPS) ---------- */
+/* ==========================================================
+   8) Shared Result Score Cards (Benchmark + FPS)
+   ========================================================== */
 .bench-score-card,
 .fps-display {
     text-align: center;
@@ -757,10 +763,12 @@ body {
     font-weight: 600;
     background: rgba(0, 0, 0, 0.22);
     color: #ffffff;
+    -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
 }
 
-/* Benchmark rating gradients */
+
+/* Gradients */
 .bench-score-card.excellent,
 .fps-display.fps-good {
     background: linear-gradient(160deg, #047857 0%, #059669 45%, #10b981 100%);
@@ -813,7 +821,9 @@ body {
     color: #fecaca;
 }
 
-/* Section Cards */
+/* ==========================================================
+   9) Result Sections, Charts, Lists
+   ========================================================== */
 .result-section {
     background: var(--bg-card-sub);
     border-radius: 12px;
@@ -837,11 +847,19 @@ body {
     color: var(--color-text-muted);
 }
 
-.result-section.warning { border-left-color: #f59e0b; }
-.result-section.danger { border-left-color: var(--color-danger); }
-.result-section.success { border-left-color: var(--color-brand); }
+.result-section.warning {
+    border-left-color: #f59e0b;
+}
 
-/* Bar Chart */
+.result-section.danger {
+    border-left-color: var(--color-danger);
+}
+
+.result-section.success {
+    border-left-color: var(--color-brand);
+}
+
+/* Bar chart */
 .bar-chart {
     margin: 15px 0;
 }
@@ -899,8 +917,13 @@ body {
     min-width: 50px;
 }
 
-.bar-fill.user { background: linear-gradient(90deg, var(--color-brand), var(--color-brand-hover)); }
-.bar-fill.game { background: linear-gradient(90deg, #51525a, #6e6f76); }
+.bar-fill.user {
+    background: linear-gradient(90deg, var(--color-brand), var(--color-brand-hover));
+}
+
+.bar-fill.game {
+    background: linear-gradient(90deg, #51525a, #6e6f76);
+}
 
 .bar-legend {
     display: flex;
@@ -924,10 +947,15 @@ body {
     border-radius: 50%;
 }
 
-.legend-dot.user { background: var(--color-brand); }
-.legend-dot.game { background: #6e6f76; }
+.legend-dot.user {
+    background: var(--color-brand);
+}
 
-/* Bottleneck List */
+.legend-dot.game {
+    background: #6e6f76;
+}
+
+/* Bottleneck list */
 .bottleneck-list {
     list-style: none;
     padding: 0;
@@ -970,7 +998,9 @@ body {
     color: #f59e0b;
 }
 
-/* ========== MODAL DIALOG ========== */
+/* ==========================================================
+   10) Modal Dialog
+   ========================================================== */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -1005,6 +1035,7 @@ body {
         transform: translateY(30px);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -1125,7 +1156,9 @@ body {
     color: var(--color-brand);
 }
 
-/* ---------- HARDWARE BENCHMARK RESULTS ---------- */
+/* ==========================================================
+   11) Hardware Benchmark Results + Tooltip
+   ========================================================== */
 .benchmark-result {
     margin-top: 20px;
     width: 100%;
@@ -1137,51 +1170,96 @@ body {
 }
 
 /* Hover tooltip shown on game card hover */
-.game-hover-tooltip{
-  position:fixed;
-  z-index:10050;
-  max-width:360px;
-  background: rgba(24,24,28,0.95);
-  border:1px solid var(--border-color);
-  border-radius: 12px;
-  padding:12px 14px;
-  color: var(--color-text-main);
-  box-shadow: 0 14px 40px rgba(0,0,0,0.5);
-  /* keep Safari compatible */
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  pointer-events:none;
-  transform: translateX(-10px);
-  opacity: 0;
-  transition: transform 160ms ease, opacity 160ms ease;
+.game-hover-tooltip {
+    position: fixed;
+    z-index: 10050;
+    max-width: 360px;
+    background: rgba(24, 24, 28, 0.95);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: var(--color-text-main);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    pointer-events: none;
+    transform: translateX(-10px);
+    opacity: 0;
+    transition: transform 160ms ease, opacity 160ms ease;
 }
 
-
-.game-hover-tooltip.game-hover-tooltip--show{
-  transform: translateX(0);
-  opacity: 1;
+.game-hover-tooltip.game-hover-tooltip--show {
+    transform: translateX(0);
+    opacity: 1;
 }
 
-@keyframes tooltipSweepIn{
-  from { transform: translateX(-12px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
+@keyframes tooltipSweepIn {
+    from {
+        transform: translateX(-12px);
+        opacity: 0;
+    }
 
-.game-hover-tooltip .tooltip-title{
-  font-weight:700;
-  margin-bottom:8px;
-  font-size:14px;
-}
-.game-hover-tooltip .tooltip-body{
-  color: var(--color-text-muted);
-  font-size:13px;
-  line-height:1.5;
-  white-space: normal;
-}
-
-/* Responsive */
-@media (max-width: 900px) {
-    .fps-prediction-container {
-        padding: 12px;
+    to {
+        transform: translateX(0);
+        opacity: 1;
     }
 }
+
+.game-hover-tooltip .tooltip-title {
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.game-hover-tooltip .tooltip-body {
+    color: var(--color-text-muted);
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: normal;
+}
+
+/* ==========================================================
+   12) Responsive
+   ========================================================== */
+/* Game grid responsive */
+@media (max-width: 1400px) {
+    #gameGrid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+@media (max-width: 1200px) {
+    #gameGrid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    #gameGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    #gameGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* FPS container padding */
+@media (max-width:900px){
+
+    .fps-prediction-container{
+        padding:12px;
+    }
+
+    .fps-layout{
+        grid-template-columns:1fr;
+    }
+
+    .fps-results-panel{
+        max-height:none;
+    }
+
+}
+
