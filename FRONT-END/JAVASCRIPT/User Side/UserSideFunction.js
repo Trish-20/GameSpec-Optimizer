@@ -328,15 +328,81 @@ function loadGameGrid() {
 
         const createTooltip = () => {
             if (tooltipEl) return tooltipEl;
-            const desc = card.dataset.description || '';
+
             const title = game.title || 'Game';
+            const desc = (card.dataset.description || '').trim();
+
+            // Build extra details. Backend currently only guarantees description + requirement fields.
+            // We derive Genre/Multiplayer from the game title/description (same heuristic used by filterGames).
+            const textForHeuristics = `${title} ${desc}`.toLowerCase();
+
+            const categoryKeywords = {
+                action: ['action', 'adventure', 'combat', 'stealth', 'open-world'],
+                rpg: ['rpg', 'loot', 'fantasy', 'choices', 'quest', 'exploration'],
+                fps: ['fps', 'shooter', 'competitive', 'agent', 'tactics', 'battle royale'],
+                adventure: ['adventure', 'open-world', 'story', 'journey', 'quest'],
+                sports: ['sports', 'soccer'],
+                racing: ['racing'],
+                strategy: ['strategy', 'tactics', 'team strategy'],
+                sandbox: ['sandbox', 'building', 'crafting', 'survival']
+            };
+
+            const guessGenre = (() => {
+                const entries = Object.entries(categoryKeywords);
+                for (const [key, kws] of entries) {
+                    if (kws.some(k => textForHeuristics.includes(k))) return key.toUpperCase();
+                }
+                return '';
+            })();
+
+            const guessMultiplayer = (() => {
+                // Simple keyword-based guess
+                if (textForHeuristics.includes('co-op') || textForHeuristics.includes('coop')) return 'CO-OP';
+                if (textForHeuristics.includes('raids') || textForHeuristics.includes('online')) return 'ONLINE';
+                if (textForHeuristics.includes('competitive') || textForHeuristics.includes('tactical') || textForHeuristics.includes('ranked')) return 'COMPETITIVE';
+                if (textForHeuristics.includes('battle royale')) return 'ONLINE (BATTLE ROYALE)';
+                if (textForHeuristics.includes('team-based') || textForHeuristics.includes('team strategy')) return 'ONLINE';
+                return '';
+            })();
+
+            const reqSummary = (() => {
+                const cpuReq = typeof game.cpu_benchmark === 'number' ? game.cpu_benchmark.toLocaleString() : game.cpu_benchmark;
+                const gpuReq = typeof game.gpu_benchmark === 'number' ? game.gpu_benchmark.toLocaleString() : game.gpu_benchmark;
+                const ramReq = typeof game.ram_benchmark === 'number' ? (game.ram_benchmark / 250) : game.ram_benchmark;
+
+                const cpuModel = game.cpu_model || 'CPU';
+                const gpuModel = game.gpu_model || 'GPU';
+                const ramModel = game.ram_model || (ramReq ? `${ramReq} GB` : 'RAM');
+
+                // Keep it compact for tooltip.
+                return {
+                    cpu: `${cpuModel} (Score: ${cpuReq})`,
+                    gpu: `${gpuModel} (Score: ${gpuReq})`,
+                    ram: `${ramModel} (Min)`
+                };
+            })();
+
+            const safeRow = (label, value) => {
+                if (!value) return '';
+                return `<div class="tooltip-row"><span class="tooltip-label">${label}:</span><span class="tooltip-value">${value}</span></div>`;
+            };
 
             tooltipEl = document.createElement('div');
             tooltipEl.className = 'game-hover-tooltip';
             tooltipEl.innerHTML = `
                 <div class="tooltip-title">${title}</div>
+                ${safeRow('Genre', guessGenre)}
+                ${safeRow('Multiplayer', guessMultiplayer)}
+                ${safeRow('Developer / Publisher', game.developer_publisher || '')}
+                <div class="tooltip-divider"></div>
                 <div class="tooltip-body">${desc || 'No description available.'}</div>
+                <div class="tooltip-divider"></div>
+                <div class="tooltip-subtitle">Recommended CPU/GPU/RAM</div>
+                ${safeRow('CPU', reqSummary.cpu)}
+                ${safeRow('GPU', reqSummary.gpu)}
+                ${safeRow('RAM', reqSummary.ram)}
             `;
+
             document.body.appendChild(tooltipEl);
 
             // Trigger sweep-in transition
@@ -442,6 +508,41 @@ function filterGames() {
         card.style.display = (matchesSearch && matchesGenre) ? 'block' : 'none';
 
     });
+}
+
+function filterFeedback() {
+
+    const searchTerm = document
+        .getElementById("feedbackSearch")
+        .value
+        .toLowerCase();
+
+    const ratingFilter = document
+        .getElementById("ratingFilter")
+        .value;
+
+    const cards = document.querySelectorAll(".feedback-card");
+
+    cards.forEach(card => {
+
+        const title = card.dataset.title || "";
+        const comment = card.dataset.comment || "";
+        const rating = card.dataset.rating || "";
+
+        const matchesSearch =
+            title.includes(searchTerm) ||
+            comment.includes(searchTerm);
+
+        const matchesRating =
+            ratingFilter === "" ||
+            rating === ratingFilter;
+
+        card.style.display =
+            (matchesSearch && matchesRating)
+                ? "block"
+                : "none";
+    });
+
 }
 
 function selectGame(title) {
@@ -935,3 +1036,68 @@ async function predictFPS() {
         hidePredictionLoading();
     }
 }
+
+async function loadFeedbackPreview() {
+
+    const container = document.getElementById("feedbackPreviewList");
+
+    container.innerHTML = "<p>Loading feedback...</p>";
+
+    try {
+
+        const response = await fetch("../../MODULES/api/get-latest-feedback.php")
+
+        const feedbacks = await response.json();
+
+        if (!feedbacks.length) {
+            container.innerHTML = "<p>No feedback available yet.</p>";
+            return;
+        }
+
+        container.innerHTML = feedbacks.map(item => `
+
+           <div class="feedback-card"
+                data-title="<?= strtolower(htmlspecialchars($row['title'])) ?>"
+                data-comment="<?= strtolower(htmlspecialchars($row['comment'])) ?>"
+                data-rating="<?= $row['rating'] ?>">
+
+                <div class="feedback-stars">
+                    <?= str_repeat("★", $row['rating']) ?>
+                    <?= str_repeat("☆", 5 - $row['rating']) ?>
+                </div>
+
+                <h4><?= htmlspecialchars($row['title']) ?></h4>
+
+                <p class="feedback-comment">
+                    <?= htmlspecialchars($row['comment']) ?>
+                </p>
+
+                <div class="feedback-footer">
+                    <span>
+                        <?= $row['is_anonymous']
+                            ? "Anonymous"
+                            : htmlspecialchars($row['username']) ?>
+                    </span>
+
+                    <span>
+                        <?= date("M d, Y", strtotime($row['created_at'])) ?>
+                    </span>
+                </div>
+
+            </div>
+
+        `).join("");
+
+    }
+    catch(error){
+
+        container.innerHTML =
+            "<p>Unable to load community feedback.</p>";
+
+        console.error(error);
+
+    }
+
+}
+
+loadFeedbackPreview();

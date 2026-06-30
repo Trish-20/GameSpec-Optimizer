@@ -71,7 +71,24 @@
                     <div class="placeholder-icon"><i class="fas fa-chart-line"></i></div>
                     <p>Configure your hardware and click "Analyze Performance" to see results</p>
                 </div>
-            </d iv>
+            </div>
+
+            <section class="feedback-preview">
+                <div class="feedback-header">
+                    <div>
+                        <h3>Community Feedback</h3>
+                        <p>See what other players think about GameSpec Optimizer.</p>
+                    </div>
+
+                    <a href="feedback.php" class="view-all-link">
+                        View All Reviews
+                    </a>
+                </div>
+
+                <div class="feedback-preview-list" id="feedbackPreviewList">
+                    <!-- Latest feedback will be inserted here -->
+                </div>
+            </section>
         </div>
     </div>
     <?php include 'footer.php'; ?>
@@ -88,3 +105,4 @@
 </script>
 </body>
 </html>
+
