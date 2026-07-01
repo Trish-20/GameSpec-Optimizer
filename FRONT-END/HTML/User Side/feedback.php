@@ -36,6 +36,8 @@
                     oninput="filterFeedback()">
             </div>
 
+           
+
             <select id="ratingFilter" onchange="filterFeedback()">
                 <option value="">All Ratings</option>
                 <option value="5">★★★★★ (5 Stars)</option>
@@ -44,6 +46,11 @@
                 <option value="2">★★☆☆☆ (2 Stars)</option>
                 <option value="1">★☆☆☆☆ (1 Star)</option>
             </select>
+
+             <button class="feedback-add-btn" type="button" onclick="openFeedbackModal()">
+                <i class="fas fa-plus"></i>
+                Add Feedback
+            </button>
 
         </section>
 
@@ -91,6 +98,49 @@
 
     <?php include 'footer.php'; ?>
 
+</div>
+
+<div class="modal-overlay" id="feedbackModalOverlay" onclick="if (event.target.id === 'feedbackModalOverlay') closeFeedbackModal();">
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="feedbackModalTitle">
+        <div class="modal-header">
+            <h2 id="feedbackModalTitle">Share Your Feedback</h2>
+            <button class="modal-close" type="button" onclick="closeFeedbackModal()" aria-label="Close feedback form">×</button>
+        </div>
+
+        <form class="modal-body feedback-form" id="feedbackForm" onsubmit="handleFeedbackSubmit(event)">
+            <label for="feedbackTitle">Title</label>
+            <input id="feedbackTitle" name="title" type="text" placeholder="Short summary" required>
+
+            <label for="feedbackComment">Your feedback</label>
+            <textarea id="feedbackComment" name="comment" placeholder="Tell us what you think..." required></textarea>
+
+            <label>Rating</label>
+            <div class="star-rating" role="radiogroup" aria-label="Feedback rating">
+                <input id="rating5" type="radio" name="rating" value="5" required>
+                <label for="rating5" class="star" aria-label="5 stars">★</label>
+
+                <input id="rating4" type="radio" name="rating" value="4">
+                <label for="rating4" class="star" aria-label="4 stars">★</label>
+
+                <input id="rating3" type="radio" name="rating" value="3">
+                <label for="rating3" class="star" aria-label="3 stars">★</label>
+
+                <input id="rating2" type="radio" name="rating" value="2">
+                <label for="rating2" class="star" aria-label="2 stars">★</label>
+
+                <input id="rating1" type="radio" name="rating" value="1">
+                <label for="rating1" class="star" aria-label="1 star">★</label>
+            </div>
+
+            <label for="feedbackUsername">Name</label>
+            <input id="feedbackUsername" name="username" type="text" placeholder="Your name (optional)">
+
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" type="button" onclick="closeFeedbackModal()">Cancel</button>
+                <button class="modal-btn modal-btn-primary" type="submit">Submit Feedback</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script src="../../JAVASCRIPT/User Side/UserSideFunction.js"></script>

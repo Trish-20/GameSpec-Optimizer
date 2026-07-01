@@ -510,16 +510,210 @@ function filterGames() {
     });
 }
 
+const sampleFeedbackData = [
+    {
+        title: "Excellent prediction accuracy",
+        comment: "The FPS predictions feel much more accurate now and helped me choose a better GPU for my setup.",
+        rating: 5,
+        username: "Ava",
+        is_anonymous: false,
+        created_at: "2026-06-28"
+    },
+    {
+        title: "Great recommendation flow",
+        comment: "I liked how the suggestions were easy to understand and matched the games I usually play.",
+        rating: 4,
+        username: "Noah",
+        is_anonymous: false,
+        created_at: "2026-06-24"
+    },
+    {
+        title: "Helpful for budget builds",
+        comment: "This made it simple to compare hardware options before buying anything new for my rig.",
+        rating: 5,
+        username: "Anonymous",
+        is_anonymous: true,
+        created_at: "2026-06-20"
+    }
+];
+
+let feedbackState = [...sampleFeedbackData];
+
+function loadStoredFeedback() {
+    try {
+        const stored = localStorage.getItem("gamespecFeedback");
+        if (!stored) return [];
+        const parsed = JSON.parse(stored);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+        console.warn("Unable to read saved feedback.", error);
+        return [];
+    }
+}
+
+const storedFeedback = loadStoredFeedback();
+if (storedFeedback.length) {
+    feedbackState = [...storedFeedback, ...feedbackState];
+}
+
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+function buildFeedbackCardHtml(item) {
+    const title = escapeHtml(item.title || "Untitled feedback");
+    const comment = escapeHtml(item.comment || "No comment provided.");
+    const rating = Number(item.rating) || 0;
+    const username = item.is_anonymous ? "Anonymous" : escapeHtml(item.username || "Guest");
+    const createdAt = item.created_at ? new Date(item.created_at).toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" }) : "Recently added";
+    const stars = "★".repeat(rating) + "☆".repeat(5 - rating);
+
+    return `
+        <div class="feedback-card"
+            data-title="${title.toLowerCase()}"
+            data-comment="${comment.toLowerCase()}"
+            data-rating="${rating}">
+            <div class="feedback-stars">${stars}</div>
+            <h4>${title}</h4>
+            <p class="feedback-comment">${comment}</p>
+            <div class="feedback-footer">
+                <span>${username}</span>
+                <span>${createdAt}</span>
+            </div>
+        </div>
+    `;
+}
+
+function renderFeedbackCards(feedbacks, container, { limit = null } = {}) {
+    if (!container) return;
+
+    const items = Array.isArray(feedbacks) ? feedbacks : [];
+    const visibleItems = limit ? items.slice(0, limit) : items;
+
+    if (!visibleItems.length) {
+        container.innerHTML = `
+            <div class="results-placeholder">
+                <div class="placeholder-icon"><i class="fas fa-comment-dots"></i></div>
+                <p>No feedback available yet.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = visibleItems.map(buildFeedbackCardHtml).join("");
+}
+
+function openFeedbackModal() {
+    const overlay = document.getElementById("feedbackModalOverlay");
+    if (overlay) {
+        overlay.classList.add("active");
+    }
+}
+
+function closeFeedbackModal() {
+    const overlay = document.getElementById("feedbackModalOverlay");
+    if (overlay) {
+        overlay.classList.remove("active");
+    }
+}
+
+function handleFeedbackSubmit(event) {
+    event.preventDefault();
+
+    const form = document.getElementById("feedbackForm");
+    if (!form) return;
+
+    const formData = new FormData(form);
+    const newFeedback = {
+        title: String(formData.get("title") || "Untitled feedback").trim(),
+        comment: String(formData.get("comment") || "No comment provided.").trim(),
+        rating: Number(formData.get("rating") || 5),
+        username: String(formData.get("username") || "").trim(),
+        is_anonymous: !String(formData.get("username") || "").trim(),
+        created_at: new Date().toISOString()
+    };
+
+    feedbackState.unshift(newFeedback);
+
+    try {
+        localStorage.setItem("gamespecFeedback", JSON.stringify(feedbackState));
+    } catch (error) {
+        console.warn("Unable to save feedback locally.", error);
+    }
+
+    const listContainer = document.getElementById("feedbackList");
+    if (listContainer) {
+        renderFeedbackCards(feedbackState, listContainer);
+    }
+
+    updateFeedbackSummary(feedbackState);
+
+    if (typeof loadFeedbackPreview === "function") {
+        loadFeedbackPreview();
+    }
+
+    form.reset();
+    closeFeedbackModal();
+}
+
+function updateFeedbackSummary(feedbacks) {
+    const averageRatingEl = document.getElementById("averageRating");
+    const averageStarsEl = document.getElementById("averageStars");
+    const totalReviewsEl = document.getElementById("totalReviews");
+
+    const items = Array.isArray(feedbacks) ? feedbacks : [];
+
+    if (!items.length) {
+        if (averageRatingEl) averageRatingEl.textContent = "0.0";
+        if (averageStarsEl) averageStarsEl.textContent = "☆☆☆☆☆";
+        if (totalReviewsEl) totalReviewsEl.textContent = "No reviews yet";
+        return;
+    }
+
+    const average = (items.reduce((sum, item) => sum + (Number(item.rating) || 0), 0) / items.length).toFixed(1);
+    const fullStars = Math.round(Number(average));
+
+    if (averageRatingEl) averageRatingEl.textContent = average;
+    if (averageStarsEl) averageStarsEl.textContent = "★".repeat(fullStars) + "☆".repeat(5 - fullStars);
+    if (totalReviewsEl) totalReviewsEl.textContent = `${items.length} community review${items.length === 1 ? "" : "s"}`;
+}
+
+async function loadFeedbackData() {
+    try {
+        const response = await fetch("../../MODULES/api/get-latest-feedback.php");
+
+        if (!response.ok) {
+            throw new Error("Feedback request failed");
+        }
+
+        const feedbacks = await response.json();
+
+        if (Array.isArray(feedbacks) && feedbacks.length) {
+            feedbackState = feedbacks;
+            return feedbackState;
+        }
+    } catch (error) {
+        console.warn("Using sample feedback data because the live feedback endpoint is unavailable.", error);
+    }
+
+    return feedbackState;
+}
+
 function filterFeedback() {
 
     const searchTerm = document
         .getElementById("feedbackSearch")
-        .value
-        .toLowerCase();
+        ?.value
+        .toLowerCase() || "";
 
     const ratingFilter = document
         .getElementById("ratingFilter")
-        .value;
+        ?.value || "";
 
     const cards = document.querySelectorAll(".feedback-card");
 
@@ -543,6 +737,27 @@ function filterFeedback() {
                 : "none";
     });
 
+}
+
+async function loadFeedbackPage() {
+    const listContainer = document.getElementById("feedbackList");
+
+    if (listContainer) {
+        listContainer.innerHTML = `
+            <div class="results-placeholder">
+                <div class="placeholder-icon"><i class="fas fa-comment-dots"></i></div>
+                <p>Loading community feedback...</p>
+            </div>
+        `;
+    }
+
+    const feedbacks = await loadFeedbackData();
+
+    updateFeedbackSummary(feedbacks);
+
+    if (listContainer) {
+        renderFeedbackCards(feedbacks, listContainer);
+    }
 }
 
 function selectGame(title) {
@@ -1038,66 +1253,19 @@ async function predictFPS() {
 }
 
 async function loadFeedbackPreview() {
-
     const container = document.getElementById("feedbackPreviewList");
 
-    container.innerHTML = "<p>Loading feedback...</p>";
+    if (!container) return;
 
-    try {
+    container.innerHTML = `
+        <div class="results-placeholder">
+            <div class="placeholder-icon"><i class="fas fa-comment-dots"></i></div>
+            <p>Loading feedback...</p>
+        </div>
+    `;
 
-        const response = await fetch("../../MODULES/api/get-latest-feedback.php")
-
-        const feedbacks = await response.json();
-
-        if (!feedbacks.length) {
-            container.innerHTML = "<p>No feedback available yet.</p>";
-            return;
-        }
-
-        container.innerHTML = feedbacks.map(item => `
-
-           <div class="feedback-card"
-                data-title="<?= strtolower(htmlspecialchars($row['title'])) ?>"
-                data-comment="<?= strtolower(htmlspecialchars($row['comment'])) ?>"
-                data-rating="<?= $row['rating'] ?>">
-
-                <div class="feedback-stars">
-                    <?= str_repeat("★", $row['rating']) ?>
-                    <?= str_repeat("☆", 5 - $row['rating']) ?>
-                </div>
-
-                <h4><?= htmlspecialchars($row['title']) ?></h4>
-
-                <p class="feedback-comment">
-                    <?= htmlspecialchars($row['comment']) ?>
-                </p>
-
-                <div class="feedback-footer">
-                    <span>
-                        <?= $row['is_anonymous']
-                            ? "Anonymous"
-                            : htmlspecialchars($row['username']) ?>
-                    </span>
-
-                    <span>
-                        <?= date("M d, Y", strtotime($row['created_at'])) ?>
-                    </span>
-                </div>
-
-            </div>
-
-        `).join("");
-
-    }
-    catch(error){
-
-        container.innerHTML =
-            "<p>Unable to load community feedback.</p>";
-
-        console.error(error);
-
-    }
-
+    const feedbacks = await loadFeedbackData();
+    renderFeedbackCards(feedbacks, container, { limit: 3 });
 }
 
 loadFeedbackPreview();
