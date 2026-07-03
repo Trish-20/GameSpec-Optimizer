@@ -24,7 +24,11 @@
 
     <a href="ml-training.php" class="nav-btn" data-page="ml">
         <i class="fas fa-brain nav-icon"></i> ML Training
-    </a> 
+    </a>
+
+    <a href="feedback-management.php" class="nav-btn" data-page="feedback">
+        <i class="fas fa-comments nav-icon"></i> Feedback Management
+    </a>
         <!-- Hidden user side access -->
         <div class="hidden-user-btn" onclick="handleUserClick()"></div>
     </div>

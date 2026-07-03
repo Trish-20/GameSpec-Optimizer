@@ -62,8 +62,11 @@
                     <option value="balanced" selected>Balanced</option>
                     <option value="performance">Performance</option>
                 </select>
-                
-                <button onclick="predictFPS()">Analyze Performance</button>
+
+                <div class="fps-action-row">
+                    <button type="button" class="detect-hardware-btn" onclick="detectHardware()">Detect Hardware</button>
+                    <button type="button" onclick="predictFPS()">Analyze Performance</button>
+                </div>
             </div>
 
             <div class="fps-results-panel" id="fpsResultsPanel">

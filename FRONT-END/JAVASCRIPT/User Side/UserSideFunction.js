@@ -517,7 +517,9 @@ const sampleFeedbackData = [
         rating: 5,
         username: "Ava",
         is_anonymous: false,
-        created_at: "2026-06-28"
+        created_at: "2026-06-28",
+        helpful_count: 3,
+        reported: false
     },
     {
         title: "Great recommendation flow",
@@ -525,7 +527,9 @@ const sampleFeedbackData = [
         rating: 4,
         username: "Noah",
         is_anonymous: false,
-        created_at: "2026-06-24"
+        created_at: "2026-06-24",
+        helpful_count: 1,
+        reported: false
     },
     {
         title: "Helpful for budget builds",
@@ -533,7 +537,9 @@ const sampleFeedbackData = [
         rating: 5,
         username: "Anonymous",
         is_anonymous: true,
-        created_at: "2026-06-20"
+        created_at: "2026-06-20",
+        helpful_count: 2,
+        reported: false
     }
 ];
 
@@ -565,31 +571,49 @@ function escapeHtml(value) {
         .replace(/'/g, "&#39;");
 }
 
-function buildFeedbackCardHtml(item) {
+function buildFeedbackCardHtml(item, index = 0, { showDelete = false } = {}) {
     const title = escapeHtml(item.title || "Untitled feedback");
     const comment = escapeHtml(item.comment || "No comment provided.");
     const rating = Number(item.rating) || 0;
     const username = item.is_anonymous ? "Anonymous" : escapeHtml(item.username || "Guest");
     const createdAt = item.created_at ? new Date(item.created_at).toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" }) : "Recently added";
     const stars = "★".repeat(rating) + "☆".repeat(5 - rating);
+    const helpfulCount = Number(item.helpful_count || 0);
+    const isReported = Boolean(item.reported);
+    const usernameText = item.is_anonymous ? "Anonymous" : String(item.username || "Guest");
 
     return `
         <div class="feedback-card"
             data-title="${title.toLowerCase()}"
             data-comment="${comment.toLowerCase()}"
-            data-rating="${rating}">
-            <div class="feedback-stars">${stars}</div>
-            <h4>${title}</h4>
+            data-rating="${rating}"
+            data-username="${usernameText.toLowerCase()}"
+            data-created="${createdAt.toLowerCase()}">
+            <div class="feedback-card-header">
+                <div>
+                    <h4>${title}</h4>
+                    <div class="feedback-meta">${username} · ${createdAt}</div>
+                </div>
+                <span class="feedback-rating-badge">${stars}</span>
+            </div>
             <p class="feedback-comment">${comment}</p>
-            <div class="feedback-footer">
-                <span>${username}</span>
-                <span>${createdAt}</span>
+            <div class="feedback-card-footer">
+                <span class="feedback-helpful-count">Helpful <strong>${helpfulCount}</strong></span>
+                <div class="feedback-actions">
+                    <button type="button" class="feedback-action-btn feedback-helpful-btn" onclick="markFeedbackHelpful(${index})">
+                        <i class="fas fa-thumbs-up"></i> Helpful
+                    </button>
+                    <button type="button" class="feedback-action-btn feedback-report-btn" onclick="reportFeedbackItem(${index})" ${isReported ? "disabled" : ""}>
+                        <i class="fas fa-flag"></i> ${isReported ? "Reported" : "Report"}
+                    </button>
+                    ${showDelete ? `<button type="button" class="feedback-action-btn feedback-delete-btn" onclick="deleteFeedbackItem(${index})"><i class="fas fa-trash-alt"></i> Delete</button>` : ""}
+                </div>
             </div>
         </div>
     `;
 }
 
-function renderFeedbackCards(feedbacks, container, { limit = null } = {}) {
+function renderFeedbackCards(feedbacks, container, { limit = null, showDelete = false } = {}) {
     if (!container) return;
 
     const items = Array.isArray(feedbacks) ? feedbacks : [];
@@ -605,7 +629,69 @@ function renderFeedbackCards(feedbacks, container, { limit = null } = {}) {
         return;
     }
 
-    container.innerHTML = visibleItems.map(buildFeedbackCardHtml).join("");
+    container.innerHTML = visibleItems.map((item, index) => buildFeedbackCardHtml(item, index, { showDelete })).join("");
+
+    if (typeof filterFeedback === "function") {
+        filterFeedback();
+    }
+}
+
+function persistFeedbackState() {
+    try {
+        localStorage.setItem("gamespecFeedback", JSON.stringify(feedbackState));
+    } catch (error) {
+        console.warn("Unable to update saved feedback locally.", error);
+    }
+}
+
+function deleteFeedbackItem(index) {
+    if (!Number.isInteger(index) || index < 0 || index >= feedbackState.length) return;
+
+    feedbackState.splice(index, 1);
+    persistFeedbackState();
+
+    const listContainer = document.getElementById("feedbackList");
+    if (listContainer) {
+        renderFeedbackCards(feedbackState, listContainer, { showDelete: true });
+    }
+
+    updateFeedbackSummary(feedbackState);
+
+    if (typeof loadFeedbackPreview === "function") {
+        loadFeedbackPreview();
+    }
+}
+
+function markFeedbackHelpful(index) {
+    if (!Number.isInteger(index) || index < 0 || index >= feedbackState.length) return;
+
+    feedbackState[index].helpful_count = Number(feedbackState[index].helpful_count || 0) + 1;
+    persistFeedbackState();
+
+    const listContainer = document.getElementById("feedbackList");
+    if (listContainer) {
+        renderFeedbackCards(feedbackState, listContainer, { showDelete: true });
+    }
+
+    if (typeof loadFeedbackPreview === "function") {
+        loadFeedbackPreview();
+    }
+}
+
+function reportFeedbackItem(index) {
+    if (!Number.isInteger(index) || index < 0 || index >= feedbackState.length) return;
+
+    feedbackState[index].reported = true;
+    persistFeedbackState();
+
+    const listContainer = document.getElementById("feedbackList");
+    if (listContainer) {
+        renderFeedbackCards(feedbackState, listContainer, { showDelete: true });
+    }
+
+    if (typeof loadFeedbackPreview === "function") {
+        loadFeedbackPreview();
+    }
 }
 
 function openFeedbackModal() {
@@ -635,7 +721,9 @@ function handleFeedbackSubmit(event) {
         rating: Number(formData.get("rating") || 5),
         username: String(formData.get("username") || "").trim(),
         is_anonymous: !String(formData.get("username") || "").trim(),
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        helpful_count: 0,
+        reported: false
     };
 
     feedbackState.unshift(newFeedback);
@@ -648,7 +736,7 @@ function handleFeedbackSubmit(event) {
 
     const listContainer = document.getElementById("feedbackList");
     if (listContainer) {
-        renderFeedbackCards(feedbackState, listContainer);
+        renderFeedbackCards(feedbackState, listContainer, { showDelete: true });
     }
 
     updateFeedbackSummary(feedbackState);
@@ -723,9 +811,14 @@ function filterFeedback() {
         const comment = card.dataset.comment || "";
         const rating = card.dataset.rating || "";
 
-        const matchesSearch =
+        const username = card.dataset.username || "";
+    const createdAt = card.dataset.created || "";
+
+    const matchesSearch =
             title.includes(searchTerm) ||
-            comment.includes(searchTerm);
+            comment.includes(searchTerm) ||
+            username.includes(searchTerm) ||
+            createdAt.includes(searchTerm);
 
         const matchesRating =
             ratingFilter === "" ||
@@ -756,13 +849,17 @@ async function loadFeedbackPage() {
     updateFeedbackSummary(feedbacks);
 
     if (listContainer) {
-        renderFeedbackCards(feedbacks, listContainer);
+        renderFeedbackCards(feedbacks, listContainer, { showDelete: true });
     }
 }
 
 function selectGame(title) {
     // Navigate to FPS prediction with selected game
     window.location.href = `fps-prediction.php?game=${encodeURIComponent(title)}`;
+}
+
+function detectHardware() {
+    window.location.href = 'hardware-benchmark.php';
 }
 
 // --- HARDWARE BENCHMARK FUNCTIONALITY ---
@@ -774,15 +871,24 @@ async function initHardwareBenchmark() {
 function loadHardwareOptions() {
     const hardwareType = document.getElementById('hardwareType').value;
     const hardwareSelect = document.getElementById('hardwareSelect');
-    
+    const hardwareSearch = document.getElementById('hardwareSearch');
+
     if (!hardwareType) {
         hardwareSelect.innerHTML = '<option value="">First select a hardware type above</option>';
         hardwareSelect.disabled = true;
+        if (hardwareSearch) {
+            hardwareSearch.value = '';
+            hardwareSearch.disabled = true;
+        }
         return;
     }
-    
+
     hardwareSelect.disabled = false;
-    
+    if (hardwareSearch) {
+        hardwareSearch.value = '';
+        hardwareSearch.disabled = false;
+    }
+
     if (hardwareType === 'cpu') {
         hardwareSelect.innerHTML = '<option value="">Select a CPU</option>';
         cpus.forEach(cpu => {
@@ -806,6 +912,25 @@ function loadHardwareOptions() {
             hardwareSelect.innerHTML += `<option value="${ram.score}" data-name="${ram.size} GB">${ram.size} GB DDR4/DDR5</option>`;
         });
     }
+
+    filterHardwareOptions();
+}
+
+function filterHardwareOptions() {
+    const searchValue = document.getElementById('hardwareSearch')?.value.toLowerCase() || '';
+    const hardwareSelect = document.getElementById('hardwareSelect');
+    if (!hardwareSelect) return;
+
+    Array.from(hardwareSelect.options).forEach(option => {
+        if (!option.value) {
+            option.hidden = false;
+            return;
+        }
+
+        const label = (option.textContent || '').toLowerCase();
+        const matches = label.includes(searchValue);
+        option.hidden = !matches;
+    });
 }
 
 function getBenchmarkScore() {
