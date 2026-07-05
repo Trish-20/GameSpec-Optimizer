@@ -985,7 +985,7 @@ function getBenchmarkScore() {
     `;
 }
 
-// --- SIMPLE HARDWARE SCORING (For demonstration only) ---
+// --- LEGACY SIMPLE HARDWARE SCORING (For demonstration only) #ToRemove  ---
 function scoreCPU(cpu) {
     cpu = cpu.toLowerCase();
     if (cpu.includes("i3") || cpu.includes("r3")) return 3;
