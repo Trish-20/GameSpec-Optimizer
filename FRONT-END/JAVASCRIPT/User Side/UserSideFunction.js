@@ -858,8 +858,77 @@ function selectGame(title) {
     window.location.href = `fps-prediction.php?game=${encodeURIComponent(title)}`;
 }
 
-function detectHardware() {
-    window.location.href = 'hardware-benchmark.php';
+function findBestHardwareMatch(items, detectedModel) {
+    if (!Array.isArray(items) || !detectedModel) return null;
+
+    const target = String(detectedModel).toLowerCase();
+    return items.find(item => String(item.model || '').toLowerCase() === target)
+        || items.find(item => target.includes(String(item.model || '').toLowerCase()))
+        || items.find(item => String(item.model || '').toLowerCase().includes(target))
+        || null;
+}
+
+function findClosestRamOption(ramGb) {
+    const options = Array.from(document.getElementById('ramSelect')?.options || [])
+        .map(option => Number(option.value))
+        .filter(value => Number.isFinite(value) && value > 0);
+
+    if (!options.length || !Number.isFinite(ramGb)) return null;
+
+    return options.reduce((closest, value) => {
+        if (closest === null) return value;
+        return Math.abs(value - ramGb) < Math.abs(closest - ramGb) ? value : closest;
+    }, null);
+}
+
+async function detectHardware() {
+    try {
+        if (!cpus.length) await loadCPUsFromCSV();
+        if (!gpus.length) await loadGPUsFromCSV();
+
+        const response = await fetch('../../../MODULES/api/get-hardware.php');
+        const result = await response.json();
+
+        if (!response.ok || result.success === false) {
+            throw new Error(result.error || result.message || 'Hardware detection failed');
+        }
+
+        const cpuMatch = findBestHardwareMatch(cpus, result.cpu_model);
+        const gpuMatch = findBestHardwareMatch(gpus, result.gpu_model);
+        const ramClosest = findClosestRamOption(Number(result.ram_gb));
+
+        if (cpuMatch) {
+            const cpuSearch = document.getElementById('cpuSearch');
+            const cpuSelect = document.getElementById('cpuSelect');
+            if (cpuSearch) cpuSearch.value = cpuMatch.model;
+            if (cpuSelect) cpuSelect.value = cpuMatch.score;
+        }
+
+        if (gpuMatch) {
+            const gpuSearch = document.getElementById('gpuSearch');
+            const gpuSelect = document.getElementById('gpuSelect');
+            if (gpuSearch) gpuSearch.value = gpuMatch.model;
+            if (gpuSelect) gpuSelect.value = gpuMatch.score;
+        }
+
+        if (ramClosest !== null) {
+            const ramSelect = document.getElementById('ramSelect');
+            if (ramSelect) ramSelect.value = String(ramClosest);
+        }
+
+        const detectedParts = [];
+        if (result.cpu_model) detectedParts.push(`CPU: ${result.cpu_model}`);
+        if (result.gpu_model) detectedParts.push(`GPU: ${result.gpu_model}`);
+        if (result.ram_gb) detectedParts.push(`RAM: ${result.ram_gb} GB`);
+
+        showModal(
+            'Hardware Detected',
+            detectedParts.length ? detectedParts.join('\n') : 'Hardware detected successfully.'
+        );
+    } catch (error) {
+        console.error('Hardware detection failed:', error);
+        showModal('Error', error.message || 'Unable to detect hardware automatically.');
+    }
 }
 
 // --- HARDWARE BENCHMARK FUNCTIONALITY ---
