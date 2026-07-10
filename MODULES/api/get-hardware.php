@@ -8,7 +8,11 @@ try {
         throw new Exception('Hardware detection script not found');
     }
 
-    $pythonBinary = (PHP_OS_FAMILY === 'Windows') ? 'python' : 'python3';
+    $venvPython = realpath(__DIR__ . '/../../.venv/Scripts/python.exe');
+    $pythonBinary = $venvPython && file_exists($venvPython)
+        ? $venvPython
+        : ((PHP_OS_FAMILY === 'Windows') ? 'python' : 'python3');
+
     $command = escapeshellcmd($pythonBinary) . ' ' . escapeshellarg($pythonScript) . ' 2>&1';
     $output = shell_exec($command);
 

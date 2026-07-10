@@ -93,9 +93,9 @@ def predict_fps(input_data):
         # Apply performance mode modifier if provided
         performance_mode = normalize_performance_mode(input_data.get('performance_mode', 0))
         if performance_mode == 1:
-            predicted_fps *= 1.15  # +15%
+            predicted_fps *= 1.05  # +15%
         elif performance_mode == -1:
-            predicted_fps *= 0.85  # -15%
+            predicted_fps *= 0.95  # -15%
         
         # Clamp to reasonable FPS range
         predicted_fps = max(1, min(predicted_fps, 500))

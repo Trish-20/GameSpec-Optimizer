@@ -858,14 +858,39 @@ function selectGame(title) {
     window.location.href = `fps-prediction.php?game=${encodeURIComponent(title)}`;
 }
 
+function normalizeHardwareText(value) {
+    return String(value || '')
+        .toLowerCase()
+        .replace(/\b(11th|12th|13th|14th|15th)\s*gen\b/g, '')
+        .replace(/\bcore\s*tm\b/g, '')
+        .replace(/\br\s*\(r\)\b/g, 'r')
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim();
+}
+
 function findBestHardwareMatch(items, detectedModel) {
     if (!Array.isArray(items) || !detectedModel) return null;
 
-    const target = String(detectedModel).toLowerCase();
-    return items.find(item => String(item.model || '').toLowerCase() === target)
-        || items.find(item => target.includes(String(item.model || '').toLowerCase()))
-        || items.find(item => String(item.model || '').toLowerCase().includes(target))
-        || null;
+    const target = normalizeHardwareText(detectedModel);
+    const targetTokens = target.split(/\s+/).filter(token => token.length > 1);
+
+    const scoredMatches = items.map(item => {
+        const model = normalizeHardwareText(item.model);
+        const modelTokens = model.split(/\s+/).filter(token => token.length > 1);
+
+        const tokenHits = modelTokens.filter(token => targetTokens.includes(token)).length;
+        const tokenCoverage = modelTokens.length ? tokenHits / modelTokens.length : 0;
+        const targetCoverage = targetTokens.length ? tokenHits / targetTokens.length : 0;
+        const exact = model === target ? 1 : 0;
+
+        return {
+            item,
+            score: exact ? 100 : (tokenCoverage * 70) + (targetCoverage * 30)
+        };
+    }).sort((a, b) => b.score - a.score);
+
+    const best = scoredMatches[0];
+    return best && best.score >= 25 ? best.item : null;
 }
 
 function findClosestRamOption(ramGb) {
@@ -897,19 +922,15 @@ async function detectHardware() {
         const gpuMatch = findBestHardwareMatch(gpus, result.gpu_model);
         const ramClosest = findClosestRamOption(Number(result.ram_gb));
 
-        if (cpuMatch) {
-            const cpuSearch = document.getElementById('cpuSearch');
-            const cpuSelect = document.getElementById('cpuSelect');
-            if (cpuSearch) cpuSearch.value = cpuMatch.model;
-            if (cpuSelect) cpuSelect.value = cpuMatch.score;
-        }
+        const cpuSearch = document.getElementById('cpuSearch');
+        const cpuSelect = document.getElementById('cpuSelect');
+        if (cpuSearch) cpuSearch.value = cpuMatch?.model || result.cpu_model || '';
+        if (cpuSelect) cpuSelect.value = cpuMatch ? cpuMatch.score : '';
 
-        if (gpuMatch) {
-            const gpuSearch = document.getElementById('gpuSearch');
-            const gpuSelect = document.getElementById('gpuSelect');
-            if (gpuSearch) gpuSearch.value = gpuMatch.model;
-            if (gpuSelect) gpuSelect.value = gpuMatch.score;
-        }
+        const gpuSearch = document.getElementById('gpuSearch');
+        const gpuSelect = document.getElementById('gpuSelect');
+        if (gpuSearch) gpuSearch.value = gpuMatch?.model || result.gpu_model || '';
+        if (gpuSelect) gpuSelect.value = gpuMatch ? gpuMatch.score : '';
 
         if (ramClosest !== null) {
             const ramSelect = document.getElementById('ramSelect');
