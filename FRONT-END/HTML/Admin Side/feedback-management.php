@@ -31,6 +31,7 @@
             <div class="feedback-admin-list" id="feedbackAdminList">
                 <p class="feedback-admin-loading">Loading feedback...</p>
             </div>
+            <div class="feedback-pagination" id="feedbackAdminPagination"></div>
         </div>
     </div>
 
@@ -104,10 +105,14 @@ function escapeHtml(value) {
         .replace(/'/g, "&#39;");
 }
 
+let feedbackAdminPage = 1;
+const feedbackAdminPageSize = 5;
+
 function renderFeedbackAdmin() {
     const feedbacks = getFeedbackData();
     const summaryContainer = document.getElementById("feedbackAdminSummary");
     const listContainer = document.getElementById("feedbackAdminList");
+    const paginationContainer = document.getElementById("feedbackAdminPagination");
 
     const total = feedbacks.length;
     const reported = feedbacks.filter(item => item.reported).length;
@@ -132,17 +137,31 @@ function renderFeedbackAdmin() {
 
     if (!listContainer) return;
 
-    if (!feedbacks.length) {
+    const searchValue = document.getElementById('feedbackSearch')?.value.toLowerCase() || '';
+    const filteredFeedback = feedbacks.filter(item => {
+        const text = `${item.title || ''} ${item.comment || ''} ${item.username || ''}`.toLowerCase();
+        return text.includes(searchValue);
+    });
+
+    const totalPages = Math.max(1, Math.ceil(filteredFeedback.length / feedbackAdminPageSize));
+    feedbackAdminPage = Math.min(feedbackAdminPage, totalPages);
+
+    const start = (feedbackAdminPage - 1) * feedbackAdminPageSize;
+    const pagedFeedback = filteredFeedback.slice(start, start + feedbackAdminPageSize);
+
+    if (!filteredFeedback.length) {
         listContainer.innerHTML = '<p class="feedback-admin-empty">No feedback available yet.</p>';
+        if (paginationContainer) paginationContainer.innerHTML = '';
         return;
     }
 
-    listContainer.innerHTML = feedbacks.map((item, index) => {
+    listContainer.innerHTML = pagedFeedback.map((item, index) => {
         const title = escapeHtml(item.title || "Untitled feedback");
         const comment = escapeHtml(item.comment || "No comment provided.");
         const username = item.is_anonymous ? "Anonymous" : escapeHtml(item.username || "Guest");
         const createdAt = item.created_at ? new Date(item.created_at).toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" }) : "Recently added";
         const stars = "★".repeat(Number(item.rating) || 0) + "☆".repeat(5 - (Number(item.rating) || 0));
+        const globalIndex = feedbacks.findIndex(entry => entry === item);
 
         return `
             <div class="feedback-admin-item">
@@ -159,24 +178,43 @@ function renderFeedbackAdmin() {
                 <p class="feedback-admin-comment">${comment}</p>
                 <div class="feedback-admin-actions">
                     <span>Helpful: ${Number(item.helpful_count || 0)}</span>
-                    ${item.reported ? `<button type="button" class="feedback-admin-btn secondary" onclick="markFeedbackReviewed(${index})">Mark reviewed</button>` : ''}
-                    <button type="button" class="feedback-admin-btn danger" onclick="deleteFeedbackAdmin(${index})">Delete</button>
+                    ${item.reported ? `<button type="button" class="feedback-admin-btn secondary" onclick="markFeedbackReviewed(${globalIndex})">Mark reviewed</button>` : ''}
+                    <button type="button" class="feedback-admin-btn danger" onclick="deleteFeedbackAdmin(${globalIndex})">Delete</button>
                 </div>
             </div>
         `;
     }).join("");
 
-    filterFeedbackAdmin();
+    if (paginationContainer) {
+        const pageButtons = [];
+        for (let page = 1; page <= totalPages; page += 1) {
+            pageButtons.push(`<button type="button" class="pagination-btn ${page === feedbackAdminPage ? 'active' : ''}" onclick="changeFeedbackAdminPage(${page})">${page}</button>`);
+        }
+        paginationContainer.innerHTML = `
+            <button type="button" class="pagination-btn" ${feedbackAdminPage === 1 ? 'disabled' : ''} onclick="changeFeedbackAdminPage(${feedbackAdminPage - 1})">Prev</button>
+            ${pageButtons.join('')}
+            <button type="button" class="pagination-btn" ${feedbackAdminPage === totalPages ? 'disabled' : ''} onclick="changeFeedbackAdminPage(${feedbackAdminPage + 1})">Next</button>
+        `;
+    }
+}
+
+function changeFeedbackAdminPage(page) {
+    const feedbacks = getFeedbackData();
+    const searchValue = document.getElementById('feedbackSearch')?.value.toLowerCase() || '';
+    const filteredFeedback = feedbacks.filter(item => {
+        const text = `${item.title || ''} ${item.comment || ''} ${item.username || ''}`.toLowerCase();
+        return text.includes(searchValue);
+    });
+    const totalPages = Math.max(1, Math.ceil(filteredFeedback.length / feedbackAdminPageSize));
+
+    if (page < 1 || page > totalPages) return;
+    feedbackAdminPage = page;
+    renderFeedbackAdmin();
 }
 
 function filterFeedbackAdmin() {
-    const searchValue = document.getElementById('feedbackSearch')?.value.toLowerCase() || '';
-    const cards = document.querySelectorAll('.feedback-admin-item');
-
-    cards.forEach(card => {
-        const text = card.textContent.toLowerCase();
-        card.style.display = text.includes(searchValue) ? 'block' : 'none';
-    });
+    feedbackAdminPage = 1;
+    renderFeedbackAdmin();
 }
 
 function deleteFeedbackAdmin(index) {
@@ -197,6 +235,7 @@ function markFeedbackReviewed(index) {
 
 window.deleteFeedbackAdmin = deleteFeedbackAdmin;
 window.markFeedbackReviewed = markFeedbackReviewed;
+window.changeFeedbackAdminPage = changeFeedbackAdminPage;
 window.addEventListener("DOMContentLoaded", renderFeedbackAdmin);
 </script>
 

@@ -242,6 +242,7 @@ body {
     background: var(--border-color);           /* dark bar color */
     margin-top: -5px;
     width: 100%;
+    margin-bottom: 15px;
 }
 
 .admin-card h3 {
@@ -288,20 +289,26 @@ body {
 
 .feedback-search-box input {
     width: 100%;
-    height: 42px;
-    padding: 10px 14px 10px 42px;
-    border-radius: 10px;
+    height: 46px;
+    padding: 10px 14px 10px 44px;
+    border-radius: 12px;
     border: 1px solid var(--border-color);
-    background: var(--bg-card-sub);
+    background: var(--bg-card);
     color: var(--color-text-main);
     box-sizing: border-box;
     line-height: 1.3;
+    font-size: 14px;
+}
+
+.feedback-search-box input:focus {
+    outline: none;
+    border-color: var(--color-brand);
 }
 
 .feedback-admin-stat {
-    background: var(--bg-card-sub);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(28, 29, 36, 0.96), rgba(22, 22, 26, 0.98));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
     padding: 16px;
     display: flex;
     flex-direction: column;
@@ -316,14 +323,21 @@ body {
 .feedback-admin-list {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 16px;
 }
 
 .feedback-admin-item {
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    padding: 18px;
-    background: rgba(255,255,255,0.03);
+    background: linear-gradient(180deg, rgba(28, 29, 36, 0.96), rgba(22, 22, 26, 0.98));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 22px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.feedback-admin-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
+    border-color: rgba(181, 255, 61, 0.22);
 }
 
 .feedback-admin-item-header {
@@ -336,6 +350,7 @@ body {
 .feedback-admin-item-header h4 {
     margin: 0 0 4px;
     color: var(--color-text-main);
+    font-size: 1.06rem;
 }
 
 .feedback-admin-item-header p {
@@ -351,10 +366,11 @@ body {
 
 .feedback-admin-badge {
     background: rgba(181, 255, 61, 0.14);
-    color: var(--color-brand);
+    color: #d8ff88;
     border-radius: 999px;
-    padding: 5px 10px;
+    padding: 6px 10px;
     font-size: 12px;
+    letter-spacing: 0.02em;
 }
 
 .feedback-admin-badge-danger {
@@ -363,8 +379,9 @@ body {
 }
 
 .feedback-admin-comment {
-    margin: 12px 0 14px;
-    color: var(--color-text-main);
+    margin: 14px 0 16px;
+    color: var(--color-text-muted);
+    line-height: 1.75;
 }
 
 .feedback-admin-actions {
@@ -373,24 +390,36 @@ body {
     flex-wrap: wrap;
     align-items: center;
     color: var(--color-text-muted);
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .feedback-admin-btn {
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 999px;
     padding: 8px 12px;
     cursor: pointer;
     font-size: 13px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--color-text-main);
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.feedback-admin-btn:hover {
+    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .feedback-admin-btn.secondary {
-    background: rgba(181, 255, 61, 0.16);
+    background: rgba(181, 255, 61, 0.14);
     color: var(--color-brand);
+    border-color: rgba(181, 255, 61, 0.24);
 }
 
 .feedback-admin-btn.danger {
-    background: rgba(244, 63, 94, 0.16);
+    background: rgba(244, 63, 94, 0.14);
     color: #ff8ca4;
+    border-color: rgba(244, 63, 94, 0.24);
 }
 
 .feedback-admin-loading,
@@ -399,26 +428,44 @@ body {
     margin: 0;
 }
 
-/* Hardware-specific style */
-.hardware-card {
-    background: #20222a;          /* darker tone for hardware */
-    border: 1px solid var(--border-color);
-    padding: 28px;                /* slightly more padding */
-    margin-bottom: 20px;          /* extra spacing between cards */
+/* ---------- FEEDBACK PAGINATION ---------- */
+.feedback-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0 0;
 }
 
-.hardware-card h3 {
-    color: var(--color-brand);    /* lime accent for section titles */
-    font-size: 18px;
-    margin-bottom: 16px;
+.pagination-btn {
+    min-width: 46px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-text-main);
+    font-size: 0.92rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
 }
 
-.hardware-card hr {
-    border: none;
-    height: 1px;
-    background: var(--border-color);
-    margin: 18px 0;
+.pagination-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-1px);
 }
+
+.pagination-btn.active {
+    background: rgba(181, 255, 61, 0.18);
+    border-color: rgba(181, 255, 61, 0.35);
+    color: #d8ff88;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
 /* ---------- BUTTON COMPONENT BASELINE STYLES ---------- */
 .report-text-group {
     display: flex;
@@ -698,7 +745,7 @@ body {
     font-weight: 600;
     font-size: 14px;
     margin-top: 7px;
-    margin-bottom: -6px;
+    margin-bottom: 15px;
     transition: all 0.2s ease;
 }
 
