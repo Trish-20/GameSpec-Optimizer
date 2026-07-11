@@ -141,7 +141,7 @@ function showModal(title, message, onConfirm = null) {
     
     // Set content
     document.getElementById('modalTitle').textContent = title || 'Notification';
-    document.getElementById('modalBody').textContent = message || '';
+    document.getElementById('modalBody').innerText = message || '';
     
     // Setup confirm button
     const confirmBtn = document.getElementById('modalConfirmBtn');
