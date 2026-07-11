@@ -93,6 +93,7 @@
 
         </section>
 
+        <div class="feedback-pagination" id="feedbackPagination"></div>
 
     </div>
 

@@ -544,6 +544,9 @@ const sampleFeedbackData = [
 ];
 
 let feedbackState = [...sampleFeedbackData];
+let filteredFeedbackState = [];
+let currentFeedbackPage = 1;
+const FEEDBACK_PAGE_SIZE = 5;
 
 function loadStoredFeedback() {
     try {
@@ -561,6 +564,23 @@ const storedFeedback = loadStoredFeedback();
 if (storedFeedback.length) {
     feedbackState = [...storedFeedback, ...feedbackState];
 }
+
+function sortFeedbackState(items) {
+    return items.slice().sort((a, b) => {
+        const ratingDiff = Number(b.rating || 0) - Number(a.rating || 0);
+        if (ratingDiff !== 0) return ratingDiff;
+
+        const helpfulDiff = Number(b.helpful_count || 0) - Number(a.helpful_count || 0);
+        if (helpfulDiff !== 0) return helpfulDiff;
+
+        const createdA = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const createdB = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return createdB - createdA;
+    });
+}
+
+feedbackState = sortFeedbackState(feedbackState);
+filteredFeedbackState = feedbackState.map((item, index) => ({ item, index }));
 
 function escapeHtml(value) {
     return String(value)
@@ -613,7 +633,7 @@ function buildFeedbackCardHtml(item, index = 0, { showDelete = false } = {}) {
     `;
 }
 
-function renderFeedbackCards(feedbacks, container, { limit = null, showDelete = false } = {}) {
+function renderFeedbackCards(feedbacks, container, { limit = null, showDelete = false, offset = 0 } = {}) {
     if (!container) return;
 
     const items = Array.isArray(feedbacks) ? feedbacks : [];
@@ -629,11 +649,58 @@ function renderFeedbackCards(feedbacks, container, { limit = null, showDelete = 
         return;
     }
 
-    container.innerHTML = visibleItems.map((item, index) => buildFeedbackCardHtml(item, index, { showDelete })).join("");
+    container.innerHTML = visibleItems.map((entry, idx) => {
+        const item = entry?.item ?? entry;
+        const itemIndex = typeof entry?.index === 'number' ? entry.index : offset + idx;
+        return buildFeedbackCardHtml(item, itemIndex, { showDelete });
+    }).join("");
+}
 
-    if (typeof filterFeedback === "function") {
-        filterFeedback();
+function renderFeedbackPagination(totalItems) {
+    const paginationContainer = document.getElementById("feedbackPagination");
+    if (!paginationContainer) return;
+
+    const totalPages = Math.max(1, Math.ceil(totalItems / FEEDBACK_PAGE_SIZE));
+    currentFeedbackPage = Math.min(currentFeedbackPage, totalPages);
+
+    if (totalPages <= 1) {
+        paginationContainer.innerHTML = "";
+        return;
     }
+
+    let html = `<button class="pagination-btn" type="button" onclick="changeFeedbackPage(${currentFeedbackPage - 1})" ${currentFeedbackPage === 1 ? "disabled" : ""}>Prev</button>`;
+
+    for (let page = 1; page <= totalPages; page += 1) {
+        html += `<button class="pagination-btn ${page === currentFeedbackPage ? "active" : ""}" type="button" onclick="changeFeedbackPage(${page})">${page}</button>`;
+    }
+
+    html += `<button class="pagination-btn" type="button" onclick="changeFeedbackPage(${currentFeedbackPage + 1})" ${currentFeedbackPage === totalPages ? "disabled" : ""}>Next</button>`;
+
+    paginationContainer.innerHTML = html;
+}
+
+function changeFeedbackPage(page) {
+    const totalItems = filteredFeedbackState.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / FEEDBACK_PAGE_SIZE));
+    if (page < 1 || page > totalPages) return;
+
+    currentFeedbackPage = page;
+    const listContainer = document.getElementById("feedbackList");
+    if (listContainer) {
+        renderFeedbackPage(listContainer, filteredFeedbackState, { showDelete: true });
+    }
+}
+
+function renderFeedbackPage(container, feedbacks, { showDelete = false } = {}) {
+    const totalItems = Array.isArray(feedbacks) ? feedbacks.length : 0;
+    const totalPages = Math.max(1, Math.ceil(totalItems / FEEDBACK_PAGE_SIZE));
+    currentFeedbackPage = Math.min(currentFeedbackPage, totalPages);
+
+    const start = (currentFeedbackPage - 1) * FEEDBACK_PAGE_SIZE;
+    const pagedItems = Array.isArray(feedbacks) ? feedbacks.slice(start, start + FEEDBACK_PAGE_SIZE) : [];
+
+    renderFeedbackCards(pagedItems, container, { showDelete, offset: start });
+    renderFeedbackPagination(totalItems);
 }
 
 function persistFeedbackState() {
@@ -649,11 +716,7 @@ function deleteFeedbackItem(index) {
 
     feedbackState.splice(index, 1);
     persistFeedbackState();
-
-    const listContainer = document.getElementById("feedbackList");
-    if (listContainer) {
-        renderFeedbackCards(feedbackState, listContainer, { showDelete: true });
-    }
+    filterFeedback();
 
     updateFeedbackSummary(feedbackState);
 
@@ -667,11 +730,7 @@ function markFeedbackHelpful(index) {
 
     feedbackState[index].helpful_count = Number(feedbackState[index].helpful_count || 0) + 1;
     persistFeedbackState();
-
-    const listContainer = document.getElementById("feedbackList");
-    if (listContainer) {
-        renderFeedbackCards(feedbackState, listContainer, { showDelete: true });
-    }
+    filterFeedback();
 
     if (typeof loadFeedbackPreview === "function") {
         loadFeedbackPreview();
@@ -683,11 +742,7 @@ function reportFeedbackItem(index) {
 
     feedbackState[index].reported = true;
     persistFeedbackState();
-
-    const listContainer = document.getElementById("feedbackList");
-    if (listContainer) {
-        renderFeedbackCards(feedbackState, listContainer, { showDelete: true });
-    }
+    filterFeedback();
 
     if (typeof loadFeedbackPreview === "function") {
         loadFeedbackPreview();
@@ -734,11 +789,7 @@ function handleFeedbackSubmit(event) {
         console.warn("Unable to save feedback locally.", error);
     }
 
-    const listContainer = document.getElementById("feedbackList");
-    if (listContainer) {
-        renderFeedbackCards(feedbackState, listContainer, { showDelete: true });
-    }
-
+    filterFeedback();
     updateFeedbackSummary(feedbackState);
 
     if (typeof loadFeedbackPreview === "function") {
@@ -793,7 +844,6 @@ async function loadFeedbackData() {
 }
 
 function filterFeedback() {
-
     const searchTerm = document
         .getElementById("feedbackSearch")
         ?.value
@@ -803,33 +853,35 @@ function filterFeedback() {
         .getElementById("ratingFilter")
         ?.value || "";
 
-    const cards = document.querySelectorAll(".feedback-card");
+    const sortedFeedback = sortFeedbackState(feedbackState);
 
-    cards.forEach(card => {
+    filteredFeedbackState = sortedFeedback
+        .map((item, index) => ({ item, index }))
+        .filter(({ item }) => {
+            const title = String(item.title || "").toLowerCase();
+            const comment = String(item.comment || "").toLowerCase();
+            const username = String(item.username || "").toLowerCase();
+            const createdAt = item.created_at ? new Date(item.created_at).toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" }).toLowerCase() : "";
+            const rating = String(item.rating || "");
 
-        const title = card.dataset.title || "";
-        const comment = card.dataset.comment || "";
-        const rating = card.dataset.rating || "";
+            const matchesSearch =
+                title.includes(searchTerm) ||
+                comment.includes(searchTerm) ||
+                username.includes(searchTerm) ||
+                createdAt.includes(searchTerm);
 
-        const username = card.dataset.username || "";
-    const createdAt = card.dataset.created || "";
+            const matchesRating =
+                ratingFilter === "" ||
+                rating === ratingFilter;
 
-    const matchesSearch =
-            title.includes(searchTerm) ||
-            comment.includes(searchTerm) ||
-            username.includes(searchTerm) ||
-            createdAt.includes(searchTerm);
+            return matchesSearch && matchesRating;
+        });
 
-        const matchesRating =
-            ratingFilter === "" ||
-            rating === ratingFilter;
-
-        card.style.display =
-            (matchesSearch && matchesRating)
-                ? "block"
-                : "none";
-    });
-
+    currentFeedbackPage = 1;
+    const listContainer = document.getElementById("feedbackList");
+    if (listContainer) {
+        renderFeedbackPage(listContainer, filteredFeedbackState, { showDelete: true });
+    }
 }
 
 async function loadFeedbackPage() {
@@ -847,10 +899,7 @@ async function loadFeedbackPage() {
     const feedbacks = await loadFeedbackData();
 
     updateFeedbackSummary(feedbacks);
-
-    if (listContainer) {
-        renderFeedbackCards(feedbacks, listContainer, { showDelete: true });
-    }
+    filterFeedback();
 }
 
 function selectGame(title) {
