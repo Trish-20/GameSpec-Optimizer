@@ -1162,6 +1162,70 @@ function runBenchmark() {
         `Your System Score: ${total}/${maxScore}`;
 }
 
+const graphicsSettingBudget = [
+    { name: 'Bloom', fps: 6, direction: 'up', visual: 'high' },
+    { name: 'Anti-Aliasing', fps: 5, direction: 'up', visual: 'high' },
+    { name: 'Shadow Quality', fps: 8, direction: 'up', visual: 'high' },
+    { name: 'Ambient Occlusion', fps: 7, direction: 'up', visual: 'medium' },
+    { name: 'Texture Quality', fps: 4, direction: 'up', visual: 'medium' },
+    { name: 'VSync', fps: 2, direction: 'down', visual: 'low' },
+    { name: 'Motion Blur', fps: 3, direction: 'down', visual: 'low' }
+];
+
+function buildGraphicsSuggestions(fpsDelta, currentQuality) {
+    const suggestions = [];
+
+    if (fpsDelta >= 15) {
+        suggestions.push(`You have enough headroom to raise visuals by about ${fpsDelta} FPS.`);
+        suggestions.push(`Enable Bloom and move Anti-Aliasing up to TAA.`);
+        suggestions.push(`Increase Shadow Quality and consider Ambient Occlusion.`);
+
+        if (currentQuality === 'low') {
+            suggestions.push('Increase Graphics Quality from Low to Medium.');
+        } else if (currentQuality === 'medium') {
+            suggestions.push('Try High graphics quality if you want a sharper image.');
+        }
+
+        const upgradeChoices = graphicsSettingBudget
+            .filter(setting => setting.direction === 'up' && setting.fps <= fpsDelta)
+            .sort((a, b) => b.fps - a.fps)
+            .map(setting => `Raise ${setting.name} (+~${setting.fps} FPS headroom needed)`);
+
+        suggestions.push(...upgradeChoices.slice(0, 3));
+    } else if (fpsDelta >= 5) {
+        suggestions.push(`You have a small buffer of about ${fpsDelta} FPS.`);
+        suggestions.push('You can safely raise Anti-Aliasing or Texture Quality.');
+        suggestions.push('If you want more visual clarity, try Bloom or a higher preset.');
+
+        if (currentQuality === 'low') {
+            suggestions.push('Increase Graphics Quality from Low to Medium first.');
+        }
+    } else if (fpsDelta > 0) {
+        suggestions.push(`You are only ${fpsDelta} FPS above the target, so keep settings conservative.`);
+        suggestions.push('Prefer small changes like Texture Quality or Anti-Aliasing only.');
+    } else {
+        const deficit = Math.abs(fpsDelta);
+        suggestions.push(`You are about ${deficit} FPS below the target.`);
+        suggestions.push('Lower Shadow Quality first, then disable Bloom if needed.');
+        suggestions.push('Reduce Anti-Aliasing or switch to FXAA for a quick gain.');
+
+        const downgradeChoices = graphicsSettingBudget
+            .filter(setting => setting.direction === 'down' && setting.fps <= deficit)
+            .sort((a, b) => b.fps - a.fps)
+            .map(setting => `Lower or disable ${setting.name} (recover ~${setting.fps} FPS)`);
+
+        suggestions.push(...downgradeChoices.slice(0, 3));
+
+        if (currentQuality === 'high') {
+            suggestions.push('If needed, step Graphics Quality down from High to Medium.');
+        } else if (currentQuality === 'medium') {
+            suggestions.push('If the deficit remains, step Graphics Quality down from Medium to Low.');
+        }
+    }
+
+    return suggestions;
+}
+
 // --- FPS PREDICTION FUNCTIONALITY (ML-backed + Loading Screen while predicting) ---
 let isPredictingFPS = false;
 
@@ -1286,6 +1350,8 @@ async function predictFPS() {
         }
 
         const estimatedFPS = Number(result.predicted_fps) || 0;
+        const targetFPS = 60;
+        const fpsDelta = estimatedFPS - targetFPS;
         const cpuOK = cpuScoreNum >= selectedGame.cpu_benchmark;
         const gpuOK = gpuScoreNum >= selectedGame.gpu_benchmark;
         const ramOK = ramScoreNum >= selectedGame.ram_benchmark;
@@ -1391,47 +1457,24 @@ async function predictFPS() {
             </div>
         `;
 
-        if (estimatedFPS >= 75) {
-            html += `
-                <div class="result-section success">
-                    <h4>You have graphics headroom</h4>
-                    <ul class="suggestion-list">
-                        <li>Increase Graphics Quality to a higher preset</li>
-                        <li>Enable Anti-Aliasing or move up to TAA</li>
-                        <li>Increase Bloom or other post-processing effects</li>
-                        <li>Increase Shadow Quality</li>
-                        <li>Increase Texture Quality</li>
-                    </ul>
-                </div>
-            `;
-        } else if (estimatedFPS >= 60) {
-            html += `
-                <div class="result-section success">
-                    <h4>You can slightly improve graphics</h4>
-                    <ul class="suggestion-list">
-                        ${quality === 'low' ? '<li>Increase Graphics Quality to Medium</li>' : ''}
-                        ${quality === 'medium' ? '<li>Try High graphics quality</li>' : ''}
-                        <li>Enable Anti-Aliasing</li>
-                        <li>Increase Texture Quality</li>
-                    </ul>
-                </div>
-            `;
-        } else if (estimatedFPS < 50) {
-            html += `
-                <div class="result-section warning">
-                    <h4>Suggested Settings to Improve FPS</h4>
-                    <ul class="suggestion-list downgrade">
-                        ${quality !== 'low' ? '<li>Lower Graphics Quality preset</li>' : ''}
-                        <li>Disable or lower Anti-Aliasing</li>
-                        <li>Lower Shadow Quality</li>
-                        <li>Reduce View Distance</li>
-                        <li>Disable Motion Blur</li>
-                        <li>Lower Texture Quality</li>
-                        <li>Disable Ambient Occlusion</li>
-                    </ul>
-                </div>
-            `;
-        }
+        const graphicsSuggestions = buildGraphicsSuggestions(fpsDelta, quality);
+        const suggestionTone = fpsDelta >= 0 ? 'success' : 'warning';
+        const suggestionHeading = fpsDelta >= 15
+            ? 'You have graphics headroom'
+            : fpsDelta >= 5
+                ? 'You can slightly improve graphics'
+                : fpsDelta > 0
+                    ? 'You are close to the target'
+                    : 'Suggested Settings to Improve FPS';
+
+        html += `
+            <div class="result-section ${suggestionTone}">
+                <h4>${suggestionHeading}</h4>
+                <ul class="suggestion-list ${fpsDelta < 0 ? 'downgrade' : ''}">
+                    ${graphicsSuggestions.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+            </div>
+        `;
 
         if (estimatedFPS < 50 && bottlenecks.length > 0) {
             html += `<div class="result-section danger">
