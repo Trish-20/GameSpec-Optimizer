@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-$csvFile = __DIR__ . '/../../DATA/CPU-benchmarks.csv';
+$csvFile = __DIR__ . '/../../DATA/CPU-benchmarks-v4.csv';
 $cpus = [];
 
 if (($handle = fopen($csvFile, 'r')) !== FALSE) {
@@ -9,11 +9,16 @@ if (($handle = fopen($csvFile, 'r')) !== FALSE) {
     
     while (($row = fgetcsv($handle)) !== FALSE) {
         if (!empty($row[0])) {
+            $category = isset($row[11]) ? strtolower(trim($row[11])) : '';
+            if ($category !== 'desktop') {
+                continue;
+            }
+
             $cpus[] = [
                 'model' => $row[0],
-                'score' => (int)$row[1],
-                'cores' => (int)$row[2],
-                'threads' => (int)$row[3]
+                'score' => (int)$row[2],
+                'cores' => isset($row[8]) ? (int)$row[8] : 0,
+                'threads' => null
             ];
         }
     }

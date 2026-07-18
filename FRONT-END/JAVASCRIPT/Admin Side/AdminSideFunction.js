@@ -2,8 +2,14 @@
 // 1. UI UTILITIES
 // ============================================================================
 // Modal Dialog System
-function showModal(title, message, onConfirm = null) {
+let activeModalConfirmHandler = null;
+
+function showModal(title, message, options = {}) {
     let modalOverlay = document.getElementById('appModal');
+    const modalOptions = typeof options === 'function'
+        ? { type: 'confirm', onConfirm: options }
+        : (typeof options === 'string' ? { type: options } : options);
+    const modalType = modalOptions.type === 'confirm' ? 'confirm' : 'info';
     
     // Create modal if it doesn't exist
     if (!modalOverlay) {
@@ -17,9 +23,7 @@ function showModal(title, message, onConfirm = null) {
                     <div class="modal-body" id="modalBody">
                         Message goes here
                     </div>
-                    <div class="modal-footer">
-                        <button class="modal-btn modal-btn-primary" id="modalConfirmBtn" onclick="closeModal()">OK</button>
-                    </div>
+                    <div class="modal-footer" id="modalFooter"></div>
                 </div>
             </div>
         `;
@@ -30,13 +34,42 @@ function showModal(title, message, onConfirm = null) {
     // Set content
     document.getElementById('modalTitle').textContent = title || 'Notification';
     document.getElementById('modalBody').textContent = message || '';
-    
-    // Setup confirm button
-    const confirmBtn = document.getElementById('modalConfirmBtn');
-    confirmBtn.onclick = function() {
-        closeModal();
-        if (onConfirm) onConfirm();
-    };
+
+    activeModalConfirmHandler = typeof modalOptions.onConfirm === 'function'
+        ? modalOptions.onConfirm
+        : null;
+
+    const modalFooter = document.getElementById('modalFooter');
+    if (modalFooter) {
+        if (modalType === 'confirm') {
+            const confirmLabel = modalOptions.confirmText || 'Confirm';
+            const cancelLabel = modalOptions.cancelText || 'Cancel';
+
+            modalFooter.innerHTML = `
+                <button type="button" class="modal-btn" id="modalCancelBtn">${cancelLabel}</button>
+                <button type="button" class="modal-btn modal-btn-primary" id="modalConfirmBtn">${confirmLabel}</button>
+            `;
+
+            document.getElementById('modalCancelBtn').onclick = function() {
+                closeModal();
+            };
+
+            document.getElementById('modalConfirmBtn').onclick = function() {
+                const confirmHandler = activeModalConfirmHandler;
+                closeModal();
+                if (confirmHandler) confirmHandler();
+            };
+        } else {
+            modalFooter.innerHTML = `
+                <button type="button" class="modal-btn modal-btn-primary" id="modalConfirmBtn">OK</button>
+            `;
+
+            document.getElementById('modalConfirmBtn').onclick = function() {
+                closeModal();
+                if (activeModalConfirmHandler) activeModalConfirmHandler();
+            };
+        }
+    }
     
     // Show modal
     modalOverlay.classList.add('active');
@@ -52,6 +85,7 @@ function closeModal() {
     if (modal) {
         modal.classList.remove('active');
     }
+    activeModalConfirmHandler = null;
 }
 
 // --- SIDEBAR CONTROL ---
@@ -73,6 +107,85 @@ let adminGames = [];
 let adminCPUs = [];
 let adminGPUs = [];
 let adminRAMs = [];
+
+const ADMIN_HARDWARE_STORE_KEY = 'gamespecAdminHardwareStore';
+
+function normalizeModelName(value) {
+    return String(value || '')
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, ' ');
+}
+
+function getAdminHardwareStore() {
+    try {
+        // localStorage.removeItem('gamespecAdminHardwareStore'); // for testing
+        const stored = localStorage.getItem(ADMIN_HARDWARE_STORE_KEY);
+        if (!stored) {
+            return { cpus: [], gpus: [], rams: [] };
+        }
+
+        const parsed = JSON.parse(stored);
+        return {
+            cpus: Array.isArray(parsed.cpus) ? parsed.cpus : [],
+            gpus: Array.isArray(parsed.gpus) ? parsed.gpus : [],
+            rams: Array.isArray(parsed.rams) ? parsed.rams : []
+        };
+    } catch (error) {
+        console.warn('Unable to read local hardware store.', error);
+        return { cpus: [], gpus: [], rams: [] };
+    }
+}
+
+function saveAdminHardwareStore(store) {
+    try {
+        localStorage.setItem(ADMIN_HARDWARE_STORE_KEY, JSON.stringify(store));
+    } catch (error) {
+        console.warn('Unable to save local hardware store.', error);
+    }
+}
+
+function seedAdminHardwareStore() {
+    saveAdminHardwareStore({
+        cpus: adminCPUs,
+        gpus: adminGPUs,
+        rams: adminRAMs
+    });
+}
+
+function syncAdminHardwareFromStore() {
+    const store = getAdminHardwareStore();
+    adminCPUs = store.cpus;
+    adminGPUs = store.gpus;
+    adminRAMs = store.rams;
+}
+
+function addLocalHardwareItem(type, item) {
+    const store = getAdminHardwareStore();
+    const listKey = type === 'cpu' ? 'cpus' : type === 'gpu' ? 'gpus' : 'rams';
+    const modelKey = type === 'ram' ? 'model' : 'model';
+    const normalizedItemName = normalizeModelName(item[modelKey]);
+
+    if (!normalizedItemName) {
+        return { success: false, message: 'Model name is required.' };
+    }
+
+    const duplicateExists = (store[listKey] || []).some(existing => {
+        const existingName = normalizeModelName(existing[modelKey] || existing.capacity || existing.modelName || '');
+        return existingName === normalizedItemName;
+    });
+
+    if (duplicateExists) {
+        return { success: false, message: `A ${type.toUpperCase()} entry with that model name already exists.` };
+    }
+
+    store[listKey].unshift(item);
+    saveAdminHardwareStore(store);
+    syncAdminHardwareFromStore();
+    displayHardwareLists();
+
+    return { success: true };
+}
 
 // --- LOAD GAMES FOR ADMIN ---
 async function loadAdminGames() {
@@ -134,22 +247,45 @@ function editGame(index) {
 }
 
 function deleteGame(index) {
-    if (confirm('Are you sure you want to delete this game?')) {
-        showModal('Success', 'Game deleted! (Backend integration pending)');
+    const game = adminGames[index];
+    if (!game) {
+        showModal('Warning', 'Game not found.');
+        return;
     }
+
+    showModal('Delete Game', `Delete ${game.title}?`, {
+        type: 'confirm',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        onConfirm: () => {
+        adminGames.splice(index, 1);
+        displayGameList();
+            showModal('Success', 'Game deleted successfully.', { type: 'info' });
+        }
+    });
 }
 
 // --- LOAD HARDWARE FOR ADMIN ---
 async function loadAdminHardware() {
     try {
-        const [cpuRes, gpuRes, ramRes] = await Promise.all([
-            fetch('../../../MODULES/api/get-cpus.php'),
-            fetch('../../../MODULES/api/get-gpus.php'),
-            fetch('../../../MODULES/api/get-ram.php')
-        ]);
-        adminCPUs = await cpuRes.json();
-        adminGPUs = await gpuRes.json();
-        adminRAMs = await ramRes.json();
+        const store = getAdminHardwareStore();
+
+        if (store.cpus.length || store.gpus.length || store.rams.length) {
+            adminCPUs = store.cpus;
+            adminGPUs = store.gpus;
+            adminRAMs = store.rams;
+        } else {
+            const [cpuRes, gpuRes, ramRes] = await Promise.all([
+                fetch('../../../MODULES/api/get-cpus.php'),
+                fetch('../../../MODULES/api/get-gpus.php'),
+                fetch('../../../MODULES/api/get-ram.php')
+            ]);
+            adminCPUs = await cpuRes.json();
+            adminGPUs = await gpuRes.json();
+            adminRAMs = await ramRes.json();
+            seedAdminHardwareStore();
+        }
+
         displayHardwareLists();
     } catch (error) {
         console.error('Error loading hardware:', error);
@@ -162,13 +298,17 @@ function displayHardwareLists() {
     if (cpuList) {
         cpuList.innerHTML = '';
         adminCPUs.slice(0, 20).forEach((cpu, index) => {
+            const cpuName = cpu.model || cpu.cpu_model || cpu.name || 'Unknown CPU';
+            const cpuScore = cpu.score ?? cpu.cpu_score ?? 'N/A';
+            const cpuCores = cpu.cores ?? 'N/A';
+            const cpuThreads = cpu.threads ?? 'N/A';
             cpuList.innerHTML += `
                 <div class="data-item">
                     <div>
-                        <span class="item-name">${cpu.model}</span>
-                        <br><small>${cpu.cores}C/${cpu.threads}T</small>
+                        <span class="item-name">${cpuName}</span>
+                        <br><small>${cpuCores}C/${cpuThreads}T</small>
                     </div>
-                    <span class="item-score">${cpu.score}</span>
+                    <span class="item-score">${cpuScore}</span>
                 </div>
             `;
         });
@@ -182,10 +322,12 @@ function displayHardwareLists() {
     if (gpuList) {
         gpuList.innerHTML = '';
         adminGPUs.slice(0, 20).forEach((gpu, index) => {
+            const gpuName = gpu.model || gpu.gpuName || gpu.name || 'Unknown GPU';
+            const gpuScore = gpu.score ?? gpu.G3Dmark ?? 'N/A';
             gpuList.innerHTML += `
                 <div class="data-item">
-                    <span class="item-name">${gpu.model}</span>
-                    <span class="item-score">${gpu.score}</span>
+                    <span class="item-name">${gpuName}</span>
+                    <span class="item-score">${gpuScore}</span>
                 </div>
             `;
         });
@@ -199,10 +341,12 @@ function displayHardwareLists() {
     if (ramList) {
         ramList.innerHTML = '';
         adminRAMs.slice(0, 20).forEach((ram, index) => {
+            const ramName = ram.model || ram.capacity || ram.name || 'Unknown RAM';
+            const ramScore = ram.score ?? ram.benchmark ?? 'N/A';
             ramList.innerHTML += `
                 <div class="data-item">
-                    <span class="item-name">${ram.capacity}GB DDR4-${ram.speed}</span>
-                    <span class="item-score">${ram.score}</span>
+                    <span class="item-name">${ramName}</span>
+                    <span class="item-score">${ramScore}</span>
                 </div>
             `;
         });
@@ -313,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (gameForm) {
         gameForm.addEventListener("submit", function(e) {
             e.preventDefault();
-            showModal('Success', 'Game added/updated! (Backend integration pending)');
+            showModal('Success', 'Game added/updated!');
         });
     }
 
@@ -322,7 +466,29 @@ document.addEventListener('DOMContentLoaded', function() {
     if (cpuForm) {
         cpuForm.addEventListener("submit", function(e) {
             e.preventDefault();
-            showModal('Success', 'CPU saved! (Backend integration pending)');
+
+            const model = document.getElementById('cpuModel')?.value.trim();
+            const score = Number(document.getElementById('cpuScore')?.value);
+
+            if (!model || !Number.isFinite(score) || score <= 0) {
+                showModal('Warning', 'Please enter a valid CPU model and benchmark score.');
+                return;
+            }
+
+            const result = addLocalHardwareItem('cpu', {
+                model,
+                score,
+                cores: 0,
+                threads: 0
+            });
+
+            if (!result.success) {
+                showModal('Warning', result.message);
+                return;
+            }
+
+            cpuForm.reset();
+            showModal('Success', 'CPU saved locally.');
         });
     }
 
@@ -331,7 +497,27 @@ document.addEventListener('DOMContentLoaded', function() {
     if (gpuForm) {
         gpuForm.addEventListener("submit", function(e) {
             e.preventDefault();
-            showModal('Success', 'GPU saved! (Backend integration pending)');
+
+            const model = document.getElementById('gpuModel')?.value.trim();
+            const score = Number(document.getElementById('gpuScore')?.value);
+
+            if (!model || !Number.isFinite(score) || score <= 0) {
+                showModal('Warning', 'Please enter a valid GPU model and benchmark score.');
+                return;
+            }
+
+            const result = addLocalHardwareItem('gpu', {
+                model,
+                score
+            });
+
+            if (!result.success) {
+                showModal('Warning', result.message);
+                return;
+            }
+
+            gpuForm.reset();
+            showModal('Success', 'GPU saved locally.');
         });
     }
 
@@ -340,7 +526,27 @@ document.addEventListener('DOMContentLoaded', function() {
     if (ramForm) {
         ramForm.addEventListener("submit", function(e) {
             e.preventDefault();
-            showModal('Success', 'RAM saved! (Backend integration pending)');
+
+            const model = document.getElementById('ramModel')?.value.trim();
+            const score = Number(document.getElementById('ramScore')?.value);
+
+            if (!model || !Number.isFinite(score) || score <= 0) {
+                showModal('Warning', 'Please enter a valid RAM model and benchmark score.');
+                return;
+            }
+
+            const result = addLocalHardwareItem('ram', {
+                model,
+                score
+            });
+
+            if (!result.success) {
+                showModal('Warning', result.message);
+                return;
+            }
+
+            ramForm.reset();
+            showModal('Success', 'RAM saved locally.');
         });
     }
 });
