@@ -11,7 +11,7 @@ CREATE TABLE users (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY uq_users_username (username),
     UNIQUE KEY uq_users_email (email)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) 
 
 CREATE TABLE cpu_benchmarks (
     cpu_model VARCHAR(255) NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE cpu_benchmarks (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (cpu_model),
     INDEX idx_cpu_score (cpu_score)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) 
 
 CREATE TABLE gpu_benchmarks (
     gpuName VARCHAR(255) NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE gpu_benchmarks (
     PRIMARY KEY (gpuName),
     INDEX idx_gpu_g3dmark (G3Dmark),
     INDEX idx_gpu_g2dmark (G2Dmark)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) 
 
 CREATE TABLE games (
     game_title VARCHAR(255) NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE games (
     PRIMARY KEY (game_title),
     INDEX idx_games_cpu_benchmark (game_cpu_benchmark),
     INDEX idx_games_gpu_benchmark (game_gpu_benchmark)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) 
 
 CREATE TABLE reviews (
     review_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -82,4 +82,4 @@ CREATE TABLE reviews (
     INDEX idx_reviews_game_title (game_title),
     INDEX idx_reviews_user_id (user_id),
     INDEX idx_reviews_created_at (created_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) 

@@ -9,7 +9,7 @@ import numpy as np
 import time
 
 try:
-    df = pd.read_csv('./DATA/benchmark-data.csv')
+    df = pd.read_csv('../DATA/benchmark-data.csv')
 except FileNotFoundError:
     print("Error: Dataset file not found. Please check the file path.")
     exit()
