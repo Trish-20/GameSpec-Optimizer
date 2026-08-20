@@ -38,6 +38,14 @@
         </div>
     </div>
 
+    <div id="noGameMessage" class="no-results-state" style="display: none;">
+        <div class="no-results-icon-wrap">
+            <i class="fas fa-magnifying-glass"></i>
+        </div>
+        <h3>No games found</h3>
+        <p>Try searching for a different game or genre.</p>
+    </div>
+
     <!-- Scrollable Game Section -->
     <div class="game-section">
         <div id="gameGrid" class="game-grid">

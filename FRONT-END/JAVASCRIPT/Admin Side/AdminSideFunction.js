@@ -220,12 +220,31 @@ function displayGameList() {
 }
 
 function filterGameList() {
+
     const search = document.getElementById('gameSearch')?.value.toLowerCase() || '';
     const items = document.querySelectorAll('#gameList .data-item');
+    const noGameMessage = document.getElementById('noGameMessage');
+
+    let found = false;
     items.forEach(item => {
+
         const name = item.querySelector('.item-name')?.textContent.toLowerCase() || '';
-        item.style.display = name.includes(search) ? 'flex' : 'none';
+
+        if (name.includes(search)) {
+            item.style.display = 'flex';
+            found = true;
+        } else {
+            item.style.display = 'none';
+        }
+
     });
+
+    // Show message only when searching and no game matches
+    if (!found && search !== '') {
+        noGameMessage.style.display = 'block';
+    } else {
+        noGameMessage.style.display = 'none';
+    }
 }
 
 function editGame(index) {

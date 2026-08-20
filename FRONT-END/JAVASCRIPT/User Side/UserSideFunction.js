@@ -472,12 +472,14 @@ function loadGameGrid() {
 function filterGames() {
     const searchTerm = document.getElementById('gameSearch')?.value.toLowerCase() || '';
     const genreFilter = document.getElementById('genreFilter')?.value || '';
-    
+    const noGameMessage = document.getElementById('noGameMessage');
     const cards = document.querySelectorAll('.game-card');
-    
+
+    let found = false;
+
     cards.forEach(card => {
-        const title = card.dataset.title;
-        
+        const title = card.dataset.title || '';
+
         const matchesSearch = title.includes(searchTerm);
 
         // Filter related games when genreFilter is set.
@@ -504,10 +506,16 @@ function filterGames() {
             ? true
             : keywords.some(k => titleLower.includes(k) || desc.includes(k));
 
+        const isVisible = matchesSearch && matchesGenre;
+        card.style.display = isVisible ? 'block' : 'none';
 
-        card.style.display = (matchesSearch && matchesGenre) ? 'block' : 'none';
-
+        if (isVisible) found = true;
     });
+
+    const isFiltering = searchTerm !== '' || genreFilter !== '';
+    if (noGameMessage) {
+        noGameMessage.style.display = isFiltering && !found ? 'block' : 'none';
+    }
 }
 
 const sampleFeedbackData = [
@@ -1365,12 +1373,26 @@ async function predictFPS() {
         if (estimatedFPS >= 75) fpsClass = 'fps-good';
         else if (estimatedFPS < 45) fpsClass = 'fps-bad';
 
+        const performanceSummary = estimatedFPS >= 75
+            ? 'Your PC should run this game smoothly.'
+            : estimatedFPS >= 45
+                ? 'Your PC should run this game with some settings adjustments.'
+                : 'Your PC may need lower settings or a hardware upgrade.';
+
+        const performanceTitle = estimatedFPS >= 75
+            ? 'Excellent performance'
+            : estimatedFPS >= 45
+                ? 'Playable performance'
+                : 'Performance may be limited';
+
         let html = '';
 
         html += `
             <div class="fps-display ${fpsClass}">
+                <div class="fps-summary-title">${performanceTitle}</div>
                 <div class="fps-value">${estimatedFPS}</div>
-                <div class="fps-label">Estimated FPS</div>
+                <div class="fps-label">Estimated frames per second</div>
+                <p class="fps-summary-text">${performanceSummary}</p>
             </div>
         `;
 
@@ -1391,21 +1413,24 @@ async function predictFPS() {
 
         html += `
             <div class="result-section">
-                <h4>Hardware vs Game Requirements</h4>
-                <div class="bar-chart">
+                <h4>Can your PC run this game?</h4>
+                <p class="result-explanation">The comparison below shows whether each part of your PC meets the game's minimum requirement.</p>
+                <details class="technical-details">
+                    <summary>View hardware comparison</summary>
+                    <div class="bar-chart">
                     <div class="bar-item">
                         <div class="bar-label">
                             <span>CPU</span>
-                            <span>${cpuOK ? 'Pass' : 'Below'}</span>
+                            <span>${cpuOK ? 'Meets requirement' : 'Needs attention'}</span>
                         </div>
                         <div class="bar-row">
-                            <span class="bar-model-name">Your: ${cpuName}</span>
+                            <span class="bar-model-name">Your CPU: ${cpuName}</span>
                             <div class="bar-container">
                                 <div class="bar-fill user" style="width: ${(cpuScoreNum / maxScore) * 100}%">${cpuScoreNum}</div>
                             </div>
                         </div>
                         <div class="bar-row">
-                            <span class="bar-model-name">Req: ${selectedGame.cpu_model || 'Min Required'}</span>
+                            <span class="bar-model-name">Minimum needed: ${selectedGame.cpu_model || 'Required level'}</span>
                             <div class="bar-container">
                                 <div class="bar-fill game" style="width: ${(selectedGame.cpu_benchmark / maxScore) * 100}%">${selectedGame.cpu_benchmark}</div>
                             </div>
@@ -1415,16 +1440,16 @@ async function predictFPS() {
                     <div class="bar-item">
                         <div class="bar-label">
                             <span>GPU</span>
-                            <span>${gpuOK ? 'Pass' : 'Below'}</span>
+                            <span>${gpuOK ? 'Meets requirement' : 'Needs attention'}</span>
                         </div>
                         <div class="bar-row">
-                            <span class="bar-model-name">Your: ${gpuName}</span>
+                            <span class="bar-model-name">Your graphics card: ${gpuName}</span>
                             <div class="bar-container">
                                 <div class="bar-fill user" style="width: ${(gpuScoreNum / maxScore) * 100}%">${gpuScoreNum}</div>
                             </div>
                         </div>
                         <div class="bar-row">
-                            <span class="bar-model-name">Req: ${selectedGame.gpu_model || 'Min Required'}</span>
+                            <span class="bar-model-name">Minimum needed: ${selectedGame.gpu_model || 'Required level'}</span>
                             <div class="bar-container">
                                 <div class="bar-fill game" style="width: ${(selectedGame.gpu_benchmark / maxScore) * 100}%">${selectedGame.gpu_benchmark}</div>
                             </div>
@@ -1434,16 +1459,16 @@ async function predictFPS() {
                     <div class="bar-item">
                         <div class="bar-label">
                             <span>RAM</span>
-                            <span>${ramOK ? 'Pass' : 'Below'}</span>
+                            <span>${ramOK ? 'Meets requirement' : 'Needs attention'}</span>
                         </div>
                         <div class="bar-row">
-                            <span class="bar-model-name">Your: ${ramGB} GB</span>
+                            <span class="bar-model-name">Your memory: ${ramGB} GB</span>
                             <div class="bar-container">
                                 <div class="bar-fill user" style="width: ${(ramScoreNum / maxScore) * 100}%">${ramScoreNum}</div>
                             </div>
                         </div>
                         <div class="bar-row">
-                            <span class="bar-model-name">Req: ${selectedGame.ram_model || (selectedGame.ram_benchmark / 250) + ' GB'}</span>
+                            <span class="bar-model-name">Minimum needed: ${selectedGame.ram_model || (selectedGame.ram_benchmark / 250) + ' GB'}</span>
                             <div class="bar-container">
                                 <div class="bar-fill game" style="width: ${(selectedGame.ram_benchmark / maxScore) * 100}%">${selectedGame.ram_benchmark}</div>
                             </div>
@@ -1454,18 +1479,19 @@ async function predictFPS() {
                     <span><span class="legend-dot user"></span> Your Hardware</span>
                     <span><span class="legend-dot game"></span> Game Requirement</span>
                 </div>
+                </details>
             </div>
         `;
 
         const graphicsSuggestions = buildGraphicsSuggestions(fpsDelta, quality);
         const suggestionTone = fpsDelta >= 0 ? 'success' : 'warning';
         const suggestionHeading = fpsDelta >= 15
-            ? 'You have graphics headroom'
+            ? 'Your PC can handle higher graphics settings'
             : fpsDelta >= 5
-                ? 'You can slightly improve graphics'
+                ? 'You can improve the graphics a little'
                 : fpsDelta > 0
-                    ? 'You are close to the target'
-                    : 'Suggested Settings to Improve FPS';
+                    ? 'Your PC is close to the recommended performance'
+                    : 'How to improve game performance';
 
         html += `
             <div class="result-section ${suggestionTone}">
