@@ -43,7 +43,10 @@
             <i class="fas fa-magnifying-glass"></i>
         </div>
         <h3>No games found</h3>
-        <p>Try searching for a different game or genre.</p>
+        <p>We couldn't find any games matching your search.<br>Try a different game name or genre.</p>
+        <button class="clear-search-btn" onclick="clearGameSearch()">
+            <i class="fas fa-times"></i> Clear search
+        </button>
     </div>
 
     <!-- Scrollable Game Section -->

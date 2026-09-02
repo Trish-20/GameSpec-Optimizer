@@ -469,6 +469,18 @@ function loadGameGrid() {
     });
 }
 
+function clearGameSearch() {
+    const searchInput = document.getElementById('gameSearch');
+    const genreFilter = document.getElementById('genreFilter');
+    const noGameMessage = document.getElementById('noGameMessage');
+
+    if (searchInput) searchInput.value = '';
+    if (genreFilter) genreFilter.value = '';
+    if (noGameMessage) noGameMessage.style.display = 'none';
+
+    filterGames();
+}
+
 function filterGames() {
     const searchTerm = document.getElementById('gameSearch')?.value.toLowerCase() || '';
     const genreFilter = document.getElementById('genreFilter')?.value || '';
@@ -480,12 +492,8 @@ function filterGames() {
     cards.forEach(card => {
         const title = card.dataset.title || '';
 
-        const matchesSearch = title.includes(searchTerm);
+        const matchesSearch = title.toLowerCase().includes(searchTerm);
 
-        // Filter related games when genreFilter is set.
-        // The browse-games filter uses a selector value like: action, rpg, fps, adventure, etc.
-        // Our CSV doesn't include genres, so we map selector values to keywords found in the game title/description.
-        // When genreFilter is set, we show all cards that match the selected category keyword.
         const desc = (card.dataset.description || '').toLowerCase();
         const titleLower = title.toLowerCase();
 

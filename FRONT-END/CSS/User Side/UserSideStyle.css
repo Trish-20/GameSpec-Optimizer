@@ -442,9 +442,8 @@
     }
 
     .no-results-state i {
-        color: rgba(171, 183, 250, 0.85);
-        font-size: 40px;
-        transform: rotate(-18deg);
+        color: var(--color-brand);
+        font-size: 40px;    
     }
 
     .no-results-state h3 {
@@ -455,10 +454,35 @@
     }
 
     .no-results-state p {
-        margin: 8px 0 0;
+        margin: 8px 0 24px;
         font-size: 1rem;
         color: var(--color-text-muted);
         font-weight: 400;
+    }
+
+    .clear-search-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 28px;
+        background: transparent;
+        border: 2px solid var(--color-brand);
+        color: var(--color-brand);
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .clear-search-btn:hover {
+        background: var(--color-brand);
+        color: var(--bg-main);
+        box-shadow: 0 4px 12px rgba(181, 255, 61, 0.3);
+    }
+
+    .clear-search-btn i {
+        font-size: 16px;
     }
 
     .game-section {
@@ -472,13 +496,15 @@
         border-radius: 16px;
         overflow: hidden;
         border: 1px solid rgba(255, 255, 255, 0.03);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
         cursor: pointer;
+        filter: brightness(0.96);
     }
 
     .game-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        transform: translateY(-4px);
+        box-shadow: 0 0 0 1px rgba(181, 255, 61, 0.12), 0 12px 28px rgba(0, 0, 0, 0.38);
+        filter: brightness(1.08) saturate(1.05);
     }
 
     .game-card .game-image {
@@ -493,6 +519,11 @@
         justify-content: center;
         color: var(--color-text-muted);
         font-size: 48px;
+        transition: filter 0.25s ease, transform 0.25s ease;
+    }
+
+    .game-card:hover .game-image {
+        filter: brightness(1.08) saturate(1.05);
     }
 
     .game-card .game-image img {
@@ -1991,11 +2022,6 @@ a:focus-visible {
 
 .content {
     max-width: 100%;
-}
-
-#gameGrid {
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-    align-items: stretch;
 }
 
 .game-card {
