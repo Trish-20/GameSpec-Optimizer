@@ -676,6 +676,37 @@
         padding-bottom: 10px;
     }
 
+    .hardware-guide {
+        margin: -4px 0 18px;
+        padding: 12px 14px;
+        border-left: 3px solid var(--color-brand);
+        background: rgba(181, 255, 61, 0.08);
+        color: var(--color-text-muted);
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .hardware-guide strong {
+        color: var(--color-text-main);
+    }
+
+    .hardware-guide kbd,
+    .hardware-guide code {
+        padding: 2px 5px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--color-text-main);
+        font-family: inherit;
+        font-size: 12px;
+    }
+
+    .input-help {
+        margin: 6px 0 0;
+        color: var(--color-text-muted);
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
     .fps-input-panel label {
         display: block;
         color: var(--color-text-muted);
@@ -818,7 +849,51 @@
         padding:25px;
         box-sizing:border-box;
         overflow-y:auto;
-        max-height:671px;
+        position:relative;
+    }
+
+    .fps-legend {
+        position: absolute;
+        top: 16px;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--color-text-muted);
+        font-size: 11px;
+        line-height: 1.3;
+        z-index: 1;
+    }
+
+    .fps-legend strong {
+        color: var(--color-text-main);
+        font-size: 12px;
+    }
+
+    .fps-legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+    }
+
+    .fps-legend-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    .fps-legend-dot.good {
+        background: #10b981;
+    }
+
+    .fps-legend-dot.ok {
+        background: #f59e0b;
+    }
+
+    .fps-legend-dot.bad {
+        background: #ef4444;
     }
 
     .results-placeholder {
@@ -1221,6 +1296,18 @@
         gap: 8px;
     }
 
+    .graphics-setting {
+        text-decoration: underline;
+        text-decoration-style: dotted;
+        text-underline-offset: 3px;
+        cursor: help;
+    }
+
+    .graphics-setting:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
     .suggestion-list.downgrade li {
         background: rgba(245, 158, 11, 0.1);
         color: #f59e0b;
@@ -1542,6 +1629,13 @@
 
         .fps-results-panel{
             max-height:none;
+        }
+
+        .fps-legend {
+            position: static;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            margin: 0 0 12px;
         }
 
     }

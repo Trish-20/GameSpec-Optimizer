@@ -17,6 +17,11 @@
         <div class="fps-layout">
             <div class="fps-input-panel">
                 <h3>Hardware Configuration</h3>
+
+                <div class="hardware-guide" role="note">
+                    <strong>Where to find your hardware:</strong>
+                    Press <kbd>Windows</kbd> + <kbd>R</kbd>, type <code>dxdiag</code>, and press Enter. Find your CPU/Processor and RAM on the <strong>System</strong> tab. Find your graphics card/GPU on the <strong>Display</strong> tab.
+                </div>
                 
                 <label>Select a Game:</label>
                 <div class="search-dropdown" id="gameDropdown">
@@ -55,6 +60,7 @@
                     <option value="medium">Medium</option>
                     <option value="high">High</option>
                 </select>
+                <p class="input-help">Choose the visual quality you plan to use in the game. Higher quality looks better but usually lowers FPS.</p>
                 
                 <label for="performanceMode">Performance Mode:</label>
                 <select id="performanceMode">
@@ -62,6 +68,7 @@
                     <option value="balanced" selected>Balanced</option>
                     <option value="performance">Performance</option>
                 </select>
+                <p class="input-help">Choose your computer's current power mode. Check it in Windows under Settings &gt; System &gt; Power &amp; battery &gt; Power mode.</p>
 
                 <div class="fps-action-row">
                     <button type="button" class="detect-hardware-btn" onclick="detectHardware()">Detect Hardware</button>
@@ -70,6 +77,12 @@
             </div>
 
             <div class="fps-results-panel" id="fpsResultsPanel">
+                <div class="fps-legend" aria-label="FPS performance legend">
+                    <strong>FPS rating</strong>
+                    <span><i class="fps-legend-dot good"></i> Good: 75+</span>
+                    <span><i class="fps-legend-dot ok"></i> Playable: 45-74</span>
+                    <span><i class="fps-legend-dot bad"></i> Low: below 45</span>
+                </div>
                 <div class="results-placeholder">
                     <div class="placeholder-icon"><i class="fas fa-chart-line"></i></div>
                     <p>Configure your hardware and click "Analyze Performance" to see results</p>
