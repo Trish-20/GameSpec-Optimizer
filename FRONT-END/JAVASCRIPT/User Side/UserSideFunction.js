@@ -2296,22 +2296,29 @@ function runBenchmark() {
 }
 
 const graphicsSettingBudget = [
-    { name: 'Bloom', fps: 6, direction: 'up', visual: 'high' },
-    { name: 'Anti-Aliasing', fps: 5, direction: 'up', visual: 'high' },
-    { name: 'Shadow Quality', fps: 8, direction: 'up', visual: 'high' },
-    { name: 'Ambient Occlusion', fps: 7, direction: 'up', visual: 'medium' },
-    { name: 'Texture Quality', fps: 4, direction: 'up', visual: 'medium' },
-    { name: 'VSync', fps: 2, direction: 'down', visual: 'low' },
-    { name: 'Motion Blur', fps: 3, direction: 'down', visual: 'low' }
+    { name: 'Bloom', fps: 6, direction: 'up', visual: 'high', description: 'Adds a soft glow around bright lights. It looks more cinematic but uses a little extra performance.' },
+    { name: 'Anti-Aliasing', fps: 5, direction: 'up', visual: 'high', description: 'Smooths jagged edges on objects. Higher settings make the image cleaner but can reduce performance.' },
+    { name: 'Shadow Quality', fps: 8, direction: 'up', visual: 'high', description: 'Controls how detailed and realistic shadows look. Higher settings can use a lot of performance.' },
+    { name: 'Ambient Occlusion', fps: 7, direction: 'up', visual: 'medium', description: 'Adds soft shadows where objects meet, making the world look more three-dimensional. It costs some performance.' },
+    { name: 'Texture Quality', fps: 4, direction: 'up', visual: 'medium', description: 'Controls the sharpness of surfaces such as walls and clothing. Higher settings use more video memory and a little more performance.' },
+    { name: 'VSync', fps: 2, direction: 'down', visual: 'low', description: 'Matches the game frame rate to your monitor to reduce visible image tearing. Turning it off may improve performance but can cause tearing.' },
+    { name: 'Motion Blur', fps: 3, direction: 'down', visual: 'low', description: 'Adds blur during fast camera movement. Turning it off usually makes the image clearer and can improve performance slightly.' }
 ];
+
+function formatGraphicsSetting(name) {
+    const setting = graphicsSettingBudget.find(item => item.name === name);
+    if (!setting) return name;
+
+    return `<span class="graphics-setting" title="${setting.description}" tabindex="0">${setting.name}</span>`;
+}
 
 function buildGraphicsSuggestions(fpsDelta, currentQuality) {
     const suggestions = [];
 
     if (fpsDelta >= 15) {
         suggestions.push(`You have enough headroom to raise visuals by about ${fpsDelta} FPS.`);
-        suggestions.push(`Enable Bloom and move Anti-Aliasing up to TAA.`);
-        suggestions.push(`Increase Shadow Quality and consider Ambient Occlusion.`);
+        suggestions.push(`Enable ${formatGraphicsSetting('Bloom')} and move ${formatGraphicsSetting('Anti-Aliasing')} up to TAA.`);
+        suggestions.push(`Increase ${formatGraphicsSetting('Shadow Quality')} and consider ${formatGraphicsSetting('Ambient Occlusion')}.`);
 
         if (currentQuality === 'low') {
             suggestions.push('Increase Graphics Quality from Low to Medium.');
@@ -2322,30 +2329,30 @@ function buildGraphicsSuggestions(fpsDelta, currentQuality) {
         const upgradeChoices = graphicsSettingBudget
             .filter(setting => setting.direction === 'up' && setting.fps <= fpsDelta)
             .sort((a, b) => b.fps - a.fps)
-            .map(setting => `Raise ${setting.name} (+~${setting.fps} FPS headroom needed)`);
+            .map(setting => `Raise ${formatGraphicsSetting(setting.name)} (+~${setting.fps} FPS headroom needed)`);
 
         suggestions.push(...upgradeChoices.slice(0, 3));
     } else if (fpsDelta >= 5) {
         suggestions.push(`You have a small buffer of about ${fpsDelta} FPS.`);
-        suggestions.push('You can safely raise Anti-Aliasing or Texture Quality.');
-        suggestions.push('If you want more visual clarity, try Bloom or a higher preset.');
+        suggestions.push(`You can safely raise ${formatGraphicsSetting('Anti-Aliasing')} or ${formatGraphicsSetting('Texture Quality')}.`);
+        suggestions.push(`If you want more visual clarity, try ${formatGraphicsSetting('Bloom')} or a higher preset.`);
 
         if (currentQuality === 'low') {
             suggestions.push('Increase Graphics Quality from Low to Medium first.');
         }
     } else if (fpsDelta > 0) {
         suggestions.push(`You are only ${fpsDelta} FPS above the target, so keep settings conservative.`);
-        suggestions.push('Prefer small changes like Texture Quality or Anti-Aliasing only.');
+        suggestions.push(`Prefer small changes like ${formatGraphicsSetting('Texture Quality')} or ${formatGraphicsSetting('Anti-Aliasing')} only.`);
     } else {
-        const deficit = Math.abs(fpsDelta);
+        const deficit = Math.round(Math.abs(fpsDelta) * 100 / 100);
         suggestions.push(`You are about ${deficit} FPS below the target.`);
-        suggestions.push('Lower Shadow Quality first, then disable Bloom if needed.');
-        suggestions.push('Reduce Anti-Aliasing or switch to FXAA for a quick gain.');
+        suggestions.push(`Lower ${formatGraphicsSetting('Shadow Quality')} first, then disable ${formatGraphicsSetting('Bloom')} if needed.`);
+        suggestions.push(`Reduce ${formatGraphicsSetting('Anti-Aliasing')} or switch to FXAA for a quick gain.`);
 
         const downgradeChoices = graphicsSettingBudget
             .filter(setting => setting.direction === 'down' && setting.fps <= deficit)
             .sort((a, b) => b.fps - a.fps)
-            .map(setting => `Lower or disable ${setting.name} (recover ~${setting.fps} FPS)`);
+            .map(setting => `Lower or disable ${formatGraphicsSetting(setting.name)} (recover ~${setting.fps} FPS)`);
 
         suggestions.push(...downgradeChoices.slice(0, 3));
 
@@ -2513,6 +2520,12 @@ async function predictFPS() {
         let html = '';
 
         html += `
+            <div class="fps-legend" aria-label="FPS performance legend">
+                <strong>FPS rating</strong>
+                <span><i class="fps-legend-dot good"></i> Good: 75+</span>
+                <span><i class="fps-legend-dot ok"></i> Playable: 45-74</span>
+                <span><i class="fps-legend-dot bad"></i> Low: below 45</span>
+            </div>
             <div class="fps-display ${fpsClass}">
                 <div class="fps-summary-title">${performanceTitle}</div>
                 <div class="fps-value">${estimatedFPS}</div>
