@@ -166,6 +166,1123 @@ function closeModal() {
     }
 }
 
+function showPageHelp(pageKey) {
+    const svgToDataUrl = (svgMarkup) => `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svgMarkup)}`;
+
+    // Present each explanation and its illustration as separate, alternating
+    // screens: information → image → information → image.
+    const steps = (helpContent[pageKey] || helpContent.browse).flatMap(({ title, text, image }) => {
+        const infoStep = { type: 'info', title, text };
+        const imageStep = image ? { type: 'image', title, image } : null;
+
+        return imageStep ? [infoStep, imageStep] : [infoStep];
+    });
+    const modalId = 'pageHelpModal';
+    let modal = document.getElementById(modalId);
+
+    const helpContent = {
+    browse: [
+        {
+            title: 'Browse & Discover Games',
+            text: `Looking for a specific game or something new to try?
+
+Browse our collection of available games all in one place. Use the search bar to quickly find a game by name, or use the genre filter to explore titles based on your preferences.
+
+Select any game to view its optimization details, recommended settings, and other helpful information.`,
+            image: '../../RES/tutorials/browse-games/search_engine.png'
+        },
+
+        {
+            title: 'Search for your favorite game',
+            text: `Looking for a specific title? Simply enter the game name in the search box to quickly find it in our database.
+
+Try searching for games like "Cyberpunk", "Fortnite", or "Diablo".
+
+Results will appear as you type, making it easy to find what you're looking for.`,
+            image: '../../RES/tutorials/browse-games/search_result.png'
+        },
+
+        {
+            title: 'Filter games by genre',
+            text: `Want to explore games by category? Click the Filter button to browse titles based on their genre.
+
+Choose from Action, RPG, FPS, Adventure, Sports, Racing, Strategy, or Sandbox.
+
+Use filters to quickly discover games that fit your interests.`,
+            image: '../../RES/tutorials/browse-games/filter_genre.png'
+        },
+
+        {
+            title: 'Browse game cards',
+            text: `Scroll through the game cards displayed below.
+
+Each card shows the game name and a preview image to help you recognize titles.
+
+Click any card to explore more details.`,
+            image: svgToDataUrl(`
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="800"
+                     height="300"
+                     viewBox="0 0 800 300">
+
+                    <rect width="800" height="300" fill="#11151d"/>
+
+                    <rect x="60" y="40"
+                          width="210" height="220"
+                          rx="16"
+                          fill="#202833"
+                          stroke="#2d3644"
+                          stroke-width="2"/>
+
+                    <rect x="300" y="40"
+                          width="210" height="220"
+                          rx="16"
+                          fill="#202833"
+                          stroke="#2d3644"
+                          stroke-width="2"/>
+
+                    <rect x="540" y="40"
+                          width="200" height="220"
+                          rx="16"
+                          fill="#202833"
+                          stroke="#2d3644"
+                          stroke-width="2"/>
+
+                    <rect x="80" y="60"
+                          width="174" height="100"
+                          rx="12"
+                          fill="#151b23"/>
+
+                    <rect x="320" y="60"
+                          width="174" height="100"
+                          rx="12"
+                          fill="#151b23"/>
+
+                    <rect x="560" y="60"
+                          width="160" height="100"
+                          rx="12"
+                          fill="#151b23"/>
+
+                    <text x="167" y="195"
+                          fill="#edf3ff"
+                          font-size="16"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        Cyberpunk
+                    </text>
+
+                    <text x="405" y="195"
+                          fill="#edf3ff"
+                          font-size="16"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        Fortnite
+                    </text>
+
+                    <text x="640" y="195"
+                          fill="#edf3ff"
+                          font-size="16"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        Diablo
+                    </text>
+
+                    <text x="400" y="270"
+                          fill="#b5ff3d"
+                          font-size="18"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        Click any card to explore
+                    </text>
+
+                </svg>
+            `)
+        },
+
+        {
+            title: 'Click a game to view details',
+            text: `Clicking a game card will show you detailed information.
+
+You'll see recommended CPU, GPU, RAM, and system requirements.
+
+Use this info to check if your system can run the game well.`,
+            image: svgToDataUrl(`
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="800"
+                     height="300"
+                     viewBox="0 0 800 300">
+
+                    <rect width="800" height="300" fill="#11151d"/>
+
+                    <rect x="80" y="40"
+                          width="250" height="240"
+                          rx="16"
+                          fill="#202833"
+                          stroke="#c7ff5c"
+                          stroke-width="3"/>
+
+                    <rect x="100" y="60"
+                          width="210" height="110"
+                          rx="12"
+                          fill="#151b23"/>
+
+                    <text x="205" y="185"
+                          fill="#edf3ff"
+                          font-size="18"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle"
+                          font-weight="bold">
+                        Game Title
+                    </text>
+
+                    <text x="205" y="210"
+                          fill="#b5ff3d"
+                          font-size="12"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        CPU: Intel i9
+                    </text>
+
+                    <text x="205" y="230"
+                          fill="#b5ff3d"
+                          font-size="12"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        GPU: RTX 4080
+                    </text>
+
+                    <text x="205" y="250"
+                          fill="#b5ff3d"
+                          font-size="12"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        RAM: 32 GB
+                    </text>
+
+                    <path d="M350 160 L420 160"
+                          stroke="#c7ff5c"
+                          stroke-width="3"
+                          stroke-linecap="round"/>
+
+                    <path d="M410 150 L420 160 L410 170"
+                          stroke="#c7ff5c"
+                          stroke-width="3"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          fill="none"/>
+
+                    <text x="500" y="180"
+                          fill="#edf3ff"
+                          font-size="16"
+                          font-family="Arial, sans-serif">
+                        Details appear
+                    </text>
+
+                </svg>
+            `)
+        }
+    ],
+
+    predict: [
+        {
+            title: 'This is the FPS Prediction tab',
+            text: `Here you can estimate how many frames per second (FPS) a game will run on your system.
+
+FPS determines how smooth your gameplay will be.
+
+Higher FPS = smoother gaming experience.`,
+            image: svgToDataUrl(`
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="800"
+                     height="300"
+                     viewBox="0 0 800 300">
+
+                    <rect width="800" height="300" fill="#11151d"/>
+
+                    <rect x="50" y="30"
+                          width="700" height="240"
+                          rx="16"
+                          fill="#1d2330"
+                          stroke="#2d3644"
+                          stroke-width="2"/>
+
+                    <text x="400" y="70"
+                          fill="#c7ff5c"
+                          font-size="24"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle"
+                          font-weight="bold">
+                        FPS Prediction Tab
+                    </text>
+
+                    <rect x="80" y="95"
+                          width="640"
+                          height="155"
+                          rx="12"
+                          fill="#1c232d"
+                          stroke="#c7ff5c"
+                          stroke-width="1"/>
+
+                    <text x="400" y="180"
+                          fill="#8e98b3"
+                          font-size="16"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        Select Game &amp; Hardware
+                    </text>
+
+                </svg>
+            `)
+        },
+
+        {
+            title: 'Select a game to test',
+            text: `Click on the game dropdown and search or select the title.
+
+You can type the game name to quickly find it.
+
+The selected game determines the performance requirements.`,
+            image: svgToDataUrl(`
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="800"
+                     height="300"
+                     viewBox="0 0 800 300">
+
+                    <rect width="800" height="300" fill="#11151d"/>
+
+                    <text x="400" y="50"
+                          fill="#edf3ff"
+                          font-size="20"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle"
+                          font-weight="bold">
+                        Select a Game
+                    </text>
+
+                    <rect x="100" y="75"
+                          width="600"
+                          height="55"
+                          rx="12"
+                          fill="#1c232d"
+                          stroke="#c7ff5c"
+                          stroke-width="2"/>
+
+                    <circle cx="140"
+                            cy="107"
+                            r="10"
+                            fill="#c7ff5c"/>
+
+                    <text x="170" y="115"
+                          fill="#dfe8f7"
+                          font-size="20"
+                          font-family="Arial, sans-serif">
+                        Search for a game...
+                    </text>
+
+                    <path d="M650 100 L680 100"
+                          stroke="#c7ff5c"
+                          stroke-width="2"
+                          stroke-linecap="round"/>
+
+                    <text x="400" y="200"
+                          fill="#b5ff3d"
+                          font-size="18"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        Type or click to select
+                    </text>
+
+                </svg>
+            `)
+        },
+
+        {
+            title: 'Choose your CPU',
+            text: `Select the CPU (processor) from your computer.
+
+Or select one you are thinking about buying.
+
+Your CPU affects overall performance and frame rate.`,
+            image: svgToDataUrl(`
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="800"
+                     height="300"
+                     viewBox="0 0 800 300">
+
+                    <rect width="800" height="300" fill="#11151d"/>
+
+                    <text x="400" y="50"
+                          fill="#edf3ff"
+                          font-size="20"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle"
+                          font-weight="bold">
+                        Select CPU
+                    </text>
+
+                    <rect x="150" y="80"
+                          width="500"
+                          height="55"
+                          rx="12"
+                          fill="#1c232d"
+                          stroke="#c7ff5c"
+                          stroke-width="2"/>
+
+                    <circle cx="190"
+                            cy="112"
+                            r="10"
+                            fill="#c7ff5c"/>
+
+                    <text x="220" y="120"
+                          fill="#dfe8f7"
+                          font-size="18"
+                          font-family="Arial, sans-serif">
+                        e.g., Intel i7, AMD Ryzen 9
+                    </text>
+
+                    <path d="M630 105 L660 105"
+                          stroke="#c7ff5c"
+                          stroke-width="2"
+                          stroke-linecap="round"/>
+
+                    <text x="400" y="200"
+                          fill="#b5ff3d"
+                          font-size="18"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        Select your processor
+                    </text>
+
+                </svg>
+            `)
+        },
+
+        {
+            title: 'Choose your GPU',
+            text: `Select your graphics card (GPU).
+
+This is the most important factor for gaming performance.
+
+A better GPU means higher FPS and better graphics quality.`,
+            image: svgToDataUrl(`
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="800"
+                     height="300"
+                     viewBox="0 0 800 300">
+
+                    <rect width="800" height="300" fill="#11151d"/>
+
+                    <text x="400" y="50"
+                          fill="#edf3ff"
+                          font-size="20"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle"
+                          font-weight="bold">
+                        Select GPU
+                    </text>
+
+                    <rect x="150" y="80"
+                          width="500"
+                          height="55"
+                          rx="12"
+                          fill="#1c232d"
+                          stroke="#c7ff5c"
+                          stroke-width="2"/>
+
+                    <circle cx="190"
+                            cy="112"
+                            r="10"
+                            fill="#c7ff5c"/>
+
+                    <text x="220" y="120"
+                          fill="#dfe8f7"
+                          font-size="18"
+                          font-family="Arial, sans-serif">
+                        e.g., RTX 4090, RTX 4070, RTX 3060
+                    </text>
+
+                    <path d="M630 105 L660 105"
+                          stroke="#c7ff5c"
+                          stroke-width="2"
+                          stroke-linecap="round"/>
+
+                    <text x="400" y="200"
+                          fill="#b5ff3d"
+                          font-size="18"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        Graphics card impacts FPS most
+                    </text>
+
+                </svg>
+            `)
+        },
+
+        {
+            title: 'Choose your RAM',
+            text: `Select how much RAM (memory) your system has.
+
+Most modern games need at least 16 GB.
+
+More RAM helps your system handle demanding games smoothly.`,
+            image: svgToDataUrl(`
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="800"
+                     height="300"
+                     viewBox="0 0 800 300">
+
+                    <rect width="800" height="300" fill="#11151d"/>
+
+                    <text x="400" y="50"
+                          fill="#edf3ff"
+                          font-size="20"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle"
+                          font-weight="bold">
+                        Select RAM
+                    </text>
+
+                    <rect x="150" y="80"
+                          width="500"
+                          height="55"
+                          rx="12"
+                          fill="#1c232d"
+                          stroke="#c7ff5c"
+                          stroke-width="2"/>
+
+                    <circle cx="190"
+                            cy="112"
+                            r="10"
+                            fill="#c7ff5c"/>
+
+                    <text x="220" y="120"
+                          fill="#dfe8f7"
+                          font-size="18"
+                          font-family="Arial, sans-serif">
+                        e.g., 8GB, 16GB, 32GB, 64GB
+                    </text>
+
+                    <path d="M630 105 L660 105"
+                          stroke="#c7ff5c"
+                          stroke-width="2"
+                          stroke-linecap="round"/>
+
+                    <text x="400" y="200"
+                          fill="#b5ff3d"
+                          font-size="18"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        Select total system memory
+                    </text>
+
+                </svg>
+            `)
+        },
+
+        {
+            title: 'Get your FPS prediction',
+            text: `Click "Analyze Performance" to see your results.
+
+You'll get your expected FPS and recommended graphics settings.
+
+Use these to optimize your gaming experience.`,
+            image: svgToDataUrl(`
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="800"
+                     height="300"
+                     viewBox="0 0 800 300">
+
+                    <rect width="800" height="300" fill="#11151d"/>
+
+                    <rect x="150" y="40"
+                          width="500"
+                          height="60"
+                          rx="14"
+                          fill="#1c232d"
+                          stroke="#c7ff5c"
+                          stroke-width="2"/>
+
+                    <text x="400" y="77"
+                          fill="#c7ff5c"
+                          font-size="24"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle"
+                          font-weight="bold">
+                        Analyze Performance
+                    </text>
+
+                    <rect x="120" y="140"
+                          width="560"
+                          height="120"
+                          rx="16"
+                          fill="#1b212c"
+                          stroke="#b5ff3d"
+                          stroke-width="2"/>
+
+                    <text x="400" y="175"
+                          fill="#edf3ff"
+                          font-size="18"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        Expected: 120 FPS @ Ultra
+                    </text>
+
+                    <text x="400" y="210"
+                          fill="#b5ff3d"
+                          font-size="16"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        Settings: Ultra / High / Medium
+                    </text>
+
+                </svg>
+            `)
+        }
+    ],
+
+    benchmark: [
+        {
+            title: 'This is the Hardware Benchmark tab',
+            text: `Here you can test individual CPU, GPU, or RAM performance.
+
+See how powerful each component is compared to others.
+
+Benchmark scores help you decide if you need upgrades.`,
+            image: svgToDataUrl(`
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="800"
+                     height="300"
+                     viewBox="0 0 800 300">
+
+                    <rect width="800" height="300" fill="#11151d"/>
+
+                    <rect x="50" y="30"
+                          width="700"
+                          height="240"
+                          rx="16"
+                          fill="#1d2330"
+                          stroke="#2d3644"
+                          stroke-width="2"/>
+
+                    <text x="400" y="70"
+                          fill="#c7ff5c"
+                          font-size="24"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle"
+                          font-weight="bold">
+                        Hardware Benchmark Tab
+                    </text>
+
+                    <rect x="80" y="95"
+                          width="150"
+                          height="120"
+                          rx="12"
+                          fill="#1c232d"
+                          stroke="#c7ff5c"
+                          stroke-width="1"/>
+
+                    <rect x="270" y="95"
+                          width="150"
+                          height="120"
+                          rx="12"
+                          fill="#1c232d"/>
+
+                    <rect x="460" y="95"
+                          width="150"
+                          height="120"
+                          rx="12"
+                          fill="#1c232d"/>
+
+                    <text x="155" y="165"
+                          fill="#edf3ff"
+                          font-size="14"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        CPU
+                    </text>
+
+                    <text x="345" y="165"
+                          fill="#edf3ff"
+                          font-size="14"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        GPU
+                    </text>
+
+                    <text x="535" y="165"
+                          fill="#edf3ff"
+                          font-size="14"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        RAM
+                    </text>
+
+                </svg>
+            `)
+        },
+
+        {
+            title: 'Choose a hardware type',
+            text: `Select whether you want to benchmark a CPU, GPU, or RAM.
+
+Each has its own performance scoring system.
+
+Pick the component you want to test.`,
+            image: svgToDataUrl(`
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="800"
+                     height="300"
+                     viewBox="0 0 800 300">
+
+                    <rect width="800" height="300" fill="#11151d"/>
+
+                    <rect x="80" y="50"
+                          width="220"
+                          height="100"
+                          rx="16"
+                          fill="#1c232d"
+                          stroke="#c7ff5c"
+                          stroke-width="2"/>
+
+                    <rect x="340" y="50"
+                          width="220"
+                          height="100"
+                          rx="16"
+                          fill="#202833"/>
+
+                    <rect x="600" y="50"
+                          width="120"
+                          height="100"
+                          rx="16"
+                          fill="#202833"/>
+
+                    <text x="190" y="110"
+                          fill="#c7ff5c"
+                          font-size="22"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle"
+                          font-weight="bold">
+                        CPU
+                    </text>
+
+                    <text x="450" y="110"
+                          fill="#edf3ff"
+                          font-size="22"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        GPU
+                    </text>
+
+                    <text x="660" y="110"
+                          fill="#edf3ff"
+                          font-size="22"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        RAM
+                    </text>
+
+                    <text x="400" y="200"
+                          fill="#b5ff3d"
+                          font-size="18"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        Click to select type
+                    </text>
+
+                </svg>
+            `)
+        },
+
+        {
+            title: 'Select your hardware model',
+            text: `Pick the exact model you have.
+
+For example: Intel i7-13700K, RTX 4080, or 32GB DDR5.
+
+You can search by name to find it quickly.`,
+            image: svgToDataUrl(`
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="800"
+                     height="300"
+                     viewBox="0 0 800 300">
+
+                    <rect width="800" height="300" fill="#11151d"/>
+
+                    <rect x="100" y="80"
+                          width="600"
+                          height="55"
+                          rx="12"
+                          fill="#1c232d"
+                          stroke="#c7ff5c"
+                          stroke-width="2"/>
+
+                    <circle cx="140"
+                            cy="112"
+                            r="10"
+                            fill="#c7ff5c"/>
+
+                    <text x="170" y="120"
+                          fill="#dfe8f7"
+                          font-size="18"
+                          font-family="Arial, sans-serif">
+                        Search hardware...
+                    </text>
+
+                    <path d="M650 105 L680 105"
+                          stroke="#c7ff5c"
+                          stroke-width="2"
+                          stroke-linecap="round"/>
+
+                    <text x="400" y="200"
+                          fill="#b5ff3d"
+                          font-size="18"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        Search or select from list
+                    </text>
+
+                </svg>
+            `)
+        },
+
+        {
+            title: 'View the benchmark score',
+            text: `The score shows how powerful your hardware is.
+
+Higher scores mean better performance across all games.
+
+Compare your score with other hardware models.`,
+            image: svgToDataUrl(`
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="800"
+                     height="300"
+                     viewBox="0 0 800 300">
+
+                    <rect width="800" height="300" fill="#11151d"/>
+
+                    <rect x="100" y="50"
+                          width="600"
+                          height="180"
+                          rx="16"
+                          fill="#1b212c"
+                          stroke="#c7ff5c"
+                          stroke-width="2"/>
+
+                    <text x="400" y="90"
+                          fill="#edf3ff"
+                          font-size="20"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        Benchmark Score
+                    </text>
+
+                    <text x="400" y="150"
+                          fill="#c7ff5c"
+                          font-size="56"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle"
+                          font-weight="bold">
+                        32,850
+                    </text>
+
+                    <text x="400" y="195"
+                          fill="#8e98b3"
+                          font-size="16"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        Higher = Better Performance
+                    </text>
+
+                </svg>
+            `)
+        },
+
+        {
+            title: 'Compare with other hardware',
+            text: `Use benchmark scores to compare your hardware with others.
+
+Decide if your current setup is good for gaming.
+
+Plan upgrades based on the performance gap you see.`,
+            image: svgToDataUrl(`
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="800"
+                     height="300"
+                     viewBox="0 0 800 300">
+
+                    <rect width="800" height="300" fill="#11151d"/>
+
+                    <rect x="80" y="60"
+                          width="240"
+                          height="160"
+                          rx="16"
+                          fill="#202833"
+                          stroke="#c7ff5c"
+                          stroke-width="2"/>
+
+                    <rect x="380" y="60"
+                          width="240"
+                          height="160"
+                          rx="16"
+                          fill="#202833"/>
+
+                    <text x="200" y="105"
+                          fill="#edf3ff"
+                          font-size="20"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle"
+                          font-weight="bold">
+                        Current PC
+                    </text>
+
+                    <text x="200" y="140"
+                          fill="#b5ff3d"
+                          font-size="18"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        Score: 18,500
+                    </text>
+
+                    <text x="200" y="165"
+                          fill="#8e98b3"
+                          font-size="14"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        Runs old games
+                    </text>
+
+                    <text x="500" y="105"
+                          fill="#edf3ff"
+                          font-size="20"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle"
+                          font-weight="bold">
+                        Upgrade Option
+                    </text>
+
+                    <text x="500" y="140"
+                          fill="#c7ff5c"
+                          font-size="18"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        Score: 35,200
+                    </text>
+
+                    <text x="500" y="165"
+                          fill="#8e98b3"
+                          font-size="14"
+                          font-family="Arial, sans-serif"
+                          text-anchor="middle">
+                        Runs modern games
+                    </text>
+
+                    <path d="M330 145 L380 145"
+                          stroke="#c7ff5c"
+                          stroke-width="3"
+                          stroke-linecap="round"/>
+
+                    <path d="M360 125 L380 145 L360 165"
+                          stroke="#c7ff5c"
+                          stroke-width="3"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          fill="none"/>
+
+                </svg>
+            `)
+        }
+    ]
+};
+let pageHelpModal = null;
+let pageHelpSection = null;
+let pageHelpCurrentStep = 0;
+
+function createPageHelpModal() {
+
+    if (pageHelpModal) {
+        return pageHelpModal;
+    }
+
+    pageHelpModal = document.createElement('div');
+
+    pageHelpModal.id = 'pageHelpModal';
+    pageHelpModal.className = 'modal-overlay page-help-modal';
+
+    pageHelpModal.innerHTML = `
+        <div class="modal-dialog">
+
+            <div class="modal-header">
+
+                <h2 id="pageHelpTitle">
+                    Quick Guide
+                </h2>
+
+                <button
+                    class="modal-close"
+                    type="button"
+                    id="pageHelpCloseBtn"
+                    aria-label="Close">
+                    &times;
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <div class="help-progress-container">
+
+                    <div class="help-progress-info">
+                        <span id="pageHelpStepLabel">
+                            Step 1 of 1
+                        </span>
+                    </div>
+
+                    <div class="help-progress-bar">
+                        <div
+                            class="help-progress-fill"
+                            id="pageHelpProgress">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="pageHelpSteps"></div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    class="modal-btn modal-btn-secondary"
+                    type="button"
+                    id="pageHelpPrevBtn">
+                    Previous
+                </button>
+
+                <button
+                    class="modal-btn modal-btn-primary"
+                    type="button"
+                    id="pageHelpNextBtn">
+                    Next
+                </button>
+
+            </div>
+
+        </div>
+    `;
+
+    document.body.appendChild(pageHelpModal);
+
+    // Close button
+    document
+        .getElementById('pageHelpCloseBtn')
+        .addEventListener('click', closePageHelp);
+
+    // Previous
+    document
+        .getElementById('pageHelpPrevBtn')
+        .addEventListener('click', pageHelpPrevious);
+
+    // Next
+    document
+        .getElementById('pageHelpNextBtn')
+        .addEventListener('click', pageHelpNext);
+
+    // Close when clicking outside the dialog
+    pageHelpModal.addEventListener('click', function (event) {
+
+        if (event.target === pageHelpModal) {
+            closePageHelp();
+        }
+
+    });
+
+    // ESC key
+    document.addEventListener('keydown', function (event) {
+
+        if (
+            event.key === 'Escape' &&
+            pageHelpModal &&
+            pageHelpModal.classList.contains('show')
+        ) {
+            closePageHelp();
+        }
+
+    });
+
+    return pageHelpModal;
+}
+    let currentStep = 0;
+    const stepsContainer = document.getElementById('pageHelpSteps');
+    const progressBar = document.getElementById('pageHelpProgress');
+    const nextButton = document.getElementById('pageHelpNextBtn');
+    const prevButton = document.getElementById('pageHelpPrevBtn');
+
+    function renderStep() {
+        const step = steps[currentStep];
+        if (!step) return;
+
+        const textHtml = step.text
+            ? step.text
+            .split(/\n\n+/)
+            .map(paragraph => `<p>${paragraph}</p>`)
+            .join('')
+            : '';
+
+        const contentHtml = step.type === 'image'
+            ? `
+                <h3>${step.title}</h3>
+                <div class="help-visual"><img src="${step.image}" alt="${step.title}" /></div>
+            `
+            : `
+                <h3>${step.title}</h3>
+                <div class="help-step-text">${textHtml}</div>
+            `;
+
+        stepsContainer.innerHTML = `
+            <div class="help-step-content active">
+                <div class="help-step-badge">Step ${currentStep + 1} of ${steps.length}</div>
+                ${contentHtml}
+            </div>
+        `;
+
+        const progressPercent = ((currentStep + 1) / steps.length) * 100;
+        progressBar.style.width = progressPercent + '%';
+
+        nextButton.textContent = currentStep === steps.length - 1 ? 'Finish' : 'Next';
+        prevButton.disabled = currentStep === 0;
+        prevButton.style.opacity = currentStep === 0 ? '0.5' : '1';
+        prevButton.style.cursor = currentStep === 0 ? 'not-allowed' : 'pointer';
+    }
+
+    nextButton.onclick = function () {
+        if (currentStep < steps.length - 1) {
+            currentStep += 1;
+            renderStep();
+            return;
+        }
+        closePageHelp();
+    };
+
+    prevButton.onclick = function () {
+        if (currentStep > 0) {
+            currentStep -= 1;
+            renderStep();
+        }
+    };
+
+    currentStep = 0;
+    renderStep();
+    modal.classList.add('active');
+}
+
+function closePageHelp() {
+    const modal = document.getElementById('pageHelpModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
 // --- SIDEBAR CONTROL ---
 function toggleSidebar() {
     document.body.classList.toggle('sidebar-open');
