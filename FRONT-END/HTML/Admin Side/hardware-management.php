@@ -20,7 +20,8 @@
                 <h3>CPU Management</h3>
                 <form id="cpuForm">
                     <label for="cpuModel">CPU Model:</label>
-                    <input type="text" id="cpuModel" placeholder="e.g., Intel Core i7-12700K" required>
+                    <input type="text" id="cpuModel" list="cpuModelOptions" placeholder="e.g., Intel Core i7-12700K" required>
+                    <datalist id="cpuModelOptions"></datalist>
                     
                     <label for="cpuScore">Benchmark Score:</label>
                     <input type="number" id="cpuScore" placeholder="e.g., 35000" required>
@@ -31,6 +32,10 @@
                 </form>
 
                 <hr>
+                <div class="search-box inventory-search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="cpuSearch" placeholder="Search CPU list..." oninput="filterHardwareList('cpu')">
+                </div>
                 
                 <div id="cpuList" class="data-list"></div>
             </div>
@@ -40,7 +45,8 @@
                 <h3>GPU Management</h3>
                 <form id="gpuForm">
                     <label for="gpuModel">GPU Model:</label>
-                    <input type="text" id="gpuModel" placeholder="e.g., NVIDIA RTX 4080" required>
+                    <input type="text" id="gpuModel" list="gpuModelOptions" placeholder="e.g., NVIDIA RTX 4080" required>
+                    <datalist id="gpuModelOptions"></datalist>
                     
                     <label for="gpuScore">Benchmark Score:</label>
                     <input type="number" id="gpuScore" placeholder="e.g., 28000" required>
@@ -51,6 +57,10 @@
                 </form>
 
                 <hr>
+                <div class="search-box inventory-search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="gpuSearch" placeholder="Search GPU list..." oninput="filterHardwareList('gpu')">
+                </div>
 
                 <div id="gpuList" class="data-list"></div>
             </div>
@@ -60,7 +70,8 @@
                 <h3>RAM Management</h3>
                 <form id="ramForm">
                     <label for="ramModel">RAM Model:</label>
-                    <input type="text" id="ramModel" placeholder="e.g., 32GB DDR5-6000" required>
+                    <input type="text" id="ramModel" list="ramModelOptions" placeholder="e.g., 32GB DDR5-6000" required>
+                    <datalist id="ramModelOptions"></datalist>
                     
                     <label for="ramScore">Benchmark Score:</label>
                     <input type="number" id="ramScore" placeholder="e.g., 8000" required>
@@ -71,6 +82,10 @@
                 </form>
 
                 <hr>
+                <div class="search-box inventory-search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="ramSearch" placeholder="Search RAM list..." oninput="filterHardwareList('ram')">
+                </div>
 
                 <div id="ramList" class="data-list"></div>
             </div>

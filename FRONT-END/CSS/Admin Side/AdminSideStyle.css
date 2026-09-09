@@ -218,6 +218,26 @@ body {
     margin-bottom: 35px; /* adds space below the form card */
 }
 
+.game-cover-preview {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.game-cover-preview img {
+    width: 96px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.game-cover-preview .btn-secondary {
+    padding: 8px 10px;
+    font-size: 12px;
+}
+
 
 .reports-card {
     padding: 32px; /* more breathing room */
@@ -1291,4 +1311,8 @@ body {
     .hardware-grid {
         grid-template-columns: 1fr;
     }
+}
+
+.inventory-search-box {
+    margin-top: 12px;
 }

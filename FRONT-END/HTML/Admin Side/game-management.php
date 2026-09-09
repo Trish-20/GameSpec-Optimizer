@@ -22,22 +22,34 @@
                 <div class="form-grid-2x2">
                     <div class="form-field">
                         <label for="gameTitle">Game Title:</label>
-                        <input type="text" id="gameTitle" placeholder="e.g., Cyberpunk 2077" required>
+                        <input type="text" id="gameTitle" list="gameTitleOptions" placeholder="e.g., Cyberpunk 2077" required>
+                        <datalist id="gameTitleOptions"></datalist>
                     </div>
 
                     <div class="form-field">
                         <label for="gameCPU">Min CPU Requirement:</label>
-                        <input type="text" id="gameCPU" placeholder="e.g., Intel Core i5-8400" required>
+                        <input type="text" id="gameCPU" list="gameCPUOptions" placeholder="e.g., Intel Core i5-8400" required>
+                        <datalist id="gameCPUOptions"></datalist>
                     </div>
 
                     <div class="form-field">
                         <label for="gameGPU">Min GPU Requirement:</label>
-                        <input type="text" id="gameGPU" placeholder="e.g., NVIDIA GTX 1060" required>
+                        <input type="text" id="gameGPU" list="gameGPUOptions" placeholder="e.g., NVIDIA GTX 1060" required>
+                        <datalist id="gameGPUOptions"></datalist>
                     </div>
 
                     <div class="form-field">
                         <label for="gameRAM">Min RAM Requirement (GB):</label>
                         <input type="number" id="gameRAM" placeholder="e.g., 16" required>
+                    </div>
+
+                    <div class="form-field game-cover-field">
+                        <label for="gameCover">Game Cover Picture:</label>
+                        <input type="file" id="gameCover" accept="image/png,image/jpeg,image/webp,image/gif,image/avif">
+                        <div id="gameCoverPreview" class="game-cover-preview" hidden>
+                            <img id="gameCoverPreviewImage" alt="Selected game cover preview">
+                            <button type="button" id="clearGameCover" class="btn-secondary">Remove preview</button>
+                        </div>
                     </div>
                 </div>
 
