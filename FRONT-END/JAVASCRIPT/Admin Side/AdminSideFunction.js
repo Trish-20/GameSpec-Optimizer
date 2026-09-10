@@ -328,7 +328,8 @@ function editGame(index) {
     document.getElementById('gameTitle').value = game.title;
     document.getElementById('gameCPU').value = game.cpu_model;
     document.getElementById('gameGPU').value = game.gpu_model;
-    document.getElementById('gameRAM').value = game.ram_benchmark / 250;
+    document.getElementById('gameRAM').value = game.ram_capacity_gb || '';
+    document.getElementById('gameRAMSpeed').value = game.ram_speed_mhz || '';
 
    // Scroll the page all the way to the top smoothly
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -623,8 +624,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const cpuModel = document.getElementById('gameCPU')?.value.trim();
             const gpuModel = document.getElementById('gameGPU')?.value.trim();
             const ramGB = Number(document.getElementById('gameRAM')?.value);
+            const ramSpeedMhz = Number(document.getElementById('gameRAMSpeed')?.value);
 
-            if (!title || !cpuModel || !gpuModel || !Number.isFinite(ramGB) || ramGB <= 0) {
+            if (!title || !cpuModel || !gpuModel || !Number.isFinite(ramGB) || ramGB <= 0 || !Number.isFinite(ramSpeedMhz) || ramSpeedMhz <= 0) {
                 showModal('Warning', 'Please complete all game and hardware requirement fields.');
                 return;
             }
@@ -636,25 +638,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             try {
-                if (!adminCPUs.length || !adminGPUs.length) {
-                    const [cpuResponse, gpuResponse] = await Promise.all([
-                        fetch('../../../MODULES/api/get-cpus.php'),
-                        fetch('../../../MODULES/api/get-gpus.php')
-                    ]);
-                    adminCPUs = await cpuResponse.json();
-                    adminGPUs = await gpuResponse.json();
-                }
-
-                const cpuMatch = adminCPUs.find(cpu => normalizeModelName(cpu.model) === normalizeModelName(cpuModel));
-                const gpuMatch = adminGPUs.find(gpu => normalizeModelName(gpu.model) === normalizeModelName(gpuModel));
                 const payload = {
                     title,
                     cpuModel,
-                    cpuBenchmark: cpuMatch?.score || 0,
                     gpuModel,
-                    gpuBenchmark: gpuMatch?.score || 0,
-                    ramModel: `${ramGB} GB RAM`,
-                    ramBenchmark: Math.round(ramGB * 250),
+                    ramCapacityGb: ramGB,
+                    ramSpeedMhz,
                     hasBloom: document.getElementById('hasBloom')?.checked,
                     hasAntiAlias: document.getElementById('hasAntiAlias')?.checked,
                     hasShadows: document.getElementById('hasShadows')?.checked,
@@ -834,7 +823,7 @@ function populateGamesTable(games) {
     
     tbody.innerHTML = '';
     games.slice(0, 10).forEach(game => {
-        const ramGB = game.ram_benchmark ? Math.round(game.ram_benchmark / 250) : 'N/A';
+        const ramGB = game.ram_capacity_gb || 'N/A';
         tbody.innerHTML += `
             <tr>
                 <td>${game.title}</td>

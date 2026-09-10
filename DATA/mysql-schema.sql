@@ -38,11 +38,9 @@ CREATE TABLE gpu_benchmarks (
 CREATE TABLE games (
     game_title VARCHAR(255) NOT NULL,
     game_cpu_model VARCHAR(255) NOT NULL,
-    game_cpu_benchmark INT UNSIGNED NOT NULL,
     game_gpu_model VARCHAR(255) NOT NULL,
-    game_gpu_benchmark INT UNSIGNED NOT NULL,
-    game_ram_model VARCHAR(255) NOT NULL,
-    game_ram_benchmark INT UNSIGNED NOT NULL,
+    game_ram_capacity_gb SMALLINT UNSIGNED NOT NULL,
+    game_ram_speed_mhz SMALLINT UNSIGNED NOT NULL,
     hasBloom TINYINT(1) NOT NULL DEFAULT 0,
     hasAntiAlias TINYINT(1) NOT NULL DEFAULT 0,
     hasShadows TINYINT(1) NOT NULL DEFAULT 0,
@@ -52,8 +50,8 @@ CREATE TABLE games (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (game_title),
-    INDEX idx_games_cpu_benchmark (game_cpu_benchmark),
-    INDEX idx_games_gpu_benchmark (game_gpu_benchmark)
+    INDEX idx_games_cpu_model (game_cpu_model),
+    INDEX idx_games_gpu_model (game_gpu_model)
 ) 
 
 CREATE TABLE reviews (

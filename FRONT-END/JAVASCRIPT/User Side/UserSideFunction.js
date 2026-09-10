@@ -19,6 +19,7 @@ async function loadGamesFromCSV() {
 // --- CPU and GPU data ---
 let cpus = [];
 let gpus = [];
+let ramBenchmarks = [];
 
 async function loadCPUsFromCSV() {
     try {
@@ -42,6 +43,17 @@ async function loadGPUsFromCSV() {
     }
 }
 
+async function loadRAMBenchmarks() {
+    try {
+        const response = await fetch('../../../MODULES/api/get-ram.php');
+        ramBenchmarks = await response.json();
+        return ramBenchmarks;
+    } catch (error) {
+        console.error('Error loading RAM benchmarks:', error);
+        return [];
+    }
+}
+
 
 // ============================================================================
 // 2. INITIALIZATION & SETUP ROUTINES
@@ -52,7 +64,8 @@ async function loadFPSPredictionDropdowns() {
     await Promise.all([
         loadGamesFromCSV(),
         loadCPUsFromCSV(),
-        loadGPUsFromCSV()
+        loadGPUsFromCSV(),
+        loadRAMBenchmarks()
     ]);
     
     // Initialize searchable dropdowns
@@ -1485,7 +1498,7 @@ function loadGameGrid() {
             const reqSummary = (() => {
                 const cpuReq = typeof game.cpu_benchmark === 'number' ? game.cpu_benchmark.toLocaleString() : game.cpu_benchmark;
                 const gpuReq = typeof game.gpu_benchmark === 'number' ? game.gpu_benchmark.toLocaleString() : game.gpu_benchmark;
-                const ramReq = typeof game.ram_benchmark === 'number' ? (game.ram_benchmark / 250) : game.ram_benchmark;
+                const ramReq = game.ram_capacity_gb || '';
 
                 const cpuModel = game.cpu_model || 'CPU';
                 const gpuModel = game.gpu_model || 'GPU';
@@ -2429,7 +2442,14 @@ async function predictFPS() {
     const cpuScoreNum = parseInt(cpuScore, 10);
     const gpuScoreNum = parseInt(gpuScore, 10);
     const ramGB = parseInt(ramSelect.value, 10);
-    const ramScoreNum = ramGB * 250;
+    if (!ramBenchmarks.length) await loadRAMBenchmarks();
+    const ramOptions = ramBenchmarks
+        .filter(item => Number(item.capacity) === ramGB)
+        .sort((a, b) => Number(a.score) - Number(b.score));
+    const ramScoreNum = Number(ramOptions[0]?.score);
+    if (!Number.isFinite(ramScoreNum)) {
+        return showModal('Warning', `No benchmark score is available for ${ramGB} GB RAM.`);
+    }
 
     const cpuName = document.getElementById("cpuSearch").value || 'Selected CPU';
     const gpuName = document.getElementById("gpuSearch").value || 'Selected GPU';
@@ -2494,7 +2514,7 @@ async function predictFPS() {
         const fpsDelta = estimatedFPS - targetFPS;
         const cpuOK = cpuScoreNum >= selectedGame.cpu_benchmark;
         const gpuOK = gpuScoreNum >= selectedGame.gpu_benchmark;
-        const ramOK = ramScoreNum >= selectedGame.ram_benchmark;
+        const ramOK = selectedGame.ram_benchmark !== null && ramScoreNum >= selectedGame.ram_benchmark;
 
         const bottlenecks = [];
         if (!cpuOK) bottlenecks.push({ type: 'CPU', name: cpuName, userScore: cpuScoreNum, required: selectedGame.cpu_benchmark });
@@ -2547,7 +2567,9 @@ async function predictFPS() {
             `;
         }
 
-        const maxScore = Math.max(cpuScoreNum, gpuScoreNum, ramScoreNum, selectedGame.cpu_benchmark, selectedGame.gpu_benchmark, selectedGame.ram_benchmark);
+        const requiredScores = [selectedGame.cpu_benchmark, selectedGame.gpu_benchmark, selectedGame.ram_benchmark]
+            .filter(score => Number.isFinite(Number(score)));
+        const maxScore = Math.max(cpuScoreNum, gpuScoreNum, ramScoreNum, ...requiredScores);
 
         html += `
             <div class="result-section">
@@ -2606,9 +2628,9 @@ async function predictFPS() {
                             </div>
                         </div>
                         <div class="bar-row">
-                            <span class="bar-model-name">Minimum needed: ${selectedGame.ram_model || (selectedGame.ram_benchmark / 250) + ' GB'}</span>
+                            <span class="bar-model-name">Minimum needed: ${selectedGame.ram_model || (selectedGame.ram_capacity_gb || 'Unknown') + ' GB'}</span>
                             <div class="bar-container">
-                                <div class="bar-fill game" style="width: ${(selectedGame.ram_benchmark / maxScore) * 100}%">${selectedGame.ram_benchmark}</div>
+                                <div class="bar-fill game" style="width: ${selectedGame.ram_benchmark === null ? 0 : (selectedGame.ram_benchmark / maxScore) * 100}%">${selectedGame.ram_benchmark === null ? 'Unavailable' : selectedGame.ram_benchmark}</div>
                             </div>
                         </div>
                     </div>
@@ -2690,7 +2712,7 @@ async function predictFPS() {
                 
                 if (b.type === 'RAM') {
                     const currentRAM = ramGB;
-                    const requiredRAM = selectedGame.ram_benchmark / 250;
+                    const requiredRAM = Number(selectedGame.ram_capacity_gb) || 0;
                     const ramOptions = [8, 16, 32, 64].filter(r => r > currentRAM && r >= requiredRAM).slice(0, 3);
                     if (ramOptions.length > 0) {
                         html += `
@@ -2700,7 +2722,7 @@ async function predictFPS() {
                                     ${ramOptions.map(r => `
                                         <div class="upgrade-option">
                                             <span>${r} GB DDR4/DDR5</span>
-                                            <span class="score">Score: ${r * 250}</span>
+                                            <span class="score">Capacity: ${r} GB</span>
                                         </div>
                                     `).join('')}
                                 </div>

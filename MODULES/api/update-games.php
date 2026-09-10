@@ -1,5 +1,9 @@
 <?php
 
+require_once __DIR__ . '/../benchmark-resolver.php';
+
+header('Content-Type: application/json; charset=utf-8');
+
 $input = json_decode(file_get_contents('php://input'), true);
 
 if (!$input) {
@@ -12,11 +16,19 @@ if (empty($input['title'])) {
 // flat strs
 $title = str_replace(' ', '_', trim($input['title']));
 $cpuModel = isset($input['cpuModel']) ? trim($input['cpuModel']) : '';
-$cpuBenchmark = isset($input['cpuBenchmark']) ? intval($input['cpuBenchmark']) : 0;
 $gpuModel = isset($input['gpuModel']) ? trim($input['gpuModel']) : '';
-$gpuBenchmark = isset($input['gpuBenchmark']) ? intval($input['gpuBenchmark']) : 0;
-$ramModel = isset($input['ramModel']) ? trim($input['ramModel']) : '';
-$ramBenchmark = isset($input['ramBenchmark']) ? intval($input['ramBenchmark']) : 0;
+$ramCapacityGb = isset($input['ramCapacityGb']) ? intval($input['ramCapacityGb']) : 0;
+$ramSpeedMhz = isset($input['ramSpeedMhz']) ? intval($input['ramSpeedMhz']) : 0;
+
+if ($cpuModel === '' || $gpuModel === '' || $ramCapacityGb <= 0 || $ramSpeedMhz <= 0) {
+    die(json_encode(['success' => false, 'message' => 'CPU, GPU, RAM capacity, and RAM speed are required.']));
+}
+
+try {
+    $benchmarks = resolveGameBenchmarks($cpuModel, $gpuModel, $ramCapacityGb, $ramSpeedMhz);
+} catch (Throwable $error) {
+    die(json_encode(['success' => false, 'message' => $error->getMessage()]));
+}
 
 // toggleables
 $hasBloom = isset($input['hasBloom']) && $input['hasBloom'] ? 1 : 0;
@@ -66,15 +78,13 @@ if (!empty($input['imageData'])) {
     }
 }
 
-// CSV columns: game_title,game_cpu_model,game_cpu_benchmark,game_gpu_model,game_gpu_benchmark,game_ram_model,game_ram_benchmark,hasBloom,hasAnti-Alias,hasShadows,hasVSync,game_image,game_description
+// CSV columns: game_title,game_cpu_model,game_gpu_model,game_ram_capacity_gb,game_ram_speed_mhz,hasBloom,hasAnti-Alias,hasShadows,hasVSync,game_image,game_description
 $newRow = [
     $title,
     $cpuModel,
-    $cpuBenchmark,
     $gpuModel,
-    $gpuBenchmark,
-    $ramModel,
-    $ramBenchmark,
+    $ramCapacityGb,
+    $ramSpeedMhz,
     $hasBloom,
     $hasAntiAlias,
     $hasShadows,
@@ -86,7 +96,11 @@ $newRow = [
 if (($handle = fopen($csvFile, 'a')) !== false) {
     fputcsv($handle, $newRow);
     fclose($handle);
-    die(json_encode(['success' => true, 'message' => 'Game added successfully']));
+    die(json_encode([
+        'success' => true,
+        'message' => 'Game added successfully',
+        'benchmark_matches' => $benchmarks,
+    ]));
 } else {
     die(json_encode(['success' => false, 'message' => 'Could not write to CSV file']));
 }

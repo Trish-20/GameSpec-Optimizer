@@ -43,6 +43,11 @@
                         <input type="number" id="gameRAM" placeholder="e.g., 16" required>
                     </div>
 
+                    <div class="form-field">
+                        <label for="gameRAMSpeed">Min RAM Speed (MHz):</label>
+                        <input type="number" id="gameRAMSpeed" placeholder="e.g., 3200" required>
+                    </div>
+
                     <div class="form-field game-cover-field">
                         <label for="gameCover">Game Cover Picture:</label>
                         <input type="file" id="gameCover" accept="image/png,image/jpeg,image/webp,image/gif,image/avif">
