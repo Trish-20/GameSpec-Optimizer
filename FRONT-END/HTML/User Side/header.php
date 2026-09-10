@@ -4,7 +4,7 @@
 <div class="top-header">
     <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
     <span class="app-title">GameSpec Optimizer</span>
-    <button class="help-btn" type="button" title="How this works" onclick="showPageHelp('browse')">
+    <button class="help-btn" type="button" title="Help &amp; Tutorial Center" onclick="showPageHelp('browse')">
         <i class="fas fa-circle-question"></i>
     </button>
 </div>

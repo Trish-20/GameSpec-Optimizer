@@ -179,1122 +179,516 @@ function closeModal() {
     }
 }
 
-function showPageHelp(pageKey) {
-    const svgToDataUrl = (svgMarkup) => `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svgMarkup)}`;
-
-    // Present each explanation and its illustration as separate, alternating
-    // screens: information → image → information → image.
-    const steps = (helpContent[pageKey] || helpContent.browse).flatMap(({ title, text, image }) => {
-        const infoStep = { type: 'info', title, text };
-        const imageStep = image ? { type: 'image', title, image } : null;
-
-        return imageStep ? [infoStep, imageStep] : [infoStep];
-    });
-    const modalId = 'pageHelpModal';
-    let modal = document.getElementById(modalId);
-
-    const helpContent = {
-    browse: [
-        {
-            title: 'Browse & Discover Games',
-            text: `Looking for a specific game or something new to try?
-
-Browse our collection of available games all in one place. Use the search bar to quickly find a game by name, or use the genre filter to explore titles based on your preferences.
-
-Select any game to view its optimization details, recommended settings, and other helpful information.`,
-            image: '../../RES/tutorials/browse-games/search_engine.png'
-        },
-
-        {
-            title: 'Search for your favorite game',
-            text: `Looking for a specific title? Simply enter the game name in the search box to quickly find it in our database.
-
-Try searching for games like "Cyberpunk", "Fortnite", or "Diablo".
-
-Results will appear as you type, making it easy to find what you're looking for.`,
-            image: '../../RES/tutorials/browse-games/search_result.png'
-        },
-
-        {
-            title: 'Filter games by genre',
-            text: `Want to explore games by category? Click the Filter button to browse titles based on their genre.
-
-Choose from Action, RPG, FPS, Adventure, Sports, Racing, Strategy, or Sandbox.
-
-Use filters to quickly discover games that fit your interests.`,
-            image: '../../RES/tutorials/browse-games/filter_genre.png'
-        },
-
-        {
-            title: 'Browse game cards',
-            text: `Scroll through the game cards displayed below.
-
-Each card shows the game name and a preview image to help you recognize titles.
-
-Click any card to explore more details.`,
-            image: svgToDataUrl(`
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     width="800"
-                     height="300"
-                     viewBox="0 0 800 300">
-
-                    <rect width="800" height="300" fill="#11151d"/>
-
-                    <rect x="60" y="40"
-                          width="210" height="220"
-                          rx="16"
-                          fill="#202833"
-                          stroke="#2d3644"
-                          stroke-width="2"/>
-
-                    <rect x="300" y="40"
-                          width="210" height="220"
-                          rx="16"
-                          fill="#202833"
-                          stroke="#2d3644"
-                          stroke-width="2"/>
-
-                    <rect x="540" y="40"
-                          width="200" height="220"
-                          rx="16"
-                          fill="#202833"
-                          stroke="#2d3644"
-                          stroke-width="2"/>
-
-                    <rect x="80" y="60"
-                          width="174" height="100"
-                          rx="12"
-                          fill="#151b23"/>
-
-                    <rect x="320" y="60"
-                          width="174" height="100"
-                          rx="12"
-                          fill="#151b23"/>
-
-                    <rect x="560" y="60"
-                          width="160" height="100"
-                          rx="12"
-                          fill="#151b23"/>
-
-                    <text x="167" y="195"
-                          fill="#edf3ff"
-                          font-size="16"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        Cyberpunk
-                    </text>
-
-                    <text x="405" y="195"
-                          fill="#edf3ff"
-                          font-size="16"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        Fortnite
-                    </text>
-
-                    <text x="640" y="195"
-                          fill="#edf3ff"
-                          font-size="16"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        Diablo
-                    </text>
-
-                    <text x="400" y="270"
-                          fill="#b5ff3d"
-                          font-size="18"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        Click any card to explore
-                    </text>
-
-                </svg>
-            `)
-        },
-
-        {
-            title: 'Click a game to view details',
-            text: `Clicking a game card will show you detailed information.
-
-You'll see recommended CPU, GPU, RAM, and system requirements.
-
-Use this info to check if your system can run the game well.`,
-            image: svgToDataUrl(`
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     width="800"
-                     height="300"
-                     viewBox="0 0 800 300">
-
-                    <rect width="800" height="300" fill="#11151d"/>
-
-                    <rect x="80" y="40"
-                          width="250" height="240"
-                          rx="16"
-                          fill="#202833"
-                          stroke="#c7ff5c"
-                          stroke-width="3"/>
-
-                    <rect x="100" y="60"
-                          width="210" height="110"
-                          rx="12"
-                          fill="#151b23"/>
-
-                    <text x="205" y="185"
-                          fill="#edf3ff"
-                          font-size="18"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle"
-                          font-weight="bold">
-                        Game Title
-                    </text>
-
-                    <text x="205" y="210"
-                          fill="#b5ff3d"
-                          font-size="12"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        CPU: Intel i9
-                    </text>
-
-                    <text x="205" y="230"
-                          fill="#b5ff3d"
-                          font-size="12"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        GPU: RTX 4080
-                    </text>
-
-                    <text x="205" y="250"
-                          fill="#b5ff3d"
-                          font-size="12"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        RAM: 32 GB
-                    </text>
-
-                    <path d="M350 160 L420 160"
-                          stroke="#c7ff5c"
-                          stroke-width="3"
-                          stroke-linecap="round"/>
-
-                    <path d="M410 150 L420 160 L410 170"
-                          stroke="#c7ff5c"
-                          stroke-width="3"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          fill="none"/>
-
-                    <text x="500" y="180"
-                          fill="#edf3ff"
-                          font-size="16"
-                          font-family="Arial, sans-serif">
-                        Details appear
-                    </text>
-
-                </svg>
-            `)
-        }
-    ],
-
-    predict: [
-        {
-            title: 'This is the FPS Prediction tab',
-            text: `Here you can estimate how many frames per second (FPS) a game will run on your system.
-
-FPS determines how smooth your gameplay will be.
-
-Higher FPS = smoother gaming experience.`,
-            image: svgToDataUrl(`
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     width="800"
-                     height="300"
-                     viewBox="0 0 800 300">
-
-                    <rect width="800" height="300" fill="#11151d"/>
-
-                    <rect x="50" y="30"
-                          width="700" height="240"
-                          rx="16"
-                          fill="#1d2330"
-                          stroke="#2d3644"
-                          stroke-width="2"/>
-
-                    <text x="400" y="70"
-                          fill="#c7ff5c"
-                          font-size="24"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle"
-                          font-weight="bold">
-                        FPS Prediction Tab
-                    </text>
-
-                    <rect x="80" y="95"
-                          width="640"
-                          height="155"
-                          rx="12"
-                          fill="#1c232d"
-                          stroke="#c7ff5c"
-                          stroke-width="1"/>
-
-                    <text x="400" y="180"
-                          fill="#8e98b3"
-                          font-size="16"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        Select Game &amp; Hardware
-                    </text>
-
-                </svg>
-            `)
-        },
-
-        {
-            title: 'Select a game to test',
-            text: `Click on the game dropdown and search or select the title.
-
-You can type the game name to quickly find it.
-
-The selected game determines the performance requirements.`,
-            image: svgToDataUrl(`
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     width="800"
-                     height="300"
-                     viewBox="0 0 800 300">
-
-                    <rect width="800" height="300" fill="#11151d"/>
-
-                    <text x="400" y="50"
-                          fill="#edf3ff"
-                          font-size="20"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle"
-                          font-weight="bold">
-                        Select a Game
-                    </text>
-
-                    <rect x="100" y="75"
-                          width="600"
-                          height="55"
-                          rx="12"
-                          fill="#1c232d"
-                          stroke="#c7ff5c"
-                          stroke-width="2"/>
-
-                    <circle cx="140"
-                            cy="107"
-                            r="10"
-                            fill="#c7ff5c"/>
-
-                    <text x="170" y="115"
-                          fill="#dfe8f7"
-                          font-size="20"
-                          font-family="Arial, sans-serif">
-                        Search for a game...
-                    </text>
-
-                    <path d="M650 100 L680 100"
-                          stroke="#c7ff5c"
-                          stroke-width="2"
-                          stroke-linecap="round"/>
-
-                    <text x="400" y="200"
-                          fill="#b5ff3d"
-                          font-size="18"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        Type or click to select
-                    </text>
-
-                </svg>
-            `)
-        },
-
-        {
-            title: 'Choose your CPU',
-            text: `Select the CPU (processor) from your computer.
-
-Or select one you are thinking about buying.
-
-Your CPU affects overall performance and frame rate.`,
-            image: svgToDataUrl(`
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     width="800"
-                     height="300"
-                     viewBox="0 0 800 300">
-
-                    <rect width="800" height="300" fill="#11151d"/>
-
-                    <text x="400" y="50"
-                          fill="#edf3ff"
-                          font-size="20"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle"
-                          font-weight="bold">
-                        Select CPU
-                    </text>
-
-                    <rect x="150" y="80"
-                          width="500"
-                          height="55"
-                          rx="12"
-                          fill="#1c232d"
-                          stroke="#c7ff5c"
-                          stroke-width="2"/>
-
-                    <circle cx="190"
-                            cy="112"
-                            r="10"
-                            fill="#c7ff5c"/>
-
-                    <text x="220" y="120"
-                          fill="#dfe8f7"
-                          font-size="18"
-                          font-family="Arial, sans-serif">
-                        e.g., Intel i7, AMD Ryzen 9
-                    </text>
-
-                    <path d="M630 105 L660 105"
-                          stroke="#c7ff5c"
-                          stroke-width="2"
-                          stroke-linecap="round"/>
-
-                    <text x="400" y="200"
-                          fill="#b5ff3d"
-                          font-size="18"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        Select your processor
-                    </text>
-
-                </svg>
-            `)
-        },
-
-        {
-            title: 'Choose your GPU',
-            text: `Select your graphics card (GPU).
-
-This is the most important factor for gaming performance.
-
-A better GPU means higher FPS and better graphics quality.`,
-            image: svgToDataUrl(`
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     width="800"
-                     height="300"
-                     viewBox="0 0 800 300">
-
-                    <rect width="800" height="300" fill="#11151d"/>
-
-                    <text x="400" y="50"
-                          fill="#edf3ff"
-                          font-size="20"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle"
-                          font-weight="bold">
-                        Select GPU
-                    </text>
-
-                    <rect x="150" y="80"
-                          width="500"
-                          height="55"
-                          rx="12"
-                          fill="#1c232d"
-                          stroke="#c7ff5c"
-                          stroke-width="2"/>
-
-                    <circle cx="190"
-                            cy="112"
-                            r="10"
-                            fill="#c7ff5c"/>
-
-                    <text x="220" y="120"
-                          fill="#dfe8f7"
-                          font-size="18"
-                          font-family="Arial, sans-serif">
-                        e.g., RTX 4090, RTX 4070, RTX 3060
-                    </text>
-
-                    <path d="M630 105 L660 105"
-                          stroke="#c7ff5c"
-                          stroke-width="2"
-                          stroke-linecap="round"/>
-
-                    <text x="400" y="200"
-                          fill="#b5ff3d"
-                          font-size="18"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        Graphics card impacts FPS most
-                    </text>
-
-                </svg>
-            `)
-        },
-
-        {
-            title: 'Choose your RAM',
-            text: `Select how much RAM (memory) your system has.
-
-Most modern games need at least 16 GB.
-
-More RAM helps your system handle demanding games smoothly.`,
-            image: svgToDataUrl(`
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     width="800"
-                     height="300"
-                     viewBox="0 0 800 300">
-
-                    <rect width="800" height="300" fill="#11151d"/>
-
-                    <text x="400" y="50"
-                          fill="#edf3ff"
-                          font-size="20"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle"
-                          font-weight="bold">
-                        Select RAM
-                    </text>
-
-                    <rect x="150" y="80"
-                          width="500"
-                          height="55"
-                          rx="12"
-                          fill="#1c232d"
-                          stroke="#c7ff5c"
-                          stroke-width="2"/>
-
-                    <circle cx="190"
-                            cy="112"
-                            r="10"
-                            fill="#c7ff5c"/>
-
-                    <text x="220" y="120"
-                          fill="#dfe8f7"
-                          font-size="18"
-                          font-family="Arial, sans-serif">
-                        e.g., 8GB, 16GB, 32GB, 64GB
-                    </text>
-
-                    <path d="M630 105 L660 105"
-                          stroke="#c7ff5c"
-                          stroke-width="2"
-                          stroke-linecap="round"/>
-
-                    <text x="400" y="200"
-                          fill="#b5ff3d"
-                          font-size="18"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        Select total system memory
-                    </text>
-
-                </svg>
-            `)
-        },
-
-        {
-            title: 'Get your FPS prediction',
-            text: `Click "Analyze Performance" to see your results.
-
-You'll get your expected FPS and recommended graphics settings.
-
-Use these to optimize your gaming experience.`,
-            image: svgToDataUrl(`
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     width="800"
-                     height="300"
-                     viewBox="0 0 800 300">
-
-                    <rect width="800" height="300" fill="#11151d"/>
-
-                    <rect x="150" y="40"
-                          width="500"
-                          height="60"
-                          rx="14"
-                          fill="#1c232d"
-                          stroke="#c7ff5c"
-                          stroke-width="2"/>
-
-                    <text x="400" y="77"
-                          fill="#c7ff5c"
-                          font-size="24"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle"
-                          font-weight="bold">
-                        Analyze Performance
-                    </text>
-
-                    <rect x="120" y="140"
-                          width="560"
-                          height="120"
-                          rx="16"
-                          fill="#1b212c"
-                          stroke="#b5ff3d"
-                          stroke-width="2"/>
-
-                    <text x="400" y="175"
-                          fill="#edf3ff"
-                          font-size="18"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        Expected: 120 FPS @ Ultra
-                    </text>
-
-                    <text x="400" y="210"
-                          fill="#b5ff3d"
-                          font-size="16"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        Settings: Ultra / High / Medium
-                    </text>
-
-                </svg>
-            `)
-        }
-    ],
-
-    benchmark: [
-        {
-            title: 'This is the Hardware Benchmark tab',
-            text: `Here you can test individual CPU, GPU, or RAM performance.
-
-See how powerful each component is compared to others.
-
-Benchmark scores help you decide if you need upgrades.`,
-            image: svgToDataUrl(`
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     width="800"
-                     height="300"
-                     viewBox="0 0 800 300">
-
-                    <rect width="800" height="300" fill="#11151d"/>
-
-                    <rect x="50" y="30"
-                          width="700"
-                          height="240"
-                          rx="16"
-                          fill="#1d2330"
-                          stroke="#2d3644"
-                          stroke-width="2"/>
-
-                    <text x="400" y="70"
-                          fill="#c7ff5c"
-                          font-size="24"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle"
-                          font-weight="bold">
-                        Hardware Benchmark Tab
-                    </text>
-
-                    <rect x="80" y="95"
-                          width="150"
-                          height="120"
-                          rx="12"
-                          fill="#1c232d"
-                          stroke="#c7ff5c"
-                          stroke-width="1"/>
-
-                    <rect x="270" y="95"
-                          width="150"
-                          height="120"
-                          rx="12"
-                          fill="#1c232d"/>
-
-                    <rect x="460" y="95"
-                          width="150"
-                          height="120"
-                          rx="12"
-                          fill="#1c232d"/>
-
-                    <text x="155" y="165"
-                          fill="#edf3ff"
-                          font-size="14"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        CPU
-                    </text>
-
-                    <text x="345" y="165"
-                          fill="#edf3ff"
-                          font-size="14"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        GPU
-                    </text>
-
-                    <text x="535" y="165"
-                          fill="#edf3ff"
-                          font-size="14"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        RAM
-                    </text>
-
-                </svg>
-            `)
-        },
-
-        {
-            title: 'Choose a hardware type',
-            text: `Select whether you want to benchmark a CPU, GPU, or RAM.
-
-Each has its own performance scoring system.
-
-Pick the component you want to test.`,
-            image: svgToDataUrl(`
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     width="800"
-                     height="300"
-                     viewBox="0 0 800 300">
-
-                    <rect width="800" height="300" fill="#11151d"/>
-
-                    <rect x="80" y="50"
-                          width="220"
-                          height="100"
-                          rx="16"
-                          fill="#1c232d"
-                          stroke="#c7ff5c"
-                          stroke-width="2"/>
-
-                    <rect x="340" y="50"
-                          width="220"
-                          height="100"
-                          rx="16"
-                          fill="#202833"/>
-
-                    <rect x="600" y="50"
-                          width="120"
-                          height="100"
-                          rx="16"
-                          fill="#202833"/>
-
-                    <text x="190" y="110"
-                          fill="#c7ff5c"
-                          font-size="22"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle"
-                          font-weight="bold">
-                        CPU
-                    </text>
-
-                    <text x="450" y="110"
-                          fill="#edf3ff"
-                          font-size="22"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        GPU
-                    </text>
-
-                    <text x="660" y="110"
-                          fill="#edf3ff"
-                          font-size="22"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        RAM
-                    </text>
-
-                    <text x="400" y="200"
-                          fill="#b5ff3d"
-                          font-size="18"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        Click to select type
-                    </text>
-
-                </svg>
-            `)
-        },
-
-        {
-            title: 'Select your hardware model',
-            text: `Pick the exact model you have.
-
-For example: Intel i7-13700K, RTX 4080, or 32GB DDR5.
-
-You can search by name to find it quickly.`,
-            image: svgToDataUrl(`
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     width="800"
-                     height="300"
-                     viewBox="0 0 800 300">
-
-                    <rect width="800" height="300" fill="#11151d"/>
-
-                    <rect x="100" y="80"
-                          width="600"
-                          height="55"
-                          rx="12"
-                          fill="#1c232d"
-                          stroke="#c7ff5c"
-                          stroke-width="2"/>
-
-                    <circle cx="140"
-                            cy="112"
-                            r="10"
-                            fill="#c7ff5c"/>
-
-                    <text x="170" y="120"
-                          fill="#dfe8f7"
-                          font-size="18"
-                          font-family="Arial, sans-serif">
-                        Search hardware...
-                    </text>
-
-                    <path d="M650 105 L680 105"
-                          stroke="#c7ff5c"
-                          stroke-width="2"
-                          stroke-linecap="round"/>
-
-                    <text x="400" y="200"
-                          fill="#b5ff3d"
-                          font-size="18"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        Search or select from list
-                    </text>
-
-                </svg>
-            `)
-        },
-
-        {
-            title: 'View the benchmark score',
-            text: `The score shows how powerful your hardware is.
-
-Higher scores mean better performance across all games.
-
-Compare your score with other hardware models.`,
-            image: svgToDataUrl(`
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     width="800"
-                     height="300"
-                     viewBox="0 0 800 300">
-
-                    <rect width="800" height="300" fill="#11151d"/>
-
-                    <rect x="100" y="50"
-                          width="600"
-                          height="180"
-                          rx="16"
-                          fill="#1b212c"
-                          stroke="#c7ff5c"
-                          stroke-width="2"/>
-
-                    <text x="400" y="90"
-                          fill="#edf3ff"
-                          font-size="20"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        Benchmark Score
-                    </text>
-
-                    <text x="400" y="150"
-                          fill="#c7ff5c"
-                          font-size="56"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle"
-                          font-weight="bold">
-                        32,850
-                    </text>
-
-                    <text x="400" y="195"
-                          fill="#8e98b3"
-                          font-size="16"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        Higher = Better Performance
-                    </text>
-
-                </svg>
-            `)
-        },
-
-        {
-            title: 'Compare with other hardware',
-            text: `Use benchmark scores to compare your hardware with others.
-
-Decide if your current setup is good for gaming.
-
-Plan upgrades based on the performance gap you see.`,
-            image: svgToDataUrl(`
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     width="800"
-                     height="300"
-                     viewBox="0 0 800 300">
-
-                    <rect width="800" height="300" fill="#11151d"/>
-
-                    <rect x="80" y="60"
-                          width="240"
-                          height="160"
-                          rx="16"
-                          fill="#202833"
-                          stroke="#c7ff5c"
-                          stroke-width="2"/>
-
-                    <rect x="380" y="60"
-                          width="240"
-                          height="160"
-                          rx="16"
-                          fill="#202833"/>
-
-                    <text x="200" y="105"
-                          fill="#edf3ff"
-                          font-size="20"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle"
-                          font-weight="bold">
-                        Current PC
-                    </text>
-
-                    <text x="200" y="140"
-                          fill="#b5ff3d"
-                          font-size="18"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        Score: 18,500
-                    </text>
-
-                    <text x="200" y="165"
-                          fill="#8e98b3"
-                          font-size="14"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        Runs old games
-                    </text>
-
-                    <text x="500" y="105"
-                          fill="#edf3ff"
-                          font-size="20"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle"
-                          font-weight="bold">
-                        Upgrade Option
-                    </text>
-
-                    <text x="500" y="140"
-                          fill="#c7ff5c"
-                          font-size="18"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        Score: 35,200
-                    </text>
-
-                    <text x="500" y="165"
-                          fill="#8e98b3"
-                          font-size="14"
-                          font-family="Arial, sans-serif"
-                          text-anchor="middle">
-                        Runs modern games
-                    </text>
-
-                    <path d="M330 145 L380 145"
-                          stroke="#c7ff5c"
-                          stroke-width="3"
-                          stroke-linecap="round"/>
-
-                    <path d="M360 125 L380 145 L360 165"
-                          stroke="#c7ff5c"
-                          stroke-width="3"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          fill="none"/>
-
-                </svg>
-            `)
-        }
-    ]
+// ============================================================================
+// 14) Help & Tutorial Center
+// ============================================================================
+// A comprehensive, scrollable guide opened from the "?" button in the header.
+// Built once and reused on every user-facing page.
+//
+// Each section pairs a concise explanation with a clearly labelled image
+// placeholder. The placeholder is a <div class="help-image-placeholder"> that a
+// designer can later replace with a real <img src="..." alt="..."> without
+// touching the surrounding markup.
+
+// Maps the per-page help key (used by the header ? button) to a Help Center
+// section so the Center opens on the most relevant topic.
+const helpSectionByKey = {
+    browse: 'browse-games',
+    predict: 'fps-prediction',
+    benchmark: 'hardware-benchmark',
+    feedback: 'community-feedback'
 };
+
+// Reusable image placeholder. Swappable for <img src="..." alt="..."> later.
+function helpImagePlaceholder(expectedName, altText) {
+    const alt = altText || expectedName;
+    return (
+        '<div class="help-image-placeholder" role="img" aria-label="' + alt + '">' +
+        '<div class="help-placeholder-icon" aria-hidden="true"><i class="fas fa-image"></i></div>' +
+        '<div class="help-placeholder-name">' + expectedName + '</div>' +
+        '<div class="help-placeholder-note">Screenshot will be inserted here</div>' +
+        '</div>'
+    );
+}
+
+// Caption helper (small caption placed under a placeholder).
+function helpCaption(text) {
+    return '<p class="help-image-caption">' + text + '</p>';
+}
+
+// Graceful fallback for images that are not yet provided: shows the labelled
+// placeholder so the area stays visible until the real src is available.
+function helpImageError(img, expectedName) {
+    var wrap = img.parentNode;
+    if (wrap && !wrap.classList.contains('has-fallback')) {
+        wrap.classList.add('has-fallback');
+        img.style.display = 'none';
+        wrap.insertAdjacentHTML('beforeend', helpImagePlaceholder(expectedName));
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Section content (rich HTML). Each entry renders inside a <section>.
+// ---------------------------------------------------------------------------
+const helpCenterSections = [
+    {
+        id: 'getting-started',
+        toc: 'Getting Started',
+        icon: 'fa-play',
+        title: 'Getting Started with GameSpec Optimizer',
+        content:
+            '<p>Use GameSpec Optimizer in six simple steps:</p>' +
+            '<ol class="help-steps">' +
+            '<li>Browse or search for a game.</li>' +
+            '<li>Select the game.</li>' +
+            '<li>Configure or detect your hardware.</li>' +
+            '<li>Choose graphics quality and performance mode.</li>' +
+            '<li>Analyze performance.</li>' +
+            '<li>Review FPS, bottlenecks, recommendations, and upgrade suggestions.</li>' +
+            '</ol>' +
+            '<div class="help-image">' +
+            '<img src="/New/GameSpec-Optimizer/RES/Tutorials/browse-games/Landing_page.png" '  +
+                 'alt="GameSpec Optimizer workflow diagram">' +
+        '</div>' +
+            helpCaption('Image: Game Selection \u2192 Hardware \u2192 Settings \u2192 FPS Analysis \u2192 Results')
+    },
+    {
+        id: 'browse-games',
+        toc: 'Browse Games',
+        icon: 'fa-gamepad',
+        title: 'Browse Games',
+        content:
+            '<p>Use the search box to find a game by name. Start typing part of the title and matching games appear as you type.</p>' +
+            '<p>Use the genre filter to narrow the list. Available genres include Action, RPG, FPS, Adventure, Sports, Racing, Strategy, and Sandbox.</p>' +
+            '<p>Hover over any game card to see a quick preview, including the game description and detected genre.</p>' +
+            '<p>Clicking a game card opens that title in <strong>FPS Prediction</strong> with the game already selected, so you can continue configuring your hardware.</p>' +
+            helpImagePlaceholder('Browse Games interface screenshot') +
+            helpCaption('Example: Searching and selecting a game')
+    },
+    {
+        id: 'hardware-detection',
+        toc: 'Hardware Detection',
+        icon: 'fa-search',
+        title: 'Hardware Detection',
+        content:
+            '<p>GameSpec Optimizer can detect your Windows CPU, GPU, and installed RAM automatically. On the FPS Prediction page, click the <strong>Detect Hardware</strong> button and your components are filled in for you.</p>' +
+            '<p>If automatic detection is unavailable (for example on a non-Windows system, or when permissions are restricted), you can <strong>select your hardware manually</strong> from the searchable dropdowns instead.</p>' +
+            '<h3>Find your hardware manually</h3>' +
+            '<p>To look up your specs without the auto-detect feature:</p>' +
+            '<ol class="help-steps">' +
+            '<li><strong>Open Windows Run</strong> by pressing <kbd>Windows</kbd> + <kbd>R</kbd>.</li>' +
+            helpImagePlaceholder('Windows Run dialog') +
+            '<li><strong>Type <code>dxdiag</code> and press Enter</strong> to open the DirectX Diagnostic Tool.</li>' +
+            helpImagePlaceholder('dxdiag command') +
+            '<li><strong>Check the System and Display tabs</strong> for your processor, memory, and graphics card.</li>' +
+            helpImagePlaceholder('dxdiag System/Display information') +
+            '</ol>' +
+            '<ul>' +
+            '<li><strong>System tab</strong> &mdash; find your CPU (Processor) and installed RAM (Memory).</li>' +
+            '<li><strong>Display tab</strong> &mdash; find your graphics card (Name under Device).</li>' +
+            '</ul>'
+    },
+    {
+        id: 'hardware-benchmark',
+        toc: 'Hardware Benchmark',
+        icon: 'fa-microchip',
+        title: 'Hardware Benchmark',
+        content:
+            '<p>The Hardware Benchmark page lets you look up benchmark scores for individual components.</p>' +
+            '<ul>' +
+            '<li><strong>CPU benchmark</strong> &mdash; scores processor performance for gaming.</li>' +
+            '<li><strong>GPU benchmark</strong> &mdash; scores graphics performance (the biggest FPS factor).</li>' +
+            '<li><strong>RAM information</strong> &mdash; shows and scores your installed memory.</li>' +
+            '</ul>' +
+            '<p>First choose a <strong>hardware type</strong> (CPU, GPU, or RAM). Then <strong>select the specific component</strong> from the searchable list. Click <strong>Get Benchmark Score</strong> to see how that model performs &mdash; a numbered score with a rating (Excellent, Great, Good, Average, or Entry Level).</p>' +
+            helpImagePlaceholder('Hardware Benchmark page screenshot') +
+            helpCaption('Example: Looking up a hardware benchmark score')
+    },
+    {
+        id: 'fps-prediction',
+        toc: 'FPS Prediction',
+        icon: 'fa-chart-line',
+        title: 'FPS Prediction',
+        content:
+            '<p>The FPS Prediction page collects the inputs below, then estimates your frame rate:</p>' +
+            '<ul>' +
+            '<li><strong>Game</strong> &mdash; the title you are testing. It sets the requirements used for the estimate.</li>' +
+            '<li><strong>CPU</strong> &mdash; your processor. Search by model or detect it automatically.</li>' +
+            '<li><strong>GPU</strong> &mdash; your graphics card. It has the largest impact on frame rate.</li>' +
+            '<li><strong>RAM</strong> &mdash; select your system memory (4 GB to 64 GB).</li>' +
+            '<li><strong>Graphics Quality</strong> &mdash; Low, Medium, or High. Higher quality looks better but usually lowers FPS.</li>' +
+            '<li><strong>Performance Mode</strong> &mdash; Battery Saver, Balanced, or Performance. Match your Windows power mode for the most accurate estimate.</li>' +
+            '</ul>' +
+            '<p>When you click <strong>Analyze Performance</strong>, the application compares your hardware against the game&rsquo;s requirements and returns an estimated FPS value.</p>' +
+            helpImagePlaceholder('FPS Prediction configuration screenshot') +
+            helpCaption('Example: Configuring hardware and graphics settings')
+    },
+    {
+        id: 'understanding-fps-results',
+        toc: 'Understanding FPS Results',
+        icon: 'fa-chart-pie',
+        title: 'Understanding FPS Results',
+        content:
+            '<p>Every prediction is reported as an estimated FPS number. Results are classified using these fixed thresholds:</p>' +
+            '<div class="help-fps-rating" role="group" aria-label="FPS rating scale">' +
+            '<div class="help-fps-rating-item">' +
+            '<span class="help-fps-dot help-fps-good" aria-hidden="true"></span>' +
+            '<span class="help-fps-range">75+ FPS</span>' +
+            '<span class="help-fps-label">Good / Excellent</span>' +
+            '</div>' +
+            '<div class="help-fps-rating-item">' +
+            '<span class="help-fps-dot help-fps-ok" aria-hidden="true"></span>' +
+            '<span class="help-fps-range">45\u201374 FPS</span>' +
+            '<span class="help-fps-label">Playable</span>' +
+            '</div>' +
+            '<div class="help-fps-rating-item">' +
+            '<span class="help-fps-dot help-fps-bad" aria-hidden="true"></span>' +
+            '<span class="help-fps-range">Below 45 FPS</span>' +
+            '<span class="help-fps-label">Low</span>' +
+            '</div>' +
+            '</div>' +
+            '<p>When predicted FPS is well above a 60 FPS target, the application highlights headroom for higher graphics settings. When it is below target, it suggests settings to lower first.</p>' +
+            helpImagePlaceholder('FPS Results screenshot') +
+            helpCaption('Example: Understanding an FPS prediction result')
+    },
+    {
+        id: 'hardware-comparison',
+        toc: 'Hardware Requirement Comparison',
+        icon: 'fa-balance-scale',
+        title: 'Hardware Requirement Comparison',
+        content:
+            '<p>The results compare your hardware against the game&rsquo;s requirements component by component.</p>' +
+            '<ul>' +
+            '<li><strong>Minimum requirements</strong> &mdash; the lowest-spec hardware the game is expected to run on.</li>' +
+            '<li><strong>Recommended requirements</strong> &mdash; hardware that delivers a smoother, more stable experience.</li>' +
+            '</ul>' +
+            '<p>Your CPU, GPU, and RAM are each compared against the game&rsquo;s minimum benchmark score.</p>' +
+            '<ul>' +
+            '<li><strong>Meets requirement</strong> means your component score is at least equal to the game&rsquo;s required score.</li>' +
+            '<li>When a component is <strong>below the requirement</strong>, it is flagged as &ldquo;Needs attention&rdquo; and may be treated as a bottleneck.</li>' +
+            '</ul>' +
+            helpImagePlaceholder('Hardware comparison screenshot') +
+            helpCaption('Example: Comparing your hardware with game requirements')
+    },
+    {
+        id: 'bottlenecks',
+        toc: 'Bottlenecks',
+        icon: 'fa-exclamation-triangle',
+        title: 'Bottlenecks',
+        content:
+            '<p>A <strong>bottleneck</strong> is a hardware component that limits overall performance because it is much weaker than the rest of your system. Even with strong parts elsewhere, a weak link holds back the frame rate.</p>' +
+            '<div class="help-bottleneck-diagram" aria-label="Bottleneck flow diagram">' +
+            '<div class="bn-row"><div class="bn-item">CPU</div><div class="bn-item">GPU</div><div class="bn-item">RAM</div></div>' +
+            '<div class="bn-arrow" aria-hidden="true">\u2193</div>' +
+            '<div class="bn-target">Game Performance</div>' +
+            '<div class="bn-arrow" aria-hidden="true">\u2193</div>' +
+            '<div class="bn-result">FPS</div>' +
+            '</div>' +
+            '<p>If a component is identified as a bottleneck, upgrading it usually gives the largest FPS gain.</p>' +
+            helpImagePlaceholder('Bottleneck result screenshot') +
+            helpCaption('Example: Identifying a limiting hardware component')
+    },
+    {
+        id: 'graphics-recommendations',
+        toc: 'Graphics Settings Recommendations',
+        icon: 'fa-sliders-h',
+        title: 'Graphics Settings Recommendations',
+        content:
+            '<p>Based on the gap between your estimated FPS and a 60 FPS target, the application suggests graphics adjustments.</p>' +
+            '<p>If you have headroom, it may recommend:</p>' +
+            '<ul>' +
+            '<li>Increasing overall <strong>Graphics Quality</strong></li>' +
+            '<li>Increasing <strong>Shadow Quality</strong></li>' +
+            '<li>Adjusting <strong>Anti-Aliasing</strong> (for example, to TAA or FXAA)</li>' +
+            '<li>Enabling <strong>Ambient Occlusion</strong></li>' +
+            '<li>Enabling <strong>Bloom</strong></li>' +
+            '<li>Adjusting other supported settings</li>' +
+            '</ul>' +
+            '<p>If your FPS is too low, the opposite adjustments are offered (lowering or disabling those same settings). All suggestions aim to <strong>balance visual quality and FPS</strong>.</p>' +
+            helpImagePlaceholder('Graphics recommendations screenshot') +
+            helpCaption('Example: Recommended graphics adjustments')
+    },
+    {
+        id: 'upgrade-recommendations',
+        toc: 'Upgrade Recommendations',
+        icon: 'fa-arrow-up',
+        title: 'Upgrade Recommendations',
+        content:
+            '<p>When your hardware does not meet a game&rsquo;s requirements, the application suggests specific upgrade options. The recommendation flows like this:</p>' +
+            '<div class="help-upgrade-flow" aria-label="Upgrade recommendation flow">' +
+            '<div class="uf-step">Current Hardware</div>' +
+            '<div class="uf-arrow" aria-hidden="true">\u2193</div>' +
+            '<div class="uf-step">Limiting Component</div>' +
+            '<div class="uf-arrow" aria-hidden="true">\u2193</div>' +
+            '<div class="uf-step">Recommended Upgrade</div>' +
+            '<div class="uf-arrow" aria-hidden="true">\u2193</div>' +
+            '<div class="uf-step uf-step-last">Expected Improvement</div>' +
+            '</div>' +
+            '<p>Review the limiting component first, then compare the suggested upgrade scores. After upgrading, re-run the prediction to confirm the improvement.</p>' +
+            helpImagePlaceholder('Upgrade recommendation screenshot') +
+            helpCaption('Example: Understanding a hardware upgrade recommendation')
+    },
+    {
+        id: 'community-feedback',
+        toc: 'Community Feedback',
+        icon: 'fa-comments',
+        title: 'Community Feedback',
+        content:
+            '<p>The Community Feedback page shows what other players think about their setups and results.</p>' +
+            '<ul>' +
+            '<li><strong>Viewing reviews</strong> &mdash; feedback cards show a star rating and comment.</li>' +
+            '<li><strong>Searching feedback</strong> &mdash; type in the search box to filter reviews by keyword.</li>' +
+            '<li><strong>Filtering by rating</strong> &mdash; use the rating dropdown to show only reviews of a certain star level.</li>' +
+            '<li><strong>Adding feedback</strong> &mdash; click &ldquo;Add Feedback&rdquo; to open a form with a star rating, title, and comment.</li>' +
+            '<li><strong>Helpful votes</strong> &mdash; click the helpful button on a review to mark it as useful.</li>' +
+            '<li><strong>Reporting</strong> &mdash; use the report button on any review to flag inappropriate content.</li>' +
+            '</ul>' +
+            helpImagePlaceholder('Community Feedback screenshot') +
+            helpCaption('Example: Reading and submitting community feedback')
+    }
+];
+
+// ---------------------------------------------------------------------------
+// FAQ (collapsible). answers are concise.
+// ---------------------------------------------------------------------------
+const helpFaqItems = [
+    {
+        q: 'What is FPS?',
+        a: 'FPS (Frames Per Second) is how many full-screen images your game draws each second. Higher FPS means smoother motion. The app predicts FPS so you can estimate smoothness before playing.'
+    },
+    {
+        q: 'What does minimum requirement mean?',
+        a: 'The lowest-spec hardware the game is expected to run on. Meeting it usually means the game launches, but not necessarily at high settings or a smooth frame rate.'
+    },
+    {
+        q: 'What does recommended requirement mean?',
+        a: 'Hardware that delivers a smoother, more stable experience. Exceeding the recommended level helps you maintain good frame rates.'
+    },
+    {
+        q: 'Why is my predicted FPS different from an actual game\'s FPS?',
+        a: 'Predictions are estimates based on benchmark scores, not live measurement. Real FPS varies with your settings, resolution, background apps, drivers, and the specific game patch.'
+    },
+    {
+        q: 'What is a bottleneck?',
+        a: 'A component that limits overall performance because it is much weaker than the rest of your system. Upgrading the bottleneck usually gives the biggest FPS gain.'
+    },
+    {
+        q: 'Why can\'t my hardware be detected?',
+        a: 'Detection uses the Windows dxdiag tool and requires Windows with permission to read system information. On other operating systems, or if permissions are restricted, detection may fail. Select your hardware manually instead.'
+    },
+    {
+        q: 'What does Performance Mode mean?',
+        a: 'It reflects your Windows power mode: Battery Saver lowers performance for battery life, Balanced is the default, and Performance maximizes frame rate. Match it to your actual setting for the most accurate prediction.'
+    },
+    {
+        q: 'Can I manually select my hardware?',
+        a: 'Yes. Use the searchable dropdowns to pick your CPU, GPU, and RAM, or click Detect Hardware to fill them in automatically.'
+    },
+    {
+        q: 'What do the FPS ratings mean?',
+        a: '75+ FPS is Good / Excellent, 45\u201374 FPS is Playable, and below 45 FPS is Low.'
+    },
+    {
+        q: 'How should I use the upgrade recommendation?',
+        a: 'Review the limiting component first, then compare the suggested upgrade scores. The recommendation shows the gap to close; re-run the prediction after upgrading to confirm the improvement.'
+    }
+];
+
+// ---------------------------------------------------------------------------
+// Build the Help Center markup (TOC + sections + FAQ + support).
+// ---------------------------------------------------------------------------
+function helpTocLink(targetId, label, icon, extraClass) {
+    const cls = extraClass ? 'help-toc-link ' + extraClass : 'help-toc-link';
+    return '<li><a href="#" class="' + cls + '" data-target="' + targetId + '">' +
+        '<i class="fas ' + icon + ' help-toc-icon" aria-hidden="true"></i>' +
+        '<span>' + label + '</span></a></li>';
+}
+
+function buildHelpCenterHTML() {
+    const tocListItems = helpTocLink('hc-getting-started', 'Start here', 'fa-home', 'help-toc-start active') +
+        helpCenterSections.map(function (s) {
+            return helpTocLink('hc-' + s.id, s.toc, s.icon || 'fa-circle');
+        }).join('') +
+        helpTocLink('hc-faq', 'FAQ', 'fa-question-circle');
+
+    const tocListHtml = '<ul class="help-toc-list">' + tocListItems + '</ul>';
+
+    const sections = helpCenterSections.map(function (s) {
+        return '<section id="hc-' + s.id + '" class="help-section" tabindex="-1">' +
+            '<h2 class="help-section-title">' +
+            '<span class="help-section-icon" aria-hidden="true"><i class="fas ' + (s.icon || 'fa-play') + '"></i></span>' +
+            '<span>' + s.title + '</span></h2>' +
+            s.content +
+            '</section>';
+    }).join('');
+
+    const faqItems = helpFaqItems.map(function (item) {
+        return '<details class="help-faq-item">' +
+            '<summary class="help-faq-question">' + item.q + '<span class="help-faq-icon" aria-hidden="true"></span></summary>' +
+            '<div class="help-faq-answer"><p>' + item.a + '</p></div>' +
+            '</details>';
+    }).join('');
+
+    return '' +
+        '<div class="modal-dialog help-center-dialog" role="dialog" aria-modal="true" aria-labelledby="pageHelpTitle">' +
+        '<div class="modal-header help-center-header">' +
+        '<div class="help-center-heading">' +
+        '<span class="help-center-kicker">GameSpec Optimizer</span>' +
+        '<h2 id="pageHelpTitle">Help &amp; Tutorial Center</h2>' +
+        '</div>' +
+        '<button class="modal-close" type="button" id="pageHelpCloseBtn" aria-label="Close help">&times;</button>' +
+        '</div>' +
+        '<div class="help-center-body">' +
+        '<nav class="help-toc" aria-label="Table of contents">' +
+        tocListHtml +
+        '</nav>' +
+        '<div class="help-content">' +
+        '<details class="help-toc-mobile" role="group" aria-label="On this page">' +
+        '<summary class="help-toc-toggle" tabindex="0"><span class="help-toc-icon"></span>On this page</summary>' +
+        tocListHtml +
+        '</details>' +
+        sections +
+        '<section id="hc-faq" class="help-section" tabindex="-1">' +
+        '<h2 class="help-section-title">' +
+        '<span class="help-section-icon" aria-hidden="true"><i class="fas fa-question-circle"></i></span>' +
+        '<span>Frequently Asked Questions</span></h2>' +
+        '<div class="help-faq">' + faqItems + '</div>' +
+        '</section>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
+}
+
 let pageHelpModal = null;
-let pageHelpSection = null;
-let pageHelpCurrentStep = 0;
 
-function createPageHelpModal() {
-
+function createHelpCenterModal() {
     if (pageHelpModal) {
         return pageHelpModal;
     }
 
     pageHelpModal = document.createElement('div');
-
     pageHelpModal.id = 'pageHelpModal';
     pageHelpModal.className = 'modal-overlay page-help-modal';
-
-    pageHelpModal.innerHTML = `
-        <div class="modal-dialog">
-
-            <div class="modal-header">
-
-                <h2 id="pageHelpTitle">
-                    Quick Guide
-                </h2>
-
-                <button
-                    class="modal-close"
-                    type="button"
-                    id="pageHelpCloseBtn"
-                    aria-label="Close">
-                    &times;
-                </button>
-
-            </div>
-
-            <div class="modal-body">
-
-                <div class="help-progress-container">
-
-                    <div class="help-progress-info">
-                        <span id="pageHelpStepLabel">
-                            Step 1 of 1
-                        </span>
-                    </div>
-
-                    <div class="help-progress-bar">
-                        <div
-                            class="help-progress-fill"
-                            id="pageHelpProgress">
-                        </div>
-                    </div>
-
-                </div>
-
-                <div id="pageHelpSteps"></div>
-
-            </div>
-
-            <div class="modal-footer">
-
-                <button
-                    class="modal-btn modal-btn-secondary"
-                    type="button"
-                    id="pageHelpPrevBtn">
-                    Previous
-                </button>
-
-                <button
-                    class="modal-btn modal-btn-primary"
-                    type="button"
-                    id="pageHelpNextBtn">
-                    Next
-                </button>
-
-            </div>
-
-        </div>
-    `;
+    pageHelpModal.innerHTML = buildHelpCenterHTML();
 
     document.body.appendChild(pageHelpModal);
 
-    // Close button
-    document
-        .getElementById('pageHelpCloseBtn')
-        .addEventListener('click', closePageHelp);
+    // Close actions
+    var closeHandler = function () { closePageHelp(); };
+    var closeBtn = pageHelpModal.querySelector('#pageHelpCloseBtn');
+    if (closeBtn) closeBtn.addEventListener('click', closeHandler);
 
-    // Previous
-    document
-        .getElementById('pageHelpPrevBtn')
-        .addEventListener('click', pageHelpPrevious);
-
-    // Next
-    document
-        .getElementById('pageHelpNextBtn')
-        .addEventListener('click', pageHelpNext);
-
-    // Close when clicking outside the dialog
+    // Click outside the dialog closes the Center
     pageHelpModal.addEventListener('click', function (event) {
-
         if (event.target === pageHelpModal) {
             closePageHelp();
         }
-
     });
 
     // ESC key
     document.addEventListener('keydown', function (event) {
-
-        if (
-            event.key === 'Escape' &&
-            pageHelpModal &&
-            pageHelpModal.classList.contains('show')
-        ) {
+        if (event.key === 'Escape' && pageHelpModal && pageHelpModal.classList.contains('active')) {
             closePageHelp();
         }
-
     });
+
+    initHelpCenterTOC(pageHelpModal);
 
     return pageHelpModal;
 }
-    let currentStep = 0;
-    const stepsContainer = document.getElementById('pageHelpSteps');
-    const progressBar = document.getElementById('pageHelpProgress');
-    const nextButton = document.getElementById('pageHelpNextBtn');
-    const prevButton = document.getElementById('pageHelpPrevBtn');
 
-    function renderStep() {
-        const step = steps[currentStep];
-        if (!step) return;
+// Table-of-contents behaviour: smooth scroll + active highlight while scrolling.
+function initHelpCenterTOC(modal) {
+    var links = modal.querySelectorAll('.help-toc-link');
 
-        const textHtml = step.text
-            ? step.text
-            .split(/\n\n+/)
-            .map(paragraph => `<p>${paragraph}</p>`)
-            .join('')
-            : '';
+    links.forEach(function (link) {
+        link.addEventListener('click', function (event) {
+            event.preventDefault();
+            var target = document.getElementById(link.getAttribute('data-target'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
 
-        const contentHtml = step.type === 'image'
-            ? `
-                <h3>${step.title}</h3>
-                <div class="help-visual"><img src="${step.image}" alt="${step.title}" /></div>
-            `
-            : `
-                <h3>${step.title}</h3>
-                <div class="help-step-text">${textHtml}</div>
-            `;
+    // Highlight the current section in the TOC as the user scrolls.
+    var sections = helpCenterSections.map(function (s) {
+        return document.getElementById('hc-' + s.id);
+    }).filter(Boolean);
+    var extra = [document.getElementById('hc-faq')].filter(Boolean);
+    sections = sections.concat(extra);
 
-        stepsContainer.innerHTML = `
-            <div class="help-step-content active">
-                <div class="help-step-badge">Step ${currentStep + 1} of ${steps.length}</div>
-                ${contentHtml}
-            </div>
-        `;
-
-        const progressPercent = ((currentStep + 1) / steps.length) * 100;
-        progressBar.style.width = progressPercent + '%';
-
-        nextButton.textContent = currentStep === steps.length - 1 ? 'Finish' : 'Next';
-        prevButton.disabled = currentStep === 0;
-        prevButton.style.opacity = currentStep === 0 ? '0.5' : '1';
-        prevButton.style.cursor = currentStep === 0 ? 'not-allowed' : 'pointer';
+    if (!('IntersectionObserver' in window) || !sections.length) {
+        return;
     }
 
-    nextButton.onclick = function () {
-        if (currentStep < steps.length - 1) {
-            currentStep += 1;
-            renderStep();
-            return;
-        }
-        closePageHelp();
-    };
+    var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            var id = entry.target.id;
+            var link = modal.querySelector('.help-toc-link[data-target="' + id + '"]');
+            if (entry.isIntersecting) {
+                links.forEach(function (l) { l.classList.remove('active'); });
+                modal.querySelectorAll('.help-toc-link[data-target="' + id + '"]').forEach(function (match) {
+                    match.classList.add('active');
+                });
+            }
+        });
+    }, { root: modal.querySelector('.help-content'), threshold: 0.35 });
 
-    prevButton.onclick = function () {
-        if (currentStep > 0) {
-            currentStep -= 1;
-            renderStep();
-        }
-    };
+    sections.forEach(function (s) { observer.observe(s); });
+}
 
-    currentStep = 0;
-    renderStep();
+// Returns the help section key that best matches the current page, so the
+// Help Center opens on the most relevant topic. Falls back to the passed
+// pageKey, then to null (no scroll -> top of the Center).
+function helpCurrentPageKey(pageKey) {
+    var activeNav = document.querySelector('.sidebar .nav-btn.active');
+    if (activeNav && activeNav.dataset && helpSectionByKey[activeNav.dataset.page]) {
+        return activeNav.dataset.page;
+    }
+    var pathMap = {
+        'browse-games.php': 'browse',
+        'fps-prediction.php': 'predict',
+        'hardware-benchmark.php': 'benchmark',
+        'feedback.php': 'feedback'
+    };
+    var name = (window.location.pathname || '').split('/').pop().toLowerCase();
+    if (pathMap[name]) {
+        return pathMap[name];
+    }
+    return pageKey || null;
+}
+
+function showPageHelp(pageKey) {
+    var modal = createHelpCenterModal();
     modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    // Scroll to the most relevant section for the current page.
+    var key = helpCurrentPageKey(pageKey);
+    var targetId = key ? helpSectionByKey[key] : null;
+    if (!targetId && helpSectionByKey[pageKey]) {
+        targetId = helpSectionByKey[pageKey];
+    }
+    var targetEl = targetId ? document.getElementById('hc-' + targetId) : null;
+    if (targetEl) {
+        setTimeout(function () {
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 80);
+    }
+    return false;
 }
 
 function closePageHelp() {
-    const modal = document.getElementById('pageHelpModal');
+    var modal = document.getElementById('pageHelpModal');
     if (modal) {
         modal.classList.remove('active');
+        var closeBtn = modal.querySelector('#pageHelpCloseBtn');
+        if (closeBtn) closeBtn.blur();
     }
+    document.body.style.overflow = '';
 }
+
 
 // --- SIDEBAR CONTROL ---
 function toggleSidebar() {
