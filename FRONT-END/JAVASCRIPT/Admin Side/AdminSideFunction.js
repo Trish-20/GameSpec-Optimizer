@@ -113,6 +113,36 @@ const AUTOCOMPLETE_LIMIT = 12;
 const autocompleteSources = {};
 const hardwareModelSearchTimers = {};
 let selectedGameCoverData = '';
+let editingGameIndex = -1;
+
+function setGameFormMode(isEditing, gameTitle = '') {
+    const submitBtn = document.getElementById('gameSubmitBtn');
+    const cancelBtn = document.getElementById('cancelEditBtn');
+    const formTitle = document.getElementById('gameFormTitle');
+    const modeHint = document.getElementById('gameFormModeHint');
+    if (submitBtn) submitBtn.textContent = isEditing ? 'Save Changes' : 'Add Game';
+    if (cancelBtn) cancelBtn.style.display = isEditing ? 'inline-flex' : 'none';
+    if (formTitle) formTitle.textContent = isEditing ? `Edit Game${gameTitle ? `: ${gameTitle}` : ''}` : 'Add Game';
+    if (modeHint) modeHint.textContent = isEditing
+        ? 'You are editing an existing game. Update the details below, then click "Save Changes".'
+        : 'Fill in the details below to add a new game to the catalog.';
+}
+
+function cancelGameEdit() {
+    editingGameIndex = -1;
+    const gameForm = document.getElementById('gameForm');
+    if (gameForm) gameForm.reset();
+    selectedGameCoverData = '';
+    const gameCoverInput = document.getElementById('gameCover');
+    const gameCoverPreview = document.getElementById('gameCoverPreview');
+    const gameCoverPreviewImage = document.getElementById('gameCoverPreviewImage');
+    const gameCoverPlaceholder = document.getElementById('gameCoverPlaceholder');
+    if (gameCoverInput) gameCoverInput.value = '';
+    if (gameCoverPreviewImage) gameCoverPreviewImage.removeAttribute('src');
+    if (gameCoverPreview) gameCoverPreview.hidden = true;
+    if (gameCoverPlaceholder) gameCoverPlaceholder.hidden = false;
+    setGameFormMode(false);
+}
 
 function readFileAsDataUrl(file) {
     return new Promise((resolve, reject) => {
@@ -324,20 +354,64 @@ function scheduleHardwareModelSearch(type) {
 function editGame(index) {
     const game = adminGames[index];
     if (!game) return;
-    
-    document.getElementById('gameTitle').value = game.title;
-    document.getElementById('gameCPU').value = game.cpu_model;
-    document.getElementById('gameGPU').value = game.gpu_model;
+
+    editingGameIndex = index;
+
+    document.getElementById('gameTitle').value = game.title || '';
+    document.getElementById('gameCPU').value = game.cpu_model || '';
+    document.getElementById('gameGPU').value = game.gpu_model || '';
     document.getElementById('gameRAM').value = game.ram_capacity_gb || '';
     document.getElementById('gameRAMSpeed').value = game.ram_speed_mhz || '';
+
+    // Reuse existing description property (frontend-only; API does not persist it yet).
+    const descInput = document.getElementById('gameDescription');
+    if (descInput) descInput.value = game.description || '';
+
+    // Restore graphics-setting checkboxes from existing game data.
+    const hasBloom = document.getElementById('hasBloom');
+    const hasAntiAlias = document.getElementById('hasAntiAlias');
+    const hasShadows = document.getElementById('hasShadows');
+    const hasVSync = document.getElementById('hasVSync');
+    if (hasBloom) hasBloom.checked = game.hasBloom !== 0 && game.hasBloom !== '0';
+    if (hasAntiAlias) hasAntiAlias.checked = game.hasAntiAlias !== 0 && game.hasAntiAlias !== '0';
+    if (hasShadows) hasShadows.checked = game.hasShadows !== 0 && game.hasShadows !== '0';
+    if (hasVSync) hasVSync.checked = game.hasVSync !== 0 && game.hasVSync !== '0';
+
+    // Show existing cover image in the polished preview (no backend change).
+    selectedGameCoverData = '';
+    const gameCoverInput = document.getElementById('gameCover');
+    const gameCoverPreview = document.getElementById('gameCoverPreview');
+    const gameCoverPreviewImage = document.getElementById('gameCoverPreviewImage');
+    const gameCoverPlaceholder = document.getElementById('gameCoverPlaceholder');
+    if (gameCoverInput) gameCoverInput.value = '';
+    const existingImage = game.image ? `../../RES/${game.image}` : '';
+    if (existingImage && gameCoverPreviewImage) {
+        gameCoverPreviewImage.src = existingImage;
+        gameCoverPreviewImage.onerror = () => {
+            gameCoverPreviewImage.removeAttribute('src');
+            if (gameCoverPreview) gameCoverPreview.hidden = true;
+            if (gameCoverPlaceholder) gameCoverPlaceholder.hidden = false;
+        };
+        if (gameCoverPreview) gameCoverPreview.hidden = false;
+        if (gameCoverPlaceholder) gameCoverPlaceholder.hidden = true;
+    } else {
+        if (gameCoverPreviewImage) gameCoverPreviewImage.removeAttribute('src');
+        if (gameCoverPreview) gameCoverPreview.hidden = true;
+        if (gameCoverPlaceholder) gameCoverPlaceholder.hidden = false;
+    }
+
+    // Switch the form into edit mode: "Save Changes" + cancel option.
+    setGameFormMode(true, game.title || '');
 
    // Scroll the page all the way to the top smoothly
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     // Optional: highlight the form briefly
     const formEl = document.getElementById('gameForm');
-    formEl.classList.add('highlight');
-    setTimeout(() => formEl.classList.remove('highlight'), 1200);
+    if (formEl) {
+        formEl.classList.add('highlight');
+        setTimeout(() => formEl.classList.remove('highlight'), 1200);
+    }
 }
 
 function deleteGame(index) {
@@ -585,14 +659,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const clearGameCoverPreview = () => {
         selectedGameCoverData = '';
+        const gameCoverPlaceholder = document.getElementById('gameCoverPlaceholder');
         if (gameCoverInput) gameCoverInput.value = '';
         if (gameCoverPreviewImage) gameCoverPreviewImage.removeAttribute('src');
         if (gameCoverPreview) gameCoverPreview.hidden = true;
+        if (gameCoverPlaceholder) gameCoverPlaceholder.hidden = false;
     };
 
     if (gameCoverInput) {
         gameCoverInput.addEventListener('change', async function() {
             const file = this.files?.[0];
+            const gameCoverPlaceholder = document.getElementById('gameCoverPlaceholder');
             if (!file) return;
 
             if (!file.type.startsWith('image/') || file.size > 5 * 1024 * 1024) {
@@ -605,6 +682,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 selectedGameCoverData = await readFileAsDataUrl(file);
                 if (gameCoverPreviewImage) gameCoverPreviewImage.src = selectedGameCoverData;
                 if (gameCoverPreview) gameCoverPreview.hidden = false;
+                if (gameCoverPlaceholder) gameCoverPlaceholder.hidden = true;
             } catch (error) {
                 clearGameCoverPreview();
                 showModal('Error', error.message);
@@ -631,9 +709,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            const duplicate = adminGames.some(game => normalizeModelName(game.title) === normalizeModelName(title));
+            const duplicate = adminGames.some((game, idx) => idx !== editingGameIndex && normalizeModelName(game.title) === normalizeModelName(title));
             if (duplicate) {
                 showModal('Warning', 'A game with that title already exists.');
+                return;
+            }
+
+            // Editing is handled as a friendly frontend-only update because the
+            // existing API only supports adding new games (it rejects duplicates).
+            if (editingGameIndex >= 0) {
+                const existing = adminGames[editingGameIndex];
+                if (existing) {
+                    adminGames[editingGameIndex] = {
+                        ...existing,
+                        title,
+                        cpu_model: cpuModel,
+                        gpu_model: gpuModel,
+                        ram_capacity_gb: ramGB,
+                        ram_speed_mhz: ramSpeedMhz,
+                        ram_model: `${ramGB} GB DDR4-${ramSpeedMhz}`,
+                        hasBloom: document.getElementById('hasBloom')?.checked,
+                        hasAntiAlias: document.getElementById('hasAntiAlias')?.checked,
+                        hasShadows: document.getElementById('hasShadows')?.checked,
+                        hasVSync: document.getElementById('hasVSync')?.checked,
+                        description: document.getElementById('gameDescription')?.value.trim() || existing.description || ''
+                    };
+                    displayGameList();
+                }
+                gameForm.reset();
+                clearGameCoverPreview();
+                cancelGameEdit();
+                showModal('Success', 'Game information has been updated successfully.');
                 return;
             }
 
@@ -664,8 +770,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 gameForm.reset();
                 clearGameCoverPreview();
+                cancelGameEdit();
                 await loadAdminGames();
-                showModal('Success', 'Game saved successfully.');
+                showModal('Success', 'Game added successfully.');
             } catch (error) {
                 showModal('Error', error.message || 'Game could not be saved.');
             }

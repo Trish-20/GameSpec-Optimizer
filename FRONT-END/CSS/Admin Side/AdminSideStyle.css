@@ -221,21 +221,95 @@ body {
 .game-cover-preview {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
-    margin-top: 10px;
+    gap: 14px;
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid rgba(181, 255, 61, 0.22);
+    border-radius: 14px;
+    background: rgba(181, 255, 61, 0.05);
 }
 
 .game-cover-preview img {
-    width: 96px;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 8px;
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+    background: #101014;
+    border-radius: 12px;
     border: 1px solid var(--border-color);
+    flex-shrink: 0;
 }
 
 .game-cover-preview .btn-secondary {
     padding: 8px 10px;
     font-size: 12px;
+}
+
+.game-cover-placeholder {
+    margin-top: 12px;
+    padding: 18px 14px;
+    border: 1px dashed var(--border-color);
+    border-radius: 14px;
+    background: var(--bg-card-sub);
+    text-align: center;
+    color: var(--color-text-muted);
+}
+
+.game-cover-placeholder span {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-text-main);
+    margin-bottom: 6px;
+}
+
+.game-cover-placeholder p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.form-mode-hint {
+    color: var(--color-text-muted);
+    font-size: 14px;
+    margin: 0 0 12px;
+}
+
+.admin-card textarea {
+    width: 100%;
+    min-height: 96px;
+    max-height: 220px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-card-sub);
+    color: var(--color-text-main);
+    font-size: 14px;
+    font-family: inherit;
+    line-height: 1.55;
+    box-sizing: border-box;
+    resize: vertical;
+    transition: border-color 0.2s ease;
+}
+
+.admin-card textarea:focus {
+    outline: none;
+    border-color: var(--color-brand);
+}
+
+.admin-card textarea::placeholder {
+    color: var(--color-text-muted);
+}
+
+.game-form.highlight {
+    animation: game-form-highlight 1.2s ease;
+}
+
+@keyframes game-form-highlight {
+    0% { box-shadow: 0 0 0 3px rgba(181, 255, 61, 0.45); border-radius: 12px; }
+    100% { box-shadow: none; }
 }
 
 

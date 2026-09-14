@@ -247,10 +247,9 @@ const helpCenterSections = [
             '<li>Review FPS, bottlenecks, recommendations, and upgrade suggestions.</li>' +
             '</ol>' +
             '<div class="help-image">' +
-            '<img src="/New/GameSpec-Optimizer/RES/Tutorials/browse-games/Landing_page.png" '  +
-                 'alt="GameSpec Optimizer workflow diagram">' +
-        '</div>' +
-            helpCaption('Image: Game Selection \u2192 Hardware \u2192 Settings \u2192 FPS Analysis \u2192 Results')
+                '<img src="../../RES/Tutorials/browse-games/Landing_page.png" '  +
+                    'alt="GameSpec Optimizer workflow diagram">' +
+            '</div>'
     },
     {
         id: 'browse-games',
@@ -258,12 +257,36 @@ const helpCenterSections = [
         icon: 'fa-gamepad',
         title: 'Browse Games',
         content:
-            '<p>Use the search box to find a game by name. Start typing part of the title and matching games appear as you type.</p>' +
-            '<p>Use the genre filter to narrow the list. Available genres include Action, RPG, FPS, Adventure, Sports, Racing, Strategy, and Sandbox.</p>' +
-            '<p>Hover over any game card to see a quick preview, including the game description and detected genre.</p>' +
-            '<p>Clicking a game card opens that title in <strong>FPS Prediction</strong> with the game already selected, so you can continue configuring your hardware.</p>' +
-            helpImagePlaceholder('Browse Games interface screenshot') +
-            helpCaption('Example: Searching and selecting a game')
+            '<p>Use the search bar to find a game by name. Start typing part of the title and matching games appear as you type.</p>' +
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/browse-games/search_engine.png" '  +
+                    'alt="Search bar on the Browse Games page">' +
+            '</div>' +
+            '<p>Use the genre filter to narrow down games by type. Available types include Action, RPG, FPS, Adventure, Sports, Racing, Strategy, and Sandbox.</p>' +
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/browse-games/filter_genre.png" '  +
+                    'alt="Genre filter on the Browse Games page">' +
+            '</div>' +
+            '<p>Use <strong>More Filters</strong> to narrow down games further. Open it to filter by <strong>Works on</strong> (your computer type), <strong>Released</strong> (release year), and <strong>How demanding is this game?</strong> (how powerful a computer the game needs).</p>' +
+            '<p><strong>How demanding is this game?</strong> means how powerful a computer the game needs. Each game shows one of these levels:</p>' +
+            '<ul>' +
+            '<li><strong>Easy to Run</strong> &mdash; works on most computers, including basic ones.</li>' +
+            '<li><strong>Moderate</strong> &mdash; needs an average, reasonably modern computer.</li>' +
+            '<li><strong>Demanding</strong> &mdash; needs a modern gaming computer.</li>' +
+            '<li><strong>Very Demanding</strong> &mdash; needs a strong, high-end gaming computer.</li>' +
+            '</ul>' +
+            '<p>Open <strong>View Details</strong> on any game card to see that game&apos;s description and computer requirements.</p>' +
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/browse-games/game_info.png" '  +
+                    'alt="Game Details view opened with View Details">' +
+            '</div>' +
+            '<p>The Game Details view shows, from top to bottom: the game type, the game title, the requirement level badge, the game image, the game description, <strong>What you&apos;ll need</strong> (memory, graphics, and processor in plain language), and <strong>View detailed specifications</strong>. Open <strong>View detailed specifications</strong> to see the exact processor, graphics, and memory details.</p>' +
+            '<p>Select <strong>Can I Run This?</strong> to continue to FPS Prediction and check how the game may perform on your computer. The game you selected is already filled in there.</p>' +
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/browse-games/fps_prediction.png" '  +
+                    'alt="FPS Prediction page after selecting Can I Run This">' +
+            '</div>' +
+            '<p>To return to the Browse Games page, select <strong>Back to games</strong> or the <strong>X</strong> close button at the top of the Game Details view.</p>'
     },
     {
         id: 'hardware-detection',
@@ -820,208 +843,311 @@ async function initBrowseGames() {
     loadGameGrid();
 }
 
+// --- BROWSE GAMES: shared frontend-only helpers (no backend changes) ---
+function escapeBrowseHtml(value) {
+    return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function formatGenreLabel(value) {
+    if (!value) return 'Game';
+    const text = String(value).trim().toLowerCase();
+    const labels = { action: 'Action', rpg: 'RPG', fps: 'Shooter', adventure: 'Adventure', sports: 'Sports', racing: 'Racing', strategy: 'Strategy', sandbox: 'Sandbox / Survival' };
+    return labels[text] || (text.charAt(0).toUpperCase() + text.slice(1));
+}
+
+function getBrowseRequirementInfo(game) {
+    const gpu = parseInt(game?.gpu_benchmark, 10) || 0;
+    const cpu = parseInt(game?.cpu_benchmark, 10) || 0;
+    const peak = Math.max(gpu, cpu);
+    if (peak <= 5000) return { value: 'low', label: 'Easy to Run', icon: 'fa-circle-check' };
+    if (peak <= 12000) return { value: 'moderate', label: 'Moderate', icon: 'fa-circle-half-stroke' };
+    if (peak <= 18000) return { value: 'high', label: 'Demanding', icon: 'fa-triangle-exclamation' };
+    return { value: 'very-high', label: 'Very Demanding', icon: 'fa-fire' };
+}
+
+function guessBrowseGenre(game) {
+    const text = `${game?.title || ''} ${game?.description || ''}`.toLowerCase();
+    if (text.match(/fps|shooter|competitive|battle royale|squad/)) return 'fps';
+    if (text.match(/rpg|fantasy|choices|quest|branching|exploration/)) return 'rpg';
+    if (text.match(/sports|soccer|football/)) return 'sports';
+    if (text.match(/racing|driving/)) return 'racing';
+    if (text.match(/strategy|turn-based/)) return 'strategy';
+    if (text.match(/sandbox|building|crafting|survival/)) return 'sandbox';
+    if (text.match(/adventure|story|journey/)) return 'adventure';
+    if (text.match(/action|combat|stealth|open.world/)) return 'action';
+    return '';
+}
+
+function getBrowseGenreTags(game) {
+    const primary = guessBrowseGenre(game);
+    const tags = [];
+    if (primary) tags.push(formatGenreLabel(primary));
+    const hay = `${game?.title || ''} ${(game?.description || '')}`.toLowerCase();
+    if (/open.world|exploration/.test(hay) && !tags.includes('Open World')) tags.push('Open World');
+    if (!tags.length) tags.push('Game');
+    return tags.slice(0, 2);
+}
+
+function updateBrowseResultCount(visibleCount, totalCount) {
+    const counter = document.getElementById('browseResultCount');
+    if (!counter) return;
+    const total = Number(totalCount || 0);
+    const visible = Number(visibleCount || 0);
+    if (!total) {
+        counter.textContent = 'Loading games…';
+        return;
+    }
+    counter.textContent = visible === total
+        ? `${total} game${total === 1 ? '' : 's'}`
+        : `${visible} of ${total} games`;
+}
+
+function openGameDetailsModal(titleRaw) {
+    const game = games.find(item => item.title_raw === titleRaw);
+    const modal = document.getElementById('gameDetailsModal');
+    if (!game || !modal) {
+        if (titleRaw) selectGame(titleRaw);
+        return;
+    }
+    const requirement = getBrowseRequirementInfo(game);
+    const genres = getBrowseGenreTags(game);
+    const imageUrl = game.image ? `../../RES/${game.image}` : '';
+    const description = (game.description || '').trim() || 'No description is available for this game yet. The requirements below still apply.';
+    const ramGb = parseInt(game.ram_capacity_gb, 10) || 0;
+    const gpuScore = parseInt(game.gpu_benchmark, 10) || 0;
+    const cpuScore = parseInt(game.cpu_benchmark, 10) || 0;
+    const memoryText = ramGb ? `${ramGb} GB memory` : 'Check the exact memory below';
+    const graphicsText = gpuScore <= 5000 ? 'Basic graphics can work' : 'Dedicated gaming graphics needed';
+    const processorText = cpuScore <= 5000 ? 'Any modern processor' : 'Modern gaming processor';
+    const media = document.getElementById('gameModalMedia');
+    if (media) {
+        // Vertical layout: natural-ratio <img> fills modal width (no crop / no stretch).
+        media.style.backgroundImage = 'none';
+        if (imageUrl) {
+            media.innerHTML = `<img src="${imageUrl}" alt="${escapeBrowseHtml(game.title)} game image" loading="lazy">`;
+        } else {
+            media.innerHTML = '<div class="game-modal-media-fallback"><i class="fas fa-gamepad"></i></div>';
+        }
+    }
+    const eyebrow = document.getElementById('gameModalEyebrow');
+    if (eyebrow) eyebrow.textContent = genres.join(' • ');
+    const titleEl = document.getElementById('gameModalTitle');
+    if (titleEl) titleEl.textContent = game.title;
+    const badge = document.getElementById('gameModalBadge');
+    if (badge) badge.innerHTML = `<span class="req-badge req-${requirement.value}"><i class="fas ${requirement.icon}"></i> ${requirement.label}</span>`;
+    const descEl = document.getElementById('gameModalDescription');
+    if (descEl) descEl.textContent = description;
+    const simple = document.getElementById('gameModalSimple');
+    if (simple) {
+        simple.innerHTML = `<h4>What you'll need</h4><ul><li><i class="fas fa-memory"></i> ${memoryText}</li><li><i class="fas fa-display"></i> ${graphicsText}</li><li><i class="fas fa-microchip"></i> ${processorText}</li></ul>`;
+    }
+    const technical = document.getElementById('gameModalTechnical');
+    if (technical) {
+        technical.innerHTML = `<div class="tech-grid"><div><span>Processor</span><strong>${escapeBrowseHtml(game.cpu_model) || 'Not listed'}</strong></div><div><span>Graphics</span><strong>${escapeBrowseHtml(game.gpu_model) || 'Not listed'}</strong></div><div><span>Memory</span><strong>${escapeBrowseHtml(game.ram_model) || 'Not listed'}</strong></div></div>`;
+    }
+    const cta = document.getElementById('gameModalCta');
+    if (cta) cta.onclick = () => selectGame(game.title_raw);
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeGameDetailsModal() {
+    const modal = document.getElementById('gameDetailsModal');
+    if (!modal) return;
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeGameDetailsModal();
+});
+document.addEventListener('click', (event) => {
+    const modal = document.getElementById('gameDetailsModal');
+    if (modal && event.target === modal) closeGameDetailsModal();
+});
+
 function loadGameGrid() {
     const grid = document.getElementById('gameGrid');
     if (!grid) return;
     
     grid.innerHTML = '';
     
+    const knownReleaseYears = {
+        'alan_wake_2': 2023,
+        'apex_legends': 2019,
+        'assassins_creed': 2007,
+        'assasins_creed': 2007,
+        'baldurs_gate_3': 2023,
+        'black_myth_wukong': 2024,
+        'cs_go': 2012,
+        'csgo': 2012,
+        'cyberpunk_2077': 2020,
+        'destiny_2': 2017,
+        'elden_ring': 2022,
+        'fortnite': 2017,
+        'gta_v': 2013,
+        'genshin_impact': 2020,
+        'god_of_war': 2018,
+        'helldivers_2': 2024,
+        'hogwarts_legacy': 2023,
+        'horizon_zero_dawn': 2017,
+        'league_of_legends': 2009,
+        'lies_of_p': 2023,
+        'minecraft': 2011,
+        'overwatch': 2016,
+        'pubg': 2017,
+        'palworld': 2024,
+        'rainbow_six_siege': 2015,
+        'red_dead_redemption_2': 2018,
+        'read_dead_redemption_2': 2018,
+        'remnant_2': 2023,
+        'rocket_league': 2015,
+        'spider_man': 2018,
+        'spiderman': 2018,
+        'spider_man_remastered': 2022,
+        'spiderman_remastered': 2022,
+        'the_witcher_3': 2015,
+        'valorant': 2020,
+        'warzone': 2020
+    };
+
     games.forEach(game => {
         const card = document.createElement('div');
-        card.className = 'game-card';
+        card.className = 'game-card game-card-new';
         card.dataset.title = game.title.toLowerCase();
+        card.tabIndex = 0;
+        card.setAttribute('role', 'article');
         
-        const imageUrl = game.image ? `../../RES/${game.image}` : '';
+        const rawKey = (game.title_raw || game.title || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
+        const releaseYear = knownReleaseYears[rawKey] || knownReleaseYears[game.title_raw] || 2020;
+        card.dataset.year = releaseYear;
+        card.dataset.gpuScore = parseInt(game.gpu_benchmark, 10) || 0;
+        card.dataset.cpuScore = parseInt(game.cpu_benchmark, 10) || 0;
+        card.dataset.displayTitle = game.title;
 
-        // Store description for hover modal
+        const requirement = getBrowseRequirementInfo(game);
+        const genreTags = getBrowseGenreTags(game);
+        card.dataset.requirement = requirement.value;
+        card.dataset.genre = guessBrowseGenre(game);
+
+        const imageUrl = game.image ? `../../RES/${game.image}` : '';
         const description = (game.description || '').trim();
         card.dataset.description = description;
+        card.dataset.displayTitle = game.title;
+
+        const ramGb = parseInt(game.ram_capacity_gb, 10) || 0;
+        const memoryText = ramGb ? `${ramGb} GB memory` : 'Check memory below';
+
+        const gpuScoreForText = parseInt(game.gpu_benchmark, 10) || 0;
+        const graphicsText = gpuScoreForText <= 5000 ? 'Basic graphics can work' : 'Dedicated graphics needed';
+        const cpuScoreForText = parseInt(game.cpu_benchmark, 10) || 0;
+        const processorText = cpuScoreForText <= 5000 ? 'Any modern processor' : 'Modern gaming processor';
 
         card.innerHTML = `
             <div class="game-image" ${imageUrl ? `style="background-image: url('${imageUrl}')"` : ''}>
-                ${!imageUrl ? '🎮' : ''}
+                ${!imageUrl ? '<i class="fas fa-gamepad"></i>' : ''}
+                <span class="req-badge req-${requirement.value}"><i class="fas ${requirement.icon}"></i> ${requirement.label}</span>
             </div>
-            <div class="game-name">${game.title}</div>
+            <div class="game-body">
+                <div class="game-name">${game.title}</div>
+                <div class="game-tags">${genreTags.join(' • ')}</div>
+                <p class="game-needs-title">What you'll need</p>
+                <ul class="game-needs">
+                    <li><i class="fas fa-memory"></i> ${memoryText}</li>
+                    <li><i class="fas fa-display"></i> ${graphicsText}</li>
+                    <li><i class="fas fa-microchip"></i> ${processorText}</li>
+                </ul>
+                <div class="game-actions">
+                    <button type="button" class="game-btn-secondary" data-action="details">View Details</button>
+                    <button type="button" class="game-btn-primary" data-action="check">Can I Run This?</button>
+                </div>
+            </div>
         `;
 
-        card.onclick = () => selectGame(game.title_raw);
-
-        // Tooltip-like hover (right side of card)
-        let tooltipTimer = null;
-        let tooltipEl = null;
-
-        const createTooltip = () => {
-            if (tooltipEl) return tooltipEl;
-
-            const title = game.title || 'Game';
-            const desc = (card.dataset.description || '').trim();
-
-            // Build extra details. Backend currently only guarantees description + requirement fields.
-            // We derive Genre/Multiplayer from the game title/description (same heuristic used by filterGames).
-            const textForHeuristics = `${title} ${desc}`.toLowerCase();
-
-            const categoryKeywords = {
-                action: ['action', 'adventure', 'combat', 'stealth', 'open-world'],
-                rpg: ['rpg', 'loot', 'fantasy', 'choices', 'quest', 'exploration'],
-                fps: ['fps', 'shooter', 'competitive', 'agent', 'tactics', 'battle royale'],
-                adventure: ['adventure', 'open-world', 'story', 'journey', 'quest'],
-                sports: ['sports', 'soccer'],
-                racing: ['racing'],
-                strategy: ['strategy', 'tactics', 'team strategy'],
-                sandbox: ['sandbox', 'building', 'crafting', 'survival']
-            };
-
-            const guessGenre = (() => {
-                const entries = Object.entries(categoryKeywords);
-                for (const [key, kws] of entries) {
-                    if (kws.some(k => textForHeuristics.includes(k))) return key.toUpperCase();
-                }
-                return '';
-            })();
-
-            const guessMultiplayer = (() => {
-                // Simple keyword-based guess
-                if (textForHeuristics.includes('co-op') || textForHeuristics.includes('coop')) return 'CO-OP';
-                if (textForHeuristics.includes('raids') || textForHeuristics.includes('online')) return 'ONLINE';
-                if (textForHeuristics.includes('competitive') || textForHeuristics.includes('tactical') || textForHeuristics.includes('ranked')) return 'COMPETITIVE';
-                if (textForHeuristics.includes('battle royale')) return 'ONLINE (BATTLE ROYALE)';
-                if (textForHeuristics.includes('team-based') || textForHeuristics.includes('team strategy')) return 'ONLINE';
-                return '';
-            })();
-
-            const reqSummary = (() => {
-                const cpuReq = typeof game.cpu_benchmark === 'number' ? game.cpu_benchmark.toLocaleString() : game.cpu_benchmark;
-                const gpuReq = typeof game.gpu_benchmark === 'number' ? game.gpu_benchmark.toLocaleString() : game.gpu_benchmark;
-                const ramReq = game.ram_capacity_gb || '';
-
-                const cpuModel = game.cpu_model || 'CPU';
-                const gpuModel = game.gpu_model || 'GPU';
-                const ramModel = game.ram_model || (ramReq ? `${ramReq} GB` : 'RAM');
-
-                // Keep it compact for tooltip.
-                return {
-                    cpu: `${cpuModel} (Score: ${cpuReq})`,
-                    gpu: `${gpuModel} (Score: ${gpuReq})`,
-                    ram: `${ramModel} (Min)`
-                };
-            })();
-
-            const safeRow = (label, value) => {
-                if (!value) return '';
-                return `<div class="tooltip-row"><span class="tooltip-label">${label}:</span><span class="tooltip-value">${value}</span></div>`;
-            };
-
-            tooltipEl = document.createElement('div');
-            tooltipEl.className = 'game-hover-tooltip';
-            tooltipEl.innerHTML = `
-                <div class="tooltip-title">${title}</div>
-                ${safeRow('Genre', guessGenre)}
-                ${safeRow('Multiplayer', guessMultiplayer)}
-                ${safeRow('Developer / Publisher', game.developer_publisher || '')}
-                <div class="tooltip-divider"></div>
-                <div class="tooltip-body">${desc || 'No description available.'}</div>
-                <div class="tooltip-divider"></div>
-                <div class="tooltip-subtitle">Recommended CPU/GPU/RAM</div>
-                ${safeRow('CPU', reqSummary.cpu)}
-                ${safeRow('GPU', reqSummary.gpu)}
-                ${safeRow('RAM', reqSummary.ram)}
-            `;
-
-            document.body.appendChild(tooltipEl);
-
-            // Trigger sweep-in transition
-            requestAnimationFrame(() => {
-                tooltipEl?.classList.add('game-hover-tooltip--show');
-            });
-
-            return tooltipEl;
-        };
-
-        const positionTooltip = (rect) => {
-            if (!tooltipEl) return;
-
-            // Place tooltip to the right side of the card.
-            const gap = 12;
-            const minLeft = 16;
-            const minTop = 16;
-
-            let left = rect.right + gap;
-            let top = rect.top + rect.height / 2 - tooltipEl.offsetHeight / 2;
-
-            // Clamp horizontally within viewport
-            const maxLeft = window.innerWidth - tooltipEl.offsetWidth - 16;
-            left = Math.max(minLeft, Math.min(maxLeft, left));
-
-            // Clamp vertically within viewport
-            const maxTop = window.innerHeight - tooltipEl.offsetHeight - 16;
-            top = Math.max(minTop, Math.min(maxTop, top));
-
-            tooltipEl.style.left = `${left}px`;
-            tooltipEl.style.top = `${top}px`;
-        };
-
-
-
-        card.addEventListener('pointerenter', (e) => {
-            const rect = card.getBoundingClientRect();
-            tooltipTimer = setTimeout(() => {
-                createTooltip();
-                positionTooltip(rect);
-            }, 120);
+        card.querySelector('[data-action="details"]').addEventListener('click', (event) => {
+            event.stopPropagation();
+            openGameDetailsModal(game.title_raw);
         });
-
-        card.addEventListener('pointermove', (e) => {
-            // If tooltip already exists, keep it positioned (optional lightweight)
-            if (!tooltipEl) return;
-            const rect = card.getBoundingClientRect();
-            positionTooltip(rect);
+        card.querySelector('[data-action="check"]').addEventListener('click', (event) => {
+            event.stopPropagation();
+            selectGame(game.title_raw);
         });
-
-        card.addEventListener('pointerleave', () => {
-            if (tooltipTimer) clearTimeout(tooltipTimer);
-            tooltipTimer = null;
-            if (tooltipEl) {
-                tooltipEl.remove();
-                tooltipEl = null;
-            }
-
-            // Remove sweep effect
-            // removeHoverSweep(card); -- walang declared function, so comment out ko muna
+        card.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') openGameDetailsModal(game.title_raw);
         });
 
         grid.appendChild(card);
     });
+
+    filterGames();
+}
+
+function toggleMoreFilters() {
+    const panel = document.getElementById('moreFiltersPanel');
+    const btn = document.getElementById('moreFiltersBtn');
+    if (!panel || !btn) return;
+
+    const isHidden = panel.style.display === 'none' || panel.style.display === '';
+    if (isHidden) {
+        panel.style.display = 'block';
+        panel.setAttribute('aria-hidden', 'false');
+        btn.classList.add('active');
+        btn.setAttribute('aria-expanded', 'true');
+    } else {
+        panel.style.display = 'none';
+        panel.setAttribute('aria-hidden', 'true');
+        btn.classList.remove('active');
+        btn.setAttribute('aria-expanded', 'false');
+    }
 }
 
 function clearGameSearch() {
     const searchInput = document.getElementById('gameSearch');
     const genreFilter = document.getElementById('genreFilter');
+    const platformFilter = document.getElementById('platformFilter');
+    const yearFilter = document.getElementById('yearFilter');
+    const requirementFilter = document.getElementById('requirementFilter');
+    const sortOrder = document.getElementById('sortOrder');
     const noGameMessage = document.getElementById('noGameMessage');
 
     if (searchInput) searchInput.value = '';
     if (genreFilter) genreFilter.value = '';
+    if (platformFilter) platformFilter.value = '';
+    if (yearFilter) yearFilter.value = '';
+    if (requirementFilter) requirementFilter.value = '';
+    if (sortOrder) sortOrder.value = 'newest';
     if (noGameMessage) noGameMessage.style.display = 'none';
 
     filterGames();
 }
 
 function filterGames() {
-    const searchTerm = document.getElementById('gameSearch')?.value.toLowerCase() || '';
+    const searchTerm = document.getElementById('gameSearch')?.value.toLowerCase().trim() || '';
     const genreFilter = document.getElementById('genreFilter')?.value || '';
+    const platformFilter = document.getElementById('platformFilter')?.value || '';
+    const yearFilter = document.getElementById('yearFilter')?.value || '';
+    const requirementFilter = document.getElementById('requirementFilter')?.value || '';
+    const sortOrder = document.getElementById('sortOrder')?.value || 'newest';
     const noGameMessage = document.getElementById('noGameMessage');
-    const cards = document.querySelectorAll('.game-card');
+    const grid = document.getElementById('gameGrid');
+    const cards = Array.from(document.querySelectorAll('.game-card'));
 
     let found = false;
 
     cards.forEach(card => {
         const title = card.dataset.title || '';
-
-        const matchesSearch = title.toLowerCase().includes(searchTerm);
-
         const desc = (card.dataset.description || '').toLowerCase();
-        const titleLower = title.toLowerCase();
+        const year = parseInt(card.dataset.year, 10) || 2020;
+        const gpuScore = parseInt(card.dataset.gpuScore, 10) || 0;
 
+        // 1. Search Filter
+        const matchesSearch = !searchTerm || title.includes(searchTerm);
+
+        // 2. Genre Filter (matches card's stored genre tag when available)
         const filterKey = String(genreFilter).toLowerCase();
+        const cardGenre = String(card.dataset.genre || '').toLowerCase();
         const categoryKeywords = {
             action: ['action', 'adventure', 'rpg', 'myth', 'combat', 'stealth', 'open-world'],
             rpg: ['rpg', 'adventure', 'choices', 'loot', 'fantasy', 'myth', 'exploration'],
@@ -1034,17 +1160,74 @@ function filterGames() {
         };
 
         const keywords = categoryKeywords[filterKey] || [];
-        const matchesGenre = !filterKey || keywords.length === 0
-            ? true
-            : keywords.some(k => titleLower.includes(k) || desc.includes(k));
+        let matchesGenre = true;
+        if (filterKey) {
+            if (cardGenre) {
+                matchesGenre = cardGenre === filterKey;
+            } else {
+                matchesGenre = keywords.length === 0 || keywords.some(k => title.includes(k) || desc.includes(k));
+            }
+        }
 
-        const isVisible = matchesSearch && matchesGenre;
-        card.style.display = isVisible ? 'block' : 'none';
+        // 3. Platform Filter (PC Windows supported)
+        const matchesPlatform = !platformFilter || platformFilter === 'pc';
+
+        // 4. Release Year Filter
+        let matchesYear = true;
+        if (yearFilter === 'before-2010') {
+            matchesYear = year < 2010;
+        } else if (yearFilter === '2010-2014') {
+            matchesYear = year >= 2010 && year <= 2014;
+        } else if (yearFilter === '2015-2019') {
+            matchesYear = year >= 2015 && year <= 2019;
+        } else if (yearFilter === '2020-2024') {
+            matchesYear = year >= 2020 && year <= 2024;
+        } else if (yearFilter === '2025-present') {
+            matchesYear = year >= 2025;
+        }
+
+        // 5. Performance Requirement Filter
+        // Uses the same frontend tier as the card badge (peak of CPU/GPU scores).
+        let matchesReq = true;
+        const cardRequirement = card.dataset.requirement || getBrowseRequirementInfo({ gpu_benchmark: gpuScore, cpu_benchmark: parseInt(card.dataset.cpuScore, 10) || 0 }).value;
+        if (requirementFilter) {
+            matchesReq = cardRequirement === requirementFilter;
+        }
+
+        const isVisible = matchesSearch && matchesGenre && matchesPlatform && matchesYear && matchesReq;
+        card.style.display = isVisible ? '' : 'none';
 
         if (isVisible) found = true;
     });
 
-    const isFiltering = searchTerm !== '' || genreFilter !== '';
+    const visibleCards = cards.filter(card => card.style.display !== 'none');
+    updateBrowseResultCount(visibleCards.length, cards.length);
+
+    // 6. Sorting Logic
+    cards.sort((a, b) => {
+        const titleA = (a.dataset.displayTitle || a.dataset.title || '').toLowerCase();
+        const titleB = (b.dataset.displayTitle || b.dataset.title || '').toLowerCase();
+        const yearA = parseInt(a.dataset.year, 10) || 0;
+        const yearB = parseInt(b.dataset.year, 10) || 0;
+
+        if (sortOrder === 'oldest') {
+            return yearA !== yearB ? yearA - yearB : titleA.localeCompare(titleB);
+        } else if (sortOrder === 'az') {
+            return titleA.localeCompare(titleB);
+        } else if (sortOrder === 'za') {
+            return titleB.localeCompare(titleA);
+        } else {
+            // Default: 'newest'
+            return yearA !== yearB ? yearB - yearA : titleA.localeCompare(titleB);
+        }
+    });
+
+    // Re-append cards in sorted order
+    if (grid) {
+        cards.forEach(card => grid.appendChild(card));
+    }
+
+    const isFiltering = searchTerm !== '' || genreFilter !== '' || platformFilter !== '' || yearFilter !== '' || requirementFilter !== '';
     if (noGameMessage) {
         noGameMessage.style.display = isFiltering && !found ? 'block' : 'none';
     }
@@ -2129,7 +2312,22 @@ async function predictFPS() {
             html += `</div>`;
         }
 
+        const historyHtml = buildPredictionHistoryHtml({
+            game: selectedGame,
+            fps: estimatedFPS,
+            quality,
+            performanceMode
+        });
+        recordPredictionHistory({
+            game: selectedGame,
+            fps: estimatedFPS,
+            quality,
+            performanceMode
+        });
+        html += historyHtml;
+
         document.getElementById("fpsResultsPanel").innerHTML = html;
+        renderPredictionHistory();
     } catch (error) {
         console.error('Prediction request failed:', error);
         return showModal('Error', 'Failed to contact the ML prediction service.');
@@ -2152,7 +2350,110 @@ async function loadFeedbackPreview() {
     `;
 
     const feedbacks = await loadFeedbackData();
-    renderFeedbackCards(feedbacks, container, { limit: 3 });
+    renderFeedbackCards(feedbacks, container, { limit: 5 });
+}
+
+function getPredictionHistoryKey() {
+    return 'gamespecPredictionHistory';
+}
+
+function getPredictionHistory() {
+    try {
+        const stored = localStorage.getItem(getPredictionHistoryKey());
+        const parsed = stored ? JSON.parse(stored) : [];
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+        console.warn('Unable to read prediction history.', error);
+        return [];
+    }
+}
+
+function friendlyQualityLabel(quality) {
+    const labels = { low: 'Low', medium: 'Medium', high: 'High' };
+    return labels[String(quality || '').toLowerCase()] || 'Medium';
+}
+
+function friendlyPerformanceModeLabel(mode) {
+    const labels = { battery: 'Battery Saver', balanced: 'Balanced', performance: 'Performance' };
+    return labels[String(mode || '').toLowerCase()] || 'Balanced';
+}
+
+function friendlyHistoryDate(value) {
+    if (!value) return 'Recently checked';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return 'Recently checked';
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    const sameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+    if (sameDay(date, today)) return 'Today';
+    if (sameDay(date, yesterday)) return 'Yesterday';
+    return date.toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function buildPredictionHistoryHtml(current) {
+    return `
+        <div class="result-section prediction-history" id="predictionHistorySection" aria-live="polite">
+            <h4>Prediction History</h4>
+            <p class="result-explanation">Your previous performance checks will appear here.</p>
+            <div id="predictionHistoryList" class="prediction-history-list"></div>
+        </div>
+    `;
+}
+
+function predictionHistoryCard(entry) {
+    const game = escapeHtml(entry.game || 'Unknown game');
+    const fps = Number(entry.fps) || 0;
+    const quality = escapeHtml(friendlyQualityLabel(entry.quality));
+    const mode = escapeHtml(friendlyPerformanceModeLabel(entry.performanceMode));
+    const date = escapeHtml(friendlyHistoryDate(entry.createdAt));
+    const tone = fps >= 75 ? 'good' : fps >= 45 ? 'playable' : 'low';
+    return `
+        <div class="prediction-history-item prediction-${tone}">
+            <div class="prediction-history-main">
+                <strong>${game}</strong>
+                <span>${quality} graphics · ${mode}</span>
+            </div>
+            <div class="prediction-history-side">
+                <span class="prediction-history-fps">${fps} FPS</span>
+                <span class="prediction-history-date">${date}</span>
+            </div>
+        </div>
+    `;
+}
+
+function renderPredictionHistory() {
+    const list = document.getElementById('predictionHistoryList');
+    if (!list) return;
+    const history = getPredictionHistory().slice(0, 8);
+    if (!history.length) {
+        list.innerHTML = `
+            <div class="prediction-history-empty">
+                <p><strong>No prediction history yet.</strong></p>
+                <p>Your previous performance checks will appear here.</p>
+            </div>
+        `;
+        return;
+    }
+    list.innerHTML = history.map(predictionHistoryCard).join('');
+}
+
+function recordPredictionHistory({ game, fps, quality, performanceMode }) {
+    try {
+        const history = getPredictionHistory();
+        history.unshift({
+            game: game?.title || game?.title_raw || 'Unknown game',
+            fps: Number(fps) || 0,
+            quality,
+            performanceMode,
+            createdAt: new Date().toISOString()
+        });
+        localStorage.setItem(getPredictionHistoryKey(), JSON.stringify(history.slice(0, 8)));
+    } catch (error) {
+        console.warn('Unable to save prediction history.', error);
+    }
+    renderPredictionHistory();
 }
 
 loadFeedbackPreview();
+renderPredictionHistory();

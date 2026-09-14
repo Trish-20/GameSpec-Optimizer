@@ -16,7 +16,8 @@
         <h2>Game Management</h2>
         
         <div class="admin-card game-form-card">
-            <h3>Add / Update Game</h3>
+            <h3 id="gameFormTitle">Add Game</h3>
+            <p id="gameFormModeHint" class="form-mode-hint">Fill in the details below to add a new game to the catalog.</p>
             <hr>
             <form id="gameForm" class="game-form">
                 <div class="form-grid-2x2">
@@ -55,12 +56,21 @@
                             <img id="gameCoverPreviewImage" alt="Selected game cover preview">
                             <button type="button" id="clearGameCover" class="btn-secondary">Remove preview</button>
                         </div>
+                        <div id="gameCoverPlaceholder" class="game-cover-placeholder">
+                            <span>[ Image Preview ]</span>
+                            <p>Game image preview will appear here.</p>
+                        </div>
                     </div>
+                </div>
+
+                <div class="form-field full-width" style="margin-top: 15px;">
+                    <label for="gameDescription">Game Description:</label>
+                    <textarea id="gameDescription" rows="3" placeholder="Enter a short description of the game..."></textarea>
                 </div>
 
                 <div class="form-actions-row">
                     <div class="form-actions-left">
-                        <label for="gameGPU">Graphics Settings Available:</label>
+                        <label for="hasBloom">Graphics Settings Available:</label>
                         <div class="toggle-group">
                             <div class="toggle-item">
                                 <input type="checkbox" id="hasBloom" checked>
@@ -83,8 +93,9 @@
                     
                 </div>
                  <hr>
-                 <div class="form-action-row">
-                    <button type="submit">Add / Update Game</button>
+                 <div class="form-action-row" style="display: flex; gap: 12px; align-items: center;">
+                    <button type="submit" id="gameSubmitBtn">Add Game</button>
+                    <button type="button" id="cancelEditBtn" class="btn-secondary" style="display: none;" onclick="cancelGameEdit()">Cancel Edit</button>
                 </div>
             </form>
         </div>
