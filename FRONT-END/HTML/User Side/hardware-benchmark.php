@@ -22,10 +22,12 @@
                 <option value="ram">RAM</option>
             </select>
             
-            <label for="hardwareSelect">Select Hardware:</label>
-            <select id="hardwareSelect" disabled>
-                <option value="">First select a hardware type above</option>
-            </select>
+            <label for="hardwareSearch">Select Hardware:</label>
+            <div class="search-dropdown" id="hardwareDropdown">
+                <input type="text" class="search-input" id="hardwareSearch" placeholder="First select a hardware type above" autocomplete="off" disabled>
+                <input type="hidden" id="hardwareSelect">
+                <div class="dropdown-list" id="hardwareDropdownList"></div>
+            </div>
             
             <button onclick="getBenchmarkScore()">Get Benchmark Score</button>
 

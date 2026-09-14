@@ -730,9 +730,12 @@ function initSearchDropdown(type, data, getLabel, getValue) {
     let highlightedIndex = -1;
     let isSelecting = false; // Flag to prevent reopening on selection
     
-    // Populate initial list
+    // Populate initial list. `data` may be an array or a function returning
+    // the current option list (Hardware Benchmark passes a provider because
+    // its options change when the hardware type changes).
     function populateList(filter = '') {
-        const filtered = data.filter(item => 
+        const source = typeof data === 'function' ? data() : data;
+        const filtered = source.filter(item => 
             getLabel(item).toLowerCase().includes(filter.toLowerCase())
         ).slice(0, 50); // Limit to 50 results for performance
         
@@ -806,7 +809,8 @@ function initSearchDropdown(type, data, getLabel, getValue) {
             e.preventDefault();
             if (highlightedIndex >= 0 && items[highlightedIndex]) {
                 const value = items[highlightedIndex].dataset.value;
-                const item = data.find(d => String(getValue(d)) === String(value));
+                const source = typeof data === 'function' ? data() : data;
+                const item = source.find(d => String(getValue(d)) === String(value));
                 if (item) selectItem(item);
             }
         } else if (e.key === 'Escape') {
@@ -1337,7 +1341,7 @@ function buildFeedbackCardHtml(item, index = 0, { showDelete = false } = {}) {
                     <h4>${title}</h4>
                     <div class="feedback-meta">${username} · ${createdAt}</div>
                 </div>
-                <span class="feedback-rating-badge">${stars}</span>
+                <span class="feedback-rating-badge" aria-label="Rated ${rating} out of 5 stars"><span class="feedback-rating-stars" aria-hidden="true">${stars}</span><span class="feedback-rating-value">${rating.toFixed(1)}</span></span>
             </div>
             <p class="feedback-comment">${comment}</p>
             <div class="feedback-card-footer">
@@ -1477,6 +1481,9 @@ function openFeedbackModal() {
     if (overlay) {
         overlay.classList.add("active");
     }
+    // Lock background page scroll while the modal is open. The page keeps
+    // its scroll position and scrolling is restored on close.
+    document.body.classList.add("modal-open");
 }
 
 function closeFeedbackModal() {
@@ -1484,6 +1491,7 @@ function closeFeedbackModal() {
     if (overlay) {
         overlay.classList.remove("active");
     }
+    document.body.classList.remove("modal-open");
 }
 
 function handleFeedbackSubmit(event) {
@@ -1531,7 +1539,7 @@ function updateFeedbackSummary(feedbacks) {
     const items = Array.isArray(feedbacks) ? feedbacks : [];
 
     if (!items.length) {
-        if (averageRatingEl) averageRatingEl.textContent = "0.0";
+        if (averageRatingEl) averageRatingEl.textContent = "0.0 / 5";
         if (averageStarsEl) averageStarsEl.textContent = "☆☆☆☆☆";
         if (totalReviewsEl) totalReviewsEl.textContent = "No reviews yet";
         return;
@@ -1540,9 +1548,9 @@ function updateFeedbackSummary(feedbacks) {
     const average = (items.reduce((sum, item) => sum + (Number(item.rating) || 0), 0) / items.length).toFixed(1);
     const fullStars = Math.round(Number(average));
 
-    if (averageRatingEl) averageRatingEl.textContent = average;
+    if (averageRatingEl) averageRatingEl.textContent = `${average} / 5`;
     if (averageStarsEl) averageStarsEl.textContent = "★".repeat(fullStars) + "☆".repeat(5 - fullStars);
-    if (totalReviewsEl) totalReviewsEl.textContent = `${items.length} community review${items.length === 1 ? "" : "s"}`;
+    if (totalReviewsEl) totalReviewsEl.textContent = `Based on ${items.length} community review${items.length === 1 ? "" : "s"}`;
 }
 
 async function loadFeedbackData() {
@@ -1725,74 +1733,78 @@ async function detectHardware() {
 }
 
 // --- HARDWARE BENCHMARK FUNCTIONALITY ---
+// Current suggestion list for the hardware searchable dropdown. Rebuilt
+// whenever the hardware type changes. Uses the same searchable dropdown
+// component as the FPS Prediction page, so suggestions render BELOW the
+// input, stay attached to it while the page scrolls, and remain above
+// surrounding content instead of opening as a native select popup.
+let hardwareOptions = [];
+
 async function initHardwareBenchmark() {
     // Pre-load CPU and GPU data
     await Promise.all([loadCPUsFromCSV(), loadGPUsFromCSV()]);
+
+    // Hardware options depend on the selected hardware type, so pass a
+    // data provider function instead of a static array.
+    initSearchDropdown('hardware', () => hardwareOptions, item => item.label, item => item.score);
 }
 
 function loadHardwareOptions() {
     const hardwareType = document.getElementById('hardwareType').value;
     const hardwareSelect = document.getElementById('hardwareSelect');
     const hardwareSearch = document.getElementById('hardwareSearch');
+    const hardwareDropdown = document.getElementById('hardwareDropdown');
+
+    // Close any open suggestion list when the hardware type changes.
+    if (hardwareDropdown) {
+        hardwareDropdown.classList.remove('active');
+    }
 
     if (!hardwareType) {
-        hardwareSelect.innerHTML = '<option value="">First select a hardware type above</option>';
-        hardwareSelect.disabled = true;
+        hardwareOptions = [];
+        if (hardwareSelect) hardwareSelect.value = '';
         if (hardwareSearch) {
             hardwareSearch.value = '';
             hardwareSearch.disabled = true;
+            hardwareSearch.placeholder = 'First select a hardware type above';
         }
         return;
     }
 
-    hardwareSelect.disabled = false;
+    if (hardwareSelect) hardwareSelect.value = '';
     if (hardwareSearch) {
         hardwareSearch.value = '';
         hardwareSearch.disabled = false;
     }
 
     if (hardwareType === 'cpu') {
-        hardwareSelect.innerHTML = '<option value="">Select a CPU</option>';
-        cpus.forEach(cpu => {
-            hardwareSelect.innerHTML += `<option value="${cpu.score}" data-name="${cpu.model}">${cpu.model} (${cpu.cores}C/${cpu.threads}T)</option>`;
-        });
+        if (hardwareSearch) hardwareSearch.placeholder = 'Search CPUs...';
+        hardwareOptions = cpus.map(cpu => ({
+            label: `${cpu.model} (${cpu.cores}C/${cpu.threads}T)`,
+            model: cpu.model,
+            score: cpu.score
+        }));
     } else if (hardwareType === 'gpu') {
-        hardwareSelect.innerHTML = '<option value="">Select a GPU</option>';
-        gpus.forEach(gpu => {
-            hardwareSelect.innerHTML += `<option value="${gpu.score}" data-name="${gpu.model}">${gpu.model}</option>`;
-        });
+        if (hardwareSearch) hardwareSearch.placeholder = 'Search GPUs...';
+        hardwareOptions = gpus.map(gpu => ({
+            label: gpu.model,
+            model: gpu.model,
+            score: gpu.score
+        }));
     } else if (hardwareType === 'ram') {
-        hardwareSelect.innerHTML = '<option value="">Select RAM Size</option>';
-        const ramOptions = [
+        if (hardwareSearch) hardwareSearch.placeholder = 'Search RAM sizes...';
+        hardwareOptions = [
             { size: 4, score: 1000 },
             { size: 8, score: 2000 },
             { size: 16, score: 4000 },
             { size: 32, score: 8000 },
             { size: 64, score: 16000 }
-        ];
-        ramOptions.forEach(ram => {
-            hardwareSelect.innerHTML += `<option value="${ram.score}" data-name="${ram.size} GB">${ram.size} GB DDR4/DDR5</option>`;
-        });
+        ].map(ram => ({
+            label: `${ram.size} GB DDR4/DDR5`,
+            model: `${ram.size} GB`,
+            score: ram.score
+        }));
     }
-
-    filterHardwareOptions();
-}
-
-function filterHardwareOptions() {
-    const searchValue = document.getElementById('hardwareSearch')?.value.toLowerCase() || '';
-    const hardwareSelect = document.getElementById('hardwareSelect');
-    if (!hardwareSelect) return;
-
-    Array.from(hardwareSelect.options).forEach(option => {
-        if (!option.value) {
-            option.hidden = false;
-            return;
-        }
-
-        const label = (option.textContent || '').toLowerCase();
-        const matches = label.includes(searchValue);
-        option.hidden = !matches;
-    });
 }
 
 function getBenchmarkScore() {
@@ -1808,8 +1820,8 @@ function getBenchmarkScore() {
     }
     
     const score = parseInt(hardwareSelect.value);
-    const selectedOption = hardwareSelect.options[hardwareSelect.selectedIndex];
-    const name = selectedOption.dataset.name || selectedOption.text;
+    const hardwareSearchInput = document.getElementById('hardwareSearch');
+    const name = (hardwareSearchInput && hardwareSearchInput.value.trim()) || 'Selected hardware';
     
     // Determine score rating
     let rating = '';
@@ -2312,22 +2324,16 @@ async function predictFPS() {
             html += `</div>`;
         }
 
-        const historyHtml = buildPredictionHistoryHtml({
-            game: selectedGame,
-            fps: estimatedFPS,
-            quality,
-            performanceMode
-        });
         recordPredictionHistory({
             game: selectedGame,
             fps: estimatedFPS,
             quality,
             performanceMode
         });
-        html += historyHtml;
 
         document.getElementById("fpsResultsPanel").innerHTML = html;
         renderPredictionHistory();
+        scheduleSyncFpsTopPanels();
     } catch (error) {
         console.error('Prediction request failed:', error);
         return showModal('Error', 'Failed to contact the ML prediction service.');
@@ -2350,7 +2356,9 @@ async function loadFeedbackPreview() {
     `;
 
     const feedbacks = await loadFeedbackData();
-    renderFeedbackCards(feedbacks, container, { limit: 5 });
+    // Compact preview: latest 3 only. Existing header "View All Reviews"
+    // link (feedback.php) covers the full list — no duplicate control added.
+    renderFeedbackCards(feedbacks, container, { limit: 3 });
 }
 
 function getPredictionHistoryKey() {
@@ -2391,16 +2399,6 @@ function friendlyHistoryDate(value) {
     return date.toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-function buildPredictionHistoryHtml(current) {
-    return `
-        <div class="result-section prediction-history" id="predictionHistorySection" aria-live="polite">
-            <h4>Prediction History</h4>
-            <p class="result-explanation">Your previous performance checks will appear here.</p>
-            <div id="predictionHistoryList" class="prediction-history-list"></div>
-        </div>
-    `;
-}
-
 function predictionHistoryCard(entry) {
     const game = escapeHtml(entry.game || 'Unknown game');
     const fps = Number(entry.fps) || 0;
@@ -2425,8 +2423,11 @@ function predictionHistoryCard(entry) {
 function renderPredictionHistory() {
     const list = document.getElementById('predictionHistoryList');
     if (!list) return;
-    const history = getPredictionHistory().slice(0, 8);
-    if (!history.length) {
+    // Compact preview: latest 3 only. Older records stay in storage.
+    const PREVIEW_COUNT = 3;
+    const fullHistory = getPredictionHistory();
+    const preview = fullHistory.slice(0, PREVIEW_COUNT);
+    if (!fullHistory.length) {
         list.innerHTML = `
             <div class="prediction-history-empty">
                 <p><strong>No prediction history yet.</strong></p>
@@ -2435,7 +2436,47 @@ function renderPredictionHistory() {
         `;
         return;
     }
-    list.innerHTML = history.map(predictionHistoryCard).join('');
+    list.innerHTML = preview.map(predictionHistoryCard).join('')
+        + (fullHistory.length > PREVIEW_COUNT
+            ? `<button type="button" class="history-view-all-btn" onclick="openPredictionHistoryModal()">View All &rarr;</button>`
+            : '');
+}
+
+function openPredictionHistoryModal() {
+    const existing = document.getElementById('predictionHistoryModal');
+    if (existing) {
+        existing.classList.add('active');
+        existing.setAttribute('aria-hidden', 'false');
+        return;
+    }
+    const fullHistory = getPredictionHistory();
+    const html = `
+        <div class="history-modal-overlay" id="predictionHistoryModal" aria-hidden="false">
+            <div class="history-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="predictionHistoryModalTitle">
+                <button type="button" class="history-modal-close" id="predictionHistoryModalClose" aria-label="Close prediction history">&times;</button>
+                <h3 id="predictionHistoryModalTitle">Prediction History</h3>
+                <p class="history-modal-subtitle">All your previous performance checks.</p>
+                <div class="prediction-history-list">
+                    ${fullHistory.map(predictionHistoryCard).join('')}
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+    const overlay = document.getElementById('predictionHistoryModal');
+    document.getElementById('predictionHistoryModalClose')?.addEventListener('click', () => {
+        document.getElementById('predictionHistoryModal')?.remove();
+    });
+    overlay?.addEventListener('click', (event) => {
+        if (event.target === overlay) overlay.remove();
+    });
+    document.addEventListener('keydown', function escHandler(event) {
+        if (event.key === 'Escape') {
+            document.getElementById('predictionHistoryModal')?.remove();
+            document.removeEventListener('keydown', escHandler);
+        }
+    });
+    requestAnimationFrame(() => overlay?.classList.add('active'));
 }
 
 function recordPredictionHistory({ game, fps, quality, performanceMode }) {
@@ -2454,6 +2495,45 @@ function recordPredictionHistory({ game, fps, quality, performanceMode }) {
     }
     renderPredictionHistory();
 }
+
+/* Layout-only sync: keep the FPS Results panel visually aligned with the
+   naturally-sized Hardware Configuration panel. The input panel grows with
+   its content (no internal scroll); the results panel is capped to that
+   height and scrolls internally. Runs on resize/font load; never touches
+   prediction data, history storage, or hardware detection. */
+function syncFpsTopPanels() {
+    try {
+        const layout = document.querySelector('.fps-layout');
+        const input = document.querySelector('.fps-input-panel');
+        const results = document.getElementById('fpsResultsPanel');
+        if (!layout || !input || !results) return;
+        if (window.innerWidth <= 900) {
+            results.style.maxHeight = '';
+            return;
+        }
+        // Clear any previous cap so the input panel measures naturally.
+        results.style.maxHeight = 'none';
+        const target = input.getBoundingClientRect().height;
+        // Match the input panel height (min 320px guard for empty states).
+        results.style.maxHeight = Math.max(320, Math.round(target)) + 'px';
+    } catch (error) {
+        // Layout-only helper: never break prediction flow.
+    }
+}
+
+let syncFpsTopPanelsTimer = null;
+function scheduleSyncFpsTopPanels() {
+    if (syncFpsTopPanelsTimer) clearTimeout(syncFpsTopPanelsTimer);
+    syncFpsTopPanelsTimer = setTimeout(syncFpsTopPanels, 60);
+}
+
+window.addEventListener('resize', scheduleSyncFpsTopPanels);
+window.addEventListener('load', syncFpsTopPanels);
+document.addEventListener('DOMContentLoaded', syncFpsTopPanels);
+if (document.fonts?.ready) {
+    document.fonts.ready.then(() => syncFpsTopPanels()).catch(() => {});
+}
+syncFpsTopPanels();
 
 loadFeedbackPreview();
 renderPredictionHistory();

@@ -32,7 +32,7 @@
                 <input
                     type="text"
                     id="feedbackSearch"
-                    placeholder="Search feedback..."
+                    placeholder="Search reviews..."
                     oninput="filterFeedback()">
             </div>
 
@@ -109,29 +109,32 @@
         </div>
 
         <form class="modal-body feedback-form" id="feedbackForm" onsubmit="handleFeedbackSubmit(event)">
+            <p class="feedback-form-intro">Tell us about your experience with GameSpec Optimizer.</p>
             <label for="feedbackTitle">Title</label>
             <input id="feedbackTitle" name="title" type="text" placeholder="Short summary" required>
 
             <label for="feedbackComment">Your feedback</label>
             <textarea id="feedbackComment" name="comment" placeholder="Tell us what you think..." required></textarea>
 
-            <label>Rating</label>
-            <div class="star-rating" role="radiogroup" aria-label="Feedback rating">
-                <input id="rating5" type="radio" name="rating" value="5" required>
-                <label for="rating5" class="star" aria-label="5 stars">★</label>
+            <label id="ratingLabel">Rating</label>
+                <div class="star-rating" role="radiogroup" aria-labelledby="ratingLabel">
 
-                <input id="rating4" type="radio" name="rating" value="4">
-                <label for="rating4" class="star" aria-label="4 stars">★</label>
+                    <input id="rating5" type="radio" name="rating" value="5">
+                    <label for="rating5" class="star" aria-label="5 stars">★</label>
 
-                <input id="rating3" type="radio" name="rating" value="3">
-                <label for="rating3" class="star" aria-label="3 stars">★</label>
+                    <input id="rating4" type="radio" name="rating" value="4">
+                    <label for="rating4" class="star" aria-label="4 stars">★</label>
 
-                <input id="rating2" type="radio" name="rating" value="2">
-                <label for="rating2" class="star" aria-label="2 stars">★</label>
+                    <input id="rating3" type="radio" name="rating" value="3">
+                    <label for="rating3" class="star" aria-label="3 stars">★</label>
 
-                <input id="rating1" type="radio" name="rating" value="1">
-                <label for="rating1" class="star" aria-label="1 star">★</label>
-            </div>
+                    <input id="rating2" type="radio" name="rating" value="2">
+                    <label for="rating2" class="star" aria-label="2 stars">★</label>
+
+                    <input id="rating1" type="radio" name="rating" value="1" required>
+                    <label for="rating1" class="star" aria-label="1 star">★</label>
+
+                </div>
 
             <label for="feedbackUsername">Name</label>
             <input id="feedbackUsername" name="username" type="text" placeholder="Your name (optional)">

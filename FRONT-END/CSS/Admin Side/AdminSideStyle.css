@@ -833,13 +833,13 @@ body {
     background: var(--color-brand);
     color: #000000;
     border: none;
-    padding: 11px 19px;
+    padding: 12px 24px;
     border-radius: 12px;
     cursor: pointer;
     font-weight: 600;
     font-size: 14px;
     margin-top: 7px;
-    margin-bottom: 15px;
+    margin-bottom: -11px;
     transition: all 0.2s ease;
 }
 
