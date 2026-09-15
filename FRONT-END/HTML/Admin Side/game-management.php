@@ -49,23 +49,37 @@
                         <input type="number" id="gameRAMSpeed" placeholder="e.g., 3200" required>
                     </div>
 
+                    <!-- Cover upload/insertion on the RIGHT, top-aligned with
+                         the Min RAM Speed field and spanning down beside the
+                         description. The file input and preview share ONE
+                         unified drop card. Layout only — upload behaviour
+                         unchanged. -->
                     <div class="form-field game-cover-field">
                         <label for="gameCover">Game Cover Picture:</label>
-                        <input type="file" id="gameCover" accept="image/png,image/jpeg,image/webp,image/gif,image/avif">
-                        <div id="gameCoverPreview" class="game-cover-preview" hidden>
-                            <img id="gameCoverPreviewImage" alt="Selected game cover preview">
-                            <button type="button" id="clearGameCover" class="btn-secondary">Remove preview</button>
-                        </div>
-                        <div id="gameCoverPlaceholder" class="game-cover-placeholder">
-                            <span>[ Image Preview ]</span>
-                            <p>Game image preview will appear here.</p>
+                        <div class="game-cover-dropzone">
+                            <input type="file" id="gameCover" accept="image/png,image/jpeg,image/webp,image/gif,image/avif">
+                            <div id="gameCoverPreview" class="game-cover-preview" hidden>
+                                <span class="game-cover-thumb">
+                                    <img id="gameCoverPreviewImage" alt="Selected game cover preview">
+                                    <button type="button" id="clearGameCover" class="game-cover-remove" title="Remove preview" aria-label="Remove selected game cover preview">
+                                        <i class="fas fa-xmark" aria-hidden="true"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <div id="gameCoverPlaceholder" class="game-cover-placeholder">
+                                <span>[ Image Preview ]</span>
+                                <p>Game image preview will appear here.</p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="form-field full-width" style="margin-top: 15px;">
-                    <label for="gameDescription">Game Description:</label>
-                    <textarea id="gameDescription" rows="3" placeholder="Enter a short description of the game..."></textarea>
+                    <!-- Description sits in the LEFT column directly under the
+                         Min RAM Speed field, stretching to match the cover
+                         column height (balanced square block). -->
+                    <div class="form-field game-description-field">
+                        <label for="gameDescription">Game Description:</label>
+                        <textarea id="gameDescription" rows="3" placeholder="Enter a short description of the game..."></textarea>
+                    </div>
                 </div>
 
                 <div class="form-actions-row">

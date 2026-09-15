@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -22,7 +22,7 @@
                     <strong>Where to find your hardware:</strong>
                     Press <kbd>Windows</kbd> + <kbd>R</kbd>, type <code>dxdiag</code>, and press Enter. Find your CPU/Processor and RAM on the <strong>System</strong> tab. Find your graphics card/GPU on the <strong>Display</strong> tab.
                 </div>
-                
+
                 <label>Select a Game:</label>
                 <div class="search-dropdown" id="gameDropdown">
                     <input type="text" class="search-input" id="gameSearch" placeholder="Search games..." autocomplete="off">
@@ -36,39 +36,36 @@
                     <input type="hidden" id="cpuSelect">
                     <div class="dropdown-list" id="cpuDropdownList"></div>
                 </div>
-                
+
                 <label>Select GPU:</label>
                 <div class="search-dropdown" id="gpuDropdown">
                     <input type="text" class="search-input" id="gpuSearch" placeholder="Search GPUs..." autocomplete="off">
                     <input type="hidden" id="gpuSelect">
                     <div class="dropdown-list" id="gpuDropdownList"></div>
                 </div>
-                
-                <label for="ramSelect">Select RAM:</label>
-                <select id="ramSelect">
-                    <option value="">Select RAM</option>
-                    <option value="4">4 GB</option>
-                    <option value="8">8 GB</option>
-                    <option value="16">16 GB</option>
-                    <option value="32">32 GB</option>
-                    <option value="64">64 GB</option>
-                </select>
-                
-                <label for="graphicsQuality">Graphics Quality:</label>
-                <select id="graphicsQuality">
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                </select>
+
+                <label for="ramSearch">Select RAM:</label>
+                <div class="search-dropdown" id="ramDropdown">
+                    <input type="text" class="search-input" id="ramSearch" placeholder="Search RAM..." autocomplete="off">
+                    <input type="hidden" id="ramSelect" value="">
+                    <div class="dropdown-list" id="ramDropdownList"></div>
+                </div>
+
+                <label for="graphicsQualitySearch">Graphics Quality:</label>
+                <div class="search-dropdown" id="graphicsQualityDropdown">
+                    <input type="text" class="search-input" id="graphicsQualitySearch" placeholder="Search graphics quality..." autocomplete="off">
+                    <input type="hidden" id="graphicsQuality" value="">
+                    <div class="dropdown-list" id="graphicsQualityDropdownList"></div>
+                </div>
                 <p class="input-help">Choose the visual quality you plan to use in the game. Higher quality looks better but usually lowers FPS.</p>
-                
-                <label for="performanceMode">Performance Mode:</label>
-                <select id="performanceMode">
-                    <option value="battery">Battery Saver</option>
-                    <option value="balanced" selected>Balanced</option>
-                    <option value="performance">Performance</option>
-                </select>
-                <p class="input-help">Choose your computer's current power mode. Check it in Windows under Settings &gt; System &gt; Power &amp; battery &gt; Power mode.</p>
+
+                <label for="performanceModeSearch">Performance Mode:</label>
+                <div class="search-dropdown" id="performanceModeDropdown">
+                    <input type="text" class="search-input" id="performanceModeSearch" placeholder="Search performance mode..." autocomplete="off">
+                    <input type="hidden" id="performanceMode" value="balanced">
+                    <div class="dropdown-list" id="performanceModeDropdownList"></div>
+                </div>
+                <p class="input-help">Choose your computer's current power mode. Check it in Windows under Settings > System > Power &amp; battery > Power mode.</p>
 
                 <div class="fps-action-row">
                     <button type="button" class="detect-hardware-btn" onclick="detectHardware()">Detect Hardware</button>
@@ -93,7 +90,7 @@
                 <p class="result-explanation">Your previous performance checks will appear here.</p>
                 <div id="predictionHistoryList" class="prediction-history-list"></div>
             </div>
-            
+
             <section class="feedback-preview">
                 <div class="feedback-header">
                     <div>
@@ -126,4 +123,3 @@
 </script>
 </body>
 </html>
-

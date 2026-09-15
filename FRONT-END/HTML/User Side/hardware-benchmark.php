@@ -14,13 +14,12 @@
     <div class="page-container">
         <h2>Hardware Benchmark</h2>
         <div class="tab-card">
-            <label for="hardwareType">Choose a Hardware Type:</label>
-            <select id="hardwareType" onchange="loadHardwareOptions()">
-                <option value="">Select Hardware Type</option>
-                <option value="cpu">CPU</option>
-                <option value="gpu">GPU</option>
-                <option value="ram">RAM</option>
-            </select>
+                        <label>Choose a Hardware Type:</label>
+            <div class="search-dropdown" id="hardwareTypeDropdown">
+                <input type="text" class="search-input" id="hardwareTypeSearch" placeholder="Select hardware type..." autocomplete="off">
+                <input type="hidden" id="hardwareTypeSelect" value="">
+                <div class="dropdown-list" id="hardwareTypeDropdownList"></div>
+            </div>
             
             <label for="hardwareSearch">Select Hardware:</label>
             <div class="search-dropdown" id="hardwareDropdown">

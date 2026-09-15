@@ -13,6 +13,11 @@
     --color-brand: #b5ff3d;     /* Electric lime accent brand highlight color */
     --color-brand-hover: #c6ff66;
     --color-danger: #f43f5e;
+
+    /* Render native form controls (select option panels, scrollbars)
+       in the dark theme so opened dropdown panels match the app's
+       rounded dark UI instead of appearing bright and square. */
+    color-scheme: dark;
 }
 
 
@@ -218,15 +223,70 @@ body {
     margin-bottom: 35px; /* adds space below the form card */
 }
 
+/* ---------- GAME COVER DROP CARD (file input + preview unified) ----------
+   The file input and the preview/placeholder live inside ONE dashed
+   drop-style card instead of two separate boxes. Pure presentation —
+   the input, preview and placeholder keep their IDs and behaviour. */
+.game-cover-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.game-cover-dropzone {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    padding: 8px 10px 10px;
+    border: 1px dashed var(--border-color);
+    border-radius: 14px;
+    background: var(--bg-card-sub);
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+.game-cover-dropzone:hover,
+.game-cover-dropzone:focus-within {
+    border-color: rgba(181, 255, 61, 0.35);
+}
+
+.game-cover-dropzone input[type="file"] {
+    width: 100%;
+    margin-bottom: 0;
+    padding: 8px 10px;
+    background: transparent;
+    border: none;
+    color: var(--color-text-main);
+    font-size: 14px;
+}
+
+.game-cover-dropzone input[type="file"]::file-selector-button {
+    background: var(--bg-btn-sec);
+    color: var(--color-text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 8px 14px;
+    margin-right: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.game-cover-dropzone input[type="file"]::file-selector-button:hover {
+    background: #383942;
+    border-color: rgba(181, 255, 61, 0.45);
+}
+
 .game-cover-preview {
     display: flex;
     align-items: flex-start;
     gap: 14px;
-    margin-top: 12px;
-    padding: 12px;
-    border: 1px solid rgba(181, 255, 61, 0.22);
-    border-radius: 14px;
-    background: rgba(181, 255, 61, 0.05);
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px dashed transparent;
+    border-radius: 12px;
+    background: rgba(181, 255, 61, 0.04);
 }
 
 .game-cover-preview img {
@@ -239,17 +299,64 @@ body {
     flex-shrink: 0;
 }
 
-.game-cover-preview .btn-secondary {
-    padding: 8px 10px;
-    font-size: 12px;
+/* Thumbnail wrapper keeps the remove icon pinned to the image corner */
+.game-cover-thumb {
+    position: relative;
+    display: inline-block;
+    line-height: 0;
+    flex-shrink: 0;
+}
+
+.game-cover-thumb img {
+    display: block;
+}
+
+/* Compact icon button for removing the selected cover preview.
+   The accessible name is kept via aria-label / title ("Remove preview"). */
+.game-cover-remove {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 8px;
+    background: rgba(17, 17, 20, 0.85);
+    color: var(--color-text-main);
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.game-cover-remove:hover {
+    background: var(--color-danger);
+    border-color: var(--color-danger);
+    color: #ffffff;
+}
+
+.game-cover-remove:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
 }
 
 .game-cover-placeholder {
-    margin-top: 12px;
-    padding: 18px 14px;
-    border: 1px dashed var(--border-color);
-    border-radius: 14px;
-    background: var(--bg-card-sub);
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    padding: 14px;
+    border: 1px dashed transparent;
+    border-radius: 12px;
+    background: transparent;
+    box-sizing: border-box;
     text-align: center;
     color: var(--color-text-muted);
 }
@@ -351,8 +458,8 @@ body {
 .admin-card p {
     color: var(--color-text-muted);
     font-size: 14px;
-    margin-top: 3px;
-    margin-bottom: 46px;
+    margin-top: -8px;
+    margin-bottom: 20px;
 }
 
 .feedback-admin-card {
@@ -452,6 +559,12 @@ body {
     color: var(--color-text-muted);
 }
 
+/* Neutralize the recycled .admin-card p margins inside review cards so
+   their spacing is fully controlled by the scoped rules below. */
+.feedback-admin-item p {
+    margin: 0;
+}
+
 .feedback-admin-item-badges {
     display: flex;
     gap: 8px;
@@ -472,18 +585,19 @@ body {
     color: #ff8ca4;
 }
 
-.feedback-admin-comment {
-    margin: 14px 0 16px;
+.feedback-admin-item .feedback-admin-comment {
+    margin: 14px 0 0;   /* even gap below the author line; divider spacing handled by actions */
     color: var(--color-text-muted);
     line-height: 1.75;
 }
 
-.feedback-admin-actions {
+.feedback-admin-item .feedback-admin-actions {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
     align-items: center;
     color: var(--color-text-muted);
+    margin-top: 16px;      /* even gap between the comment and the divider */
     padding-top: 14px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -569,14 +683,17 @@ body {
 .report-text-group hr {
     border: none;
     height: 1px;                   /* thickness of the bar */
-    background: var(--border-color);           /* dark bar color */
-    margin-top: -31px;
+    background: var(--border-color); /* dark bar color */
+    margin-top: 0;                 /* natural spacing below the description text
+                                      (was -31px, which pulled the line up into
+                                      the paragraph and struck through the text) */
+    margin-bottom: 0;              /* .report-buttons' own margin-top (12px) provides the gap */
     width: 100%;
 }
 
 .report-buttons {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start; /* even 12px gaps; space-between stretched the gaps wide once the buttons hit their width cap */
     align-items: center;
     gap: 12px;
     margin-top: 12px;
@@ -584,9 +701,8 @@ body {
 }
 
 .report-buttons button {
-    flex: 1;              /* equal width distribution */
+    flex: 1 1 0;          /* equal width distribution — buttons share the full row evenly */
     min-width: 166px;     /* don’t shrink too small */
-    max-width: 248px;     /* cap the width */
 }
 
 
@@ -764,7 +880,7 @@ body {
 .admin-card select {
     width: 100%;
     padding: 12px 14px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     border-radius: 10px;
     border: 1px solid var(--border-color);
     background-color: var(--bg-card-sub);
@@ -779,6 +895,68 @@ body {
 .admin-card select:focus {
     outline: none;
     border-color: var(--color-brand);
+}
+
+/* Keep opened select option panels consistent with the dark theme,
+   matching the user-side dropdown styling. */
+.admin-card select option {
+    background-color: var(--bg-card);
+    color: var(--color-text-main);
+}
+
+/* ---------- ROUNDED NATIVE SELECT POPUP (progressive enhancement) ----------
+   Chromium 135+ renders the opened option panel as a styleable element, so
+   the popup can match the rounded dropdowns used across the app. Unsupported
+   browsers keep the OS popup, which is already dark via color-scheme: dark. */
+.admin-card select {
+    appearance: base-select;
+}
+
+.admin-card select::picker-icon {
+    display: none; /* the page-drawn styling carries the look; hide the UA arrow */
+}
+
+.admin-card select::picker(select) {
+    appearance: base-select;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    padding: 0;
+    max-height: 200px;      /* same height cap as the custom dropdown lists */
+    scrollbar-width: thin;  /* same thin dark scrollbar as the custom lists */
+    scrollbar-color: #3b3b4d #111114;
+}
+
+/* Options inside the opened panel — styled via their own selectors
+   (NOT "…::picker(select) option", which is not a valid selector chain). */
+.admin-card select option {
+    background: transparent;
+    color: var(--color-text-main);
+    font-size: 14px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: inset 0 -1px 0 var(--border-color); /* fallback separator if option borders are ignored */
+    cursor: pointer;
+}
+
+.admin-card select option:last-child {
+    border-bottom: none;
+    box-shadow: none;
+}
+
+.admin-card select option:hover,
+.admin-card select option:focus {
+    background: rgba(181, 255, 61, 0.35); /* strong highlight like the custom dropdowns */
+    outline: none;
+}
+
+.admin-card select option:checked {
+    background: rgba(181, 255, 61, 0.35); /* current value reads highlighted, matching the custom look */
+}
+
+.admin-card select option::checkmark {
+    display: none;
 }
 
 
@@ -807,8 +985,40 @@ body {
 .form-grid-2x2 {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px 20px;
+    gap: 19px 15px;
     margin-bottom: 20px;
+}
+
+/* ---------- GAME FORM COVER & DESCRIPTION PLACEMENT ----------
+   The cover field occupies the RIGHT column beside the Min RAM Speed
+   input and spans down; the description sits in the LEFT column directly
+   under Min RAM Speed, stretching to the same bottom edge as the cover
+   preview so the two columns form one balanced, square-shaped block.
+   Pure layout — upload/preview behaviour untouched. */
+.form-grid-2x2 .game-cover-field {
+    grid-column: 2;
+    grid-row: 3 / span 2;
+}
+
+.form-grid-2x2 .game-description-field {
+    grid-column: 1;
+    grid-row: 4;
+    display: flex;
+    flex-direction: column;
+    margin-top: -15px;
+}
+
+.game-description-field textarea {
+    flex: 1 1 auto;
+    margin-bottom: 0;
+}
+
+/* The cover preview/placeholder blocks define their own display values,
+   so the [hidden] attribute needs this explicit rule for the JS toggle
+   (preview vs placeholder) to actually hide the inactive block. */
+.game-cover-preview[hidden],
+.game-cover-placeholder[hidden] {
+    display: none;
 }
 
 .form-actions-row {
@@ -882,6 +1092,31 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
+}
+
+/* ---------- HARDWARE CATEGORY TAB ALIGNMENT ----------
+   Category heading and its underline stay flush with the content below:
+   Category heading -> active underline -> form/search field -> list.
+   Left edges align with the card padding and vertical rhythm is even. */
+.hardware-card h3 {
+    margin-bottom: 12px;
+}
+
+.hardware-card hr {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.hardware-card .inventory-search-box {
+    margin-top: 0;
+}
+
+/* Keep the Save button clear of the search field below it: the shared
+   .form-action-row submit button uses a negative bottom margin that was
+   tuned for the old divider position; neutralize it inside hardware cards
+   so the search box starts below the button instead of overlapping it. */
+.hardware-card .form-action-row button[type="submit"] {
+    margin-bottom: 15px;
 }
 
 /* ---------- DYNAMIC METADATA DATA LISTS ---------- */
@@ -970,19 +1205,21 @@ body {
 .search-box .search-icon {
     position: absolute;
     left: 12px;              /* distance from left edge */
+    top: 50%;
+    transform: translateY(-50%); /* keeps the icon vertically centered inside the field */
     color: var(--color-text-muted);
     font-size: 14px;
     pointer-events: none;    /* ensures clicks go to the input */
-    margin-bottom: 9px;
 }
 
 .tables-grid .search-icon {
     position: absolute;
     left: 12px;              /* distance from left edge */
+    top: 50%;
+    transform: translateY(-50%); /* keeps the icon vertically centered inside the field */
     color: var(--color-text-muted);
     font-size: 14px;
     pointer-events: none;    /* ensures clicks go to the input */
-    margin-bottom: 9px;
 }
 
 .search-box input {
@@ -1339,6 +1576,17 @@ body {
 
     .form-grid-2x2 {
         grid-template-columns: 1fr;
+    }
+
+    /* Cover and description stack naturally on small screens */
+    .form-grid-2x2 .game-cover-field,
+    .form-grid-2x2 .game-description-field {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    .game-description-field textarea {
+        flex: 0 0 auto;
     }
 
     .form-actions-row {

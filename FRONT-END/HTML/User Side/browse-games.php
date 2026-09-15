@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -15,26 +15,20 @@
     <div class="browse-top-section">
         <h2>Browse Games</h2>
         <p class="browse-subtitle">Find a game you like, see what kind of computer it needs in plain language, then check if your PC can run it.</p>
-        
+
         <div class="search-filter-container">
             <div class="search-box">
                 <input type="text" id="gameSearch" placeholder="Search games — try &quot;Minecraft&quot;..." oninput="filterGames()" aria-label="Search games">
                 <span class="search-icon"><i class="fas fa-magnifying-glass"></i></span>
             </div>
-            
+
             <div class="genre-filter">
-                <label for="genreFilter" class="visually-hidden">Filter by game type</label>
-                <select id="genreFilter" onchange="filterGames()" aria-label="Filter by game type">
-                    <option value="">All Genres</option>
-                    <option value="action">Action</option>
-                    <option value="rpg">RPG</option>
-                    <option value="fps">FPS</option>
-                    <option value="adventure">Adventure</option>
-                    <option value="sports">Sports</option>
-                    <option value="racing">Racing</option>
-                    <option value="strategy">Strategy</option>
-                    <option value="sandbox">Sandbox</option>
-                </select>
+                <label for="genreFilterSearch" class="visually-hidden">Filter by game type</label>
+                <div class="search-dropdown" id="genreFilterDropdown">
+                    <input type="text" class="search-input" id="genreFilterSearch" placeholder="Filter by genre..." autocomplete="off">
+                    <input type="hidden" id="genreFilter" value="">
+                    <div class="dropdown-list" id="genreFilterDropdownList"></div>
+                </div>
             </div>
 
             <button type="button" id="moreFiltersBtn" class="more-filters-btn" onclick="toggleMoreFilters()" aria-expanded="false" aria-controls="moreFiltersPanel">
@@ -44,13 +38,12 @@
             </button>
 
             <div class="sort-filter">
-                <label for="sortOrder" class="sort-label">Sort:</label>
-                <select id="sortOrder" onchange="filterGames()" aria-label="Sort games">
-                    <option value="newest">Newest → Oldest</option>
-                    <option value="oldest">Oldest → Newest</option>
-                    <option value="az">A → Z</option>
-                    <option value="za">Z → A</option>
-                </select>
+                <label for="sortOrderSearch" class="sort-label">Sort:</label>
+                <div class="search-dropdown" id="sortOrderDropdown">
+                    <input type="text" class="search-input" id="sortOrderSearch" placeholder="Sort games..." autocomplete="off">
+                    <input type="hidden" id="sortOrder" value="">
+                    <div class="dropdown-list" id="sortOrderDropdownList"></div>
+                </div>
             </div>
         </div>
 
@@ -58,34 +51,30 @@
         <div id="moreFiltersPanel" class="more-filters-panel" style="display: none;" aria-hidden="true">
             <div class="more-filters-grid">
                 <div class="filter-group">
-                    <label for="platformFilter">Works on</label>
-                    <select id="platformFilter" onchange="filterGames()" aria-label="Filter by platform">
-                        <option value="">All computers</option>
-                        <option value="pc">PC (Windows)</option>
-                    </select>
+                    <label for="platformFilterSearch">Works on</label>
+                    <div class="search-dropdown" id="platformFilterDropdown">
+                        <input type="text" class="search-input" id="platformFilterSearch" placeholder="Filter by platform..." autocomplete="off">
+                        <input type="hidden" id="platformFilter" value="">
+                        <div class="dropdown-list" id="platformFilterDropdownList"></div>
+                    </div>
                 </div>
 
                 <div class="filter-group">
-                    <label for="yearFilter">Released</label>
-                    <select id="yearFilter" onchange="filterGames()" aria-label="Filter by release year">
-                        <option value="">Any year</option>
-                        <option value="before-2010">Before 2010</option>
-                        <option value="2010-2014">2010–2014</option>
-                        <option value="2015-2019">2015–2019</option>
-                        <option value="2020-2024">2020–2024</option>
-                        <option value="2025-present">2025–Present</option>
-                    </select>
+                    <label for="yearFilterSearch">Released</label>
+                    <div class="search-dropdown" id="yearFilterDropdown">
+                        <input type="text" class="search-input" id="yearFilterSearch" placeholder="Filter by year..." autocomplete="off">
+                        <input type="hidden" id="yearFilter" value="">
+                        <div class="dropdown-list" id="yearFilterDropdownList"></div>
+                    </div>
                 </div>
 
                 <div class="filter-group">
-                    <label for="requirementFilter">How demanding is this game?</label>
-                    <select id="requirementFilter" onchange="filterGames()" aria-label="Filter by how demanding a game is">
-                        <option value="">All levels</option>
-                        <option value="low">Easy to Run</option>
-                        <option value="moderate">Moderate</option>
-                        <option value="high">Demanding</option>
-                        <option value="very-high">Very Demanding</option>
-                    </select>
+                    <label for="requirementFilterSearch">How demanding is this game?</label>
+                    <div class="search-dropdown" id="requirementFilterDropdown">
+                        <input type="text" class="search-input" id="requirementFilterSearch" placeholder="Filter by demand..." autocomplete="off">
+                        <input type="hidden" id="requirementFilter" value="">
+                        <div class="dropdown-list" id="requirementFilterDropdownList"></div>
+                    </div>
                     <span class="filter-hint">How powerful a computer the game needs.</span>
                 </div>
 

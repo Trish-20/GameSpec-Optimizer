@@ -68,10 +68,43 @@ async function loadFPSPredictionDropdowns() {
         loadRAMBenchmarks()
     ]);
     
-    // Initialize searchable dropdowns
+        // Initialize searchable dropdowns
     initSearchDropdown('game', games, game => game.title, game => game.title_raw);
     initSearchDropdown('cpu', cpus, cpu => cpu.model, cpu => cpu.score);
     initSearchDropdown('gpu', gpus, gpu => gpu.model, gpu => gpu.score);
+        // RAM uses capacity field for label (e.g. "8 GB"), score for value
+    const ramData = [];
+    [4, 8, 16, 32, 64].forEach(cap => {
+        const match = ramBenchmarks.find(r => Number(r.capacity) === cap);
+        ramData.push({
+            label: `${cap} GB`,
+            value: String(cap),
+            capacity: cap,
+            score: match ? match.score : undefined
+        });
+    });
+    initSearchDropdown('ram', ramData, ram => ram.label, ram => ram.value);
+    initSearchDropdown('graphicsQuality', [
+        { label: 'Low', value: 'low' },
+        { label: 'Medium', value: 'medium' },
+        { label: 'High', value: 'high' }
+    ], item => item.label, item => item.value);
+    initSearchDropdown('performanceMode', [
+        { label: 'Battery Saver', value: 'battery' },
+        { label: 'Balanced', value: 'balanced' },
+        { label: 'Performance', value: 'performance' }
+    ], item => item.label, item => item.value);
+
+    // The markup already carries default values in the hidden inputs (for
+    // example Performance Mode defaults to "balanced"). Show the matching label
+    // in the visible box so each dropdown reads like a real field instead of
+    // only showing its placeholder.
+    ['graphicsQuality', 'performanceMode'].forEach(type => {
+        const hiddenInput = document.getElementById(type);
+        if (hiddenInput && hiddenInput.value && searchDropdownApis[type]) {
+            searchDropdownApis[type].setValue(hiddenInput.value);
+        }
+    });
     
     // Check if game was passed via URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -264,9 +297,9 @@ const helpCenterSections = [
             '</div>' +
             '<p>Use the genre filter to narrow down games by type. Available types include Action, RPG, FPS, Adventure, Sports, Racing, Strategy, and Sandbox.</p>' +
             '<div class="help-image">' +
-                '<img src="../../RES/Tutorials/browse-games/filter_genre.png" '  +
+                '<img src="../../RES/Tutorials/browse-games/filter_options.png" '  +
                     'alt="Genre filter on the Browse Games page">' +
-            '</div>' +
+            '</div>' +  
             '<p>Use <strong>More Filters</strong> to narrow down games further. Open it to filter by <strong>Works on</strong> (your computer type), <strong>Released</strong> (release year), and <strong>How demanding is this game?</strong> (how powerful a computer the game needs).</p>' +
             '<p><strong>How demanding is this game?</strong> means how powerful a computer the game needs. Each game shows one of these levels:</p>' +
             '<ul>' +
@@ -277,16 +310,32 @@ const helpCenterSections = [
             '</ul>' +
             '<p>Open <strong>View Details</strong> on any game card to see that game&apos;s description and computer requirements.</p>' +
             '<div class="help-image">' +
-                '<img src="../../RES/Tutorials/browse-games/game_info.png" '  +
+                '<img src="../../RES/Tutorials/browse-games/view_details.png" '  +
                     'alt="Game Details view opened with View Details">' +
             '</div>' +
             '<p>The Game Details view shows, from top to bottom: the game type, the game title, the requirement level badge, the game image, the game description, <strong>What you&apos;ll need</strong> (memory, graphics, and processor in plain language), and <strong>View detailed specifications</strong>. Open <strong>View detailed specifications</strong> to see the exact processor, graphics, and memory details.</p>' +
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/browse-games/title_part.png" '  +
+                    'alt="Game Details view opened with View Details">' +
+            '</div>' +
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/browse-games/game_image.png" '  +
+                    'alt="Game Details view opened with View Details">' +
+            '</div>' +
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/browse-games/what_youll_need.png" '  +
+                    'alt="Game Details view opened with View Details">' +
+            '</div>' +
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/browse-games/detailed_spec.png" '  +
+                    'alt="Game Details view opened with View Details">' +
+            '</div>' +
             '<p>Select <strong>Can I Run This?</strong> to continue to FPS Prediction and check how the game may perform on your computer. The game you selected is already filled in there.</p>' +
             '<div class="help-image">' +
-                '<img src="../../RES/Tutorials/browse-games/fps_prediction.png" '  +
+                '<img src="../../RES/Tutorials/browse-games/hardware_config.png" '  +
                     'alt="FPS Prediction page after selecting Can I Run This">' +
             '</div>' +
-            '<p>To return to the Browse Games page, select <strong>Back to games</strong> or the <strong>X</strong> close button at the top of the Game Details view.</p>'
+            '<p>To return to the Browse Games page, select the <strong>X</strong> close button at the top of the Game Details view.</p>'
     },
     {
         id: 'hardware-detection',
@@ -295,20 +344,37 @@ const helpCenterSections = [
         title: 'Hardware Detection',
         content:
             '<p>GameSpec Optimizer can detect your Windows CPU, GPU, and installed RAM automatically. On the FPS Prediction page, click the <strong>Detect Hardware</strong> button and your components are filled in for you.</p>' +
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/hardware-detection/detect_hardware.png" ' +
+                    'alt="FPS Prediction page after selecting Can I Run This">' +
+            '</div>' + 
             '<p>If automatic detection is unavailable (for example on a non-Windows system, or when permissions are restricted), you can <strong>select your hardware manually</strong> from the searchable dropdowns instead.</p>' +
             '<h3>Find your hardware manually</h3>' +
             '<p>To look up your specs without the auto-detect feature:</p>' +
             '<ol class="help-steps">' +
             '<li><strong>Open Windows Run</strong> by pressing <kbd>Windows</kbd> + <kbd>R</kbd>.</li>' +
-            helpImagePlaceholder('Windows Run dialog') +
             '<li><strong>Type <code>dxdiag</code> and press Enter</strong> to open the DirectX Diagnostic Tool.</li>' +
-            helpImagePlaceholder('dxdiag command') +
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/hardware-detection/dxdiag.png" '  +
+                    'alt="FPS Prediction page after selecting Can I Run This">' +
+            '</div>' +
             '<li><strong>Check the System and Display tabs</strong> for your processor, memory, and graphics card.</li>' +
-            helpImagePlaceholder('dxdiag System/Display information') +
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/hardware-detection/display_information.png" '  +
+                    'alt="FPS Prediction page after selecting Can I Run This">' +
+            '</div>' +
             '</ol>' +
             '<ul>' +
-            '<li><strong>System tab</strong> &mdash; find your CPU (Processor) and installed RAM (Memory).</li>' +
-            '<li><strong>Display tab</strong> &mdash; find your graphics card (Name under Device).</li>' +
+            '<li><strong>System tab</strong> &mdash; find your CPU (Processor e.g 11th Gen Intel(R) Core(TM) i5 ‑ 1135G7 @ 2.40GHz (8 CPUs, ~2.4GHz)) and installed RAM (Memory e.g 16 GB).</li>' +
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/hardware-detection/processor_tab.png" '  +
+                    'alt="FPS Prediction page after selecting Can I Run This">' +
+            '</div>' +
+            '<li><strong>Display tab</strong> &mdash; find your graphics card (Name under Device e.g Intel(R) Iris(R) Xe Graphics).</li>' +
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/hardware-detection/graphics_tab.png" '  +
+                    'alt="FPS Prediction page after selecting Can I Run This">' +
+            '</div>' +
             '</ul>'
     },
     {
@@ -324,8 +390,18 @@ const helpCenterSections = [
             '<li><strong>RAM information</strong> &mdash; shows and scores your installed memory.</li>' +
             '</ul>' +
             '<p>First choose a <strong>hardware type</strong> (CPU, GPU, or RAM). Then <strong>select the specific component</strong> from the searchable list. Click <strong>Get Benchmark Score</strong> to see how that model performs &mdash; a numbered score with a rating (Excellent, Great, Good, Average, or Entry Level).</p>' +
-            helpImagePlaceholder('Hardware Benchmark page screenshot') +
-            helpCaption('Example: Looking up a hardware benchmark score')
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/hardware-benchmark/hardware_type.png" '  +
+                    'alt="FPS Prediction page after selecting Can I Run This">' +
+            '</div>' +
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/hardware-benchmark/hardware.png" '  +
+                    'alt="FPS Prediction page after selecting Can I Run This">' +
+            '</div>' +
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/hardware-benchmark/benchmark_score.png" '  +
+                    'alt="FPS Prediction page after selecting Can I Run This">' +
+            '</div>'
     },
     {
         id: 'fps-prediction',
@@ -342,9 +418,11 @@ const helpCenterSections = [
             '<li><strong>Graphics Quality</strong> &mdash; Low, Medium, or High. Higher quality looks better but usually lowers FPS.</li>' +
             '<li><strong>Performance Mode</strong> &mdash; Battery Saver, Balanced, or Performance. Match your Windows power mode for the most accurate estimate.</li>' +
             '</ul>' +
-            '<p>When you click <strong>Analyze Performance</strong>, the application compares your hardware against the game&rsquo;s requirements and returns an estimated FPS value.</p>' +
-            helpImagePlaceholder('FPS Prediction configuration screenshot') +
-            helpCaption('Example: Configuring hardware and graphics settings')
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/fps-prediction/FPS_inputFields.png" '  +
+                    'alt="FPS Prediction page after selecting Can I Run This">' +
+            '</div>' +
+            '<p>When you click <strong>Analyze Performance</strong>, the application compares your hardware against the game&rsquo;s requirements and returns an estimated FPS value.</p>' 
     },
     {
         id: 'understanding-fps-results',
@@ -371,8 +449,10 @@ const helpCenterSections = [
             '</div>' +
             '</div>' +
             '<p>When predicted FPS is well above a 60 FPS target, the application highlights headroom for higher graphics settings. When it is below target, it suggests settings to lower first.</p>' +
-            helpImagePlaceholder('FPS Results screenshot') +
-            helpCaption('Example: Understanding an FPS prediction result')
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/fps-prediction/upper_result.png" '  +
+                    'alt="FPS Prediction page after selecting Can I Run This">' +
+            '</div>' 
     },
     {
         id: 'hardware-comparison',
@@ -390,8 +470,10 @@ const helpCenterSections = [
             '<li><strong>Meets requirement</strong> means your component score is at least equal to the game&rsquo;s required score.</li>' +
             '<li>When a component is <strong>below the requirement</strong>, it is flagged as &ldquo;Needs attention&rdquo; and may be treated as a bottleneck.</li>' +
             '</ul>' +
-            helpImagePlaceholder('Hardware comparison screenshot') +
-            helpCaption('Example: Comparing your hardware with game requirements')
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/fps-prediction/middle_result.png" '  +
+                    'alt="FPS Prediction page after selecting Can I Run This">' +
+            '</div>' 
     },
     {
         id: 'bottlenecks',
@@ -408,8 +490,10 @@ const helpCenterSections = [
             '<div class="bn-result">FPS</div>' +
             '</div>' +
             '<p>If a component is identified as a bottleneck, upgrading it usually gives the largest FPS gain.</p>' +
-            helpImagePlaceholder('Bottleneck result screenshot') +
-            helpCaption('Example: Identifying a limiting hardware component')
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/fps-prediction/last_part.png" '  +
+                    'alt="FPS Prediction page after selecting Can I Run This">' +
+            '</div>' 
     },
     {
         id: 'graphics-recommendations',
@@ -427,9 +511,7 @@ const helpCenterSections = [
             '<li>Enabling <strong>Bloom</strong></li>' +
             '<li>Adjusting other supported settings</li>' +
             '</ul>' +
-            '<p>If your FPS is too low, the opposite adjustments are offered (lowering or disabling those same settings). All suggestions aim to <strong>balance visual quality and FPS</strong>.</p>' +
-            helpImagePlaceholder('Graphics recommendations screenshot') +
-            helpCaption('Example: Recommended graphics adjustments')
+            '<p>If your FPS is too low, the opposite adjustments are offered (lowering or disabling those same settings). All suggestions aim to <strong>balance visual quality and FPS</strong>.</p>' 
     },
     {
         id: 'upgrade-recommendations',
@@ -447,9 +529,7 @@ const helpCenterSections = [
             '<div class="uf-arrow" aria-hidden="true">\u2193</div>' +
             '<div class="uf-step uf-step-last">Expected Improvement</div>' +
             '</div>' +
-            '<p>Review the limiting component first, then compare the suggested upgrade scores. After upgrading, re-run the prediction to confirm the improvement.</p>' +
-            helpImagePlaceholder('Upgrade recommendation screenshot') +
-            helpCaption('Example: Understanding a hardware upgrade recommendation')
+            '<p>Review the limiting component first, then compare the suggested upgrade scores. After upgrading, re-run the prediction to confirm the improvement.</p>' 
     },
     {
         id: 'community-feedback',
@@ -466,9 +546,11 @@ const helpCenterSections = [
             '<li><strong>Helpful votes</strong> &mdash; click the helpful button on a review to mark it as useful.</li>' +
             '<li><strong>Reporting</strong> &mdash; use the report button on any review to flag inappropriate content.</li>' +
             '</ul>' +
-            helpImagePlaceholder('Community Feedback screenshot') +
-            helpCaption('Example: Reading and submitting community feedback')
-    }
+            '<div class="help-image">' +
+                '<img src="../../RES/Tutorials/feedback/feedback_preview.png" '  +
+                    'alt="FPS Prediction page after selecting Can I Run This">' +
+            '</div>'
+    },
 ];
 
 // ---------------------------------------------------------------------------
@@ -719,9 +801,23 @@ function toggleSidebar() {
 }
 
 // --- SEARCHABLE DROPDOWN FUNCTIONALITY ---
-function initSearchDropdown(type, data, getLabel, getValue) {
+// Every dropdown on the User Side (FPS Prediction, Browse Games filters,
+// Hardware Benchmark and Community Feedback) is built from the SAME
+// .search-dropdown markup so they all share one look, one hover state and
+// one thin dark scrollbar. This registry exposes a small API per dropdown so
+// other helpers (Clear Filters, URL prefills, Detect Hardware) can set the
+// visible label and the stored hidden value together.
+const searchDropdownApis = {};
+
+function initSearchDropdown(type, data, getLabel, getValue, onSelect) {
     const searchInput = document.getElementById(`${type}Search`);
-    const hiddenInput = document.getElementById(type === 'game' ? 'selectedGame' : `${type}Select`);
+    // The hidden input holds the real value. Most dropdowns use
+    // `${type}Select`, but the Browse Games filters, the feedback rating
+    // filter and the FPS graphics/performance fields keep their original ids
+    // (e.g. `genreFilter`, `graphicsQuality`), so fall back to `${type}`.
+    const hiddenInput = document.getElementById(
+        type === 'game' ? 'selectedGame' : `${type}Select`
+    ) || document.getElementById(type);
     const dropdownList = document.getElementById(`${type}DropdownList`);
     const dropdown = document.getElementById(`${type}Dropdown`);
     
@@ -747,29 +843,32 @@ function initSearchDropdown(type, data, getLabel, getValue) {
             return;
         }
         
-        filtered.forEach((item, index) => {
+                filtered.forEach((item, index) => {
             const div = document.createElement('div');
             div.className = 'dropdown-item';
             div.textContent = getLabel(item);
             div.dataset.value = getValue(item);
             div.dataset.index = index;
-            
+
             div.addEventListener('mousedown', (e) => {
                 e.preventDefault(); // Prevent input blur
                 selectItem(item);
             });
-            
+
             dropdownList.appendChild(div);
         });
     }
     
-    function selectItem(item) {
+            function selectItem(item) {
         isSelecting = true;
         searchInput.value = getLabel(item);
-        hiddenInput.value = getValue(item);
+        if (hiddenInput) hiddenInput.value = getValue(item);
         dropdown.classList.remove('active');
         searchInput.blur(); // Remove focus from input
         setTimeout(() => { isSelecting = false; }, 100);
+        if (typeof onSelect === 'function') {
+            onSelect(item, getValue(item));
+        }
     }
     
     function highlightItem(index) {
@@ -792,7 +891,7 @@ function initSearchDropdown(type, data, getLabel, getValue) {
     
     searchInput.addEventListener('input', () => {
         populateList(searchInput.value);
-        hiddenInput.value = ''; // Clear selection when typing
+        if (hiddenInput) hiddenInput.value = ''; // Clear selection when typing
         dropdown.classList.add('active');
     });
     
@@ -824,6 +923,28 @@ function initSearchDropdown(type, data, getLabel, getValue) {
             dropdown.classList.remove('active');
         }
     });
+
+    // Small API so other code can set the label + stored value together
+    // (e.g. URL prefills, Clear Filters, Detect Hardware) instead of writing
+    // only to the visible search box.
+    const api = {
+        setValue(value) {
+            const source = typeof data === 'function' ? data() : data;
+            const match = source.find(d => String(getValue(d)) === String(value));
+            searchInput.value = match ? getLabel(match) : '';
+            if (hiddenInput) hiddenInput.value = match ? getValue(match) : '';
+        },
+        open() {
+            populateList(searchInput.value);
+            dropdown.classList.add('active');
+        },
+        close() {
+            dropdown.classList.remove('active');
+        }
+    };
+
+    searchDropdownApis[type] = api;
+    return api;
 }
 
 // --- LEGACY: TAB NAVIGATION (for old UserSide.html) #ToRemove ---
@@ -845,6 +966,69 @@ function showTab(tabName, button) {
 async function initBrowseGames() {
     await loadGamesFromCSV();
     loadGameGrid();
+
+    // Initialize the searchable dropdowns for the filter controls
+    initSearchDropdown('genreFilter', [
+        { label: 'All Genres', value: '' },
+        { label: 'Action', value: 'action' },
+        { label: 'RPG', value: 'rpg' },
+        { label: 'FPS', value: 'fps' },
+        { label: 'Adventure', value: 'adventure' },
+        { label: 'Sports', value: 'sports' },
+        { label: 'Racing', value: 'racing' },
+        { label: 'Strategy', value: 'strategy' },
+        { label: 'Sandbox', value: 'sandbox' }
+    ], item => item.label, item => item.value, filterGames);
+
+    initSearchDropdown('sortOrder', [
+        { label: 'Newest → Oldest', value: 'newest' },
+        { label: 'Oldest → Newest', value: 'oldest' },
+        { label: 'A → Z', value: 'az' },
+        { label: 'Z → A', value: 'za' }
+    ], item => item.label, item => item.value, filterGames);
+
+    initSearchDropdown('platformFilter', [
+        { label: 'All computers', value: '' },
+        { label: 'PC (Windows)', value: 'pc' }
+    ], item => item.label, item => item.value, filterGames);
+
+    initSearchDropdown('yearFilter', [
+        { label: 'Any year', value: '' },
+        { label: 'Before 2010', value: 'before-2010' },
+        { label: '2010–2014', value: '2010-2014' },
+        { label: '2015–2019', value: '2015-2019' },
+        { label: '2020–2024', value: '2020-2024' },
+        { label: '2025–Present', value: '2025-present' }
+    ], item => item.label, item => item.value, filterGames);
+
+    initSearchDropdown('requirementFilter', [
+        { label: 'All levels', value: '' },
+        { label: 'Easy to Run', value: 'low' },
+        { label: 'Moderate', value: 'moderate' },
+        { label: 'Demanding', value: 'high' },
+        { label: 'Very Demanding', value: 'very-high' }
+    ], item => item.label, item => item.value, filterGames);
+
+    // Apply any filter values passed in the URL (if present). Use each
+    // dropdown's API so the visible label matches the stored value instead of
+    // showing the raw value (e.g. "action" instead of "Action").
+    const urlParams = new URLSearchParams(window.location.search);
+    const applyFilterFromUrl = (type, value) => {
+        if (value && searchDropdownApis[type]) {
+            searchDropdownApis[type].setValue(value);
+        }
+    };
+    applyFilterFromUrl('genreFilter', urlParams.get('genre') || '');
+    applyFilterFromUrl('sortOrder', urlParams.get('sort') || '');
+    applyFilterFromUrl('platformFilter', urlParams.get('platform') || '');
+    applyFilterFromUrl('yearFilter', urlParams.get('year') || '');
+    applyFilterFromUrl('requirementFilter', urlParams.get('requirement') || '');
+
+    // Trigger initial filter if gameSearch has a value
+    const gameSearchVal = urlParams.get('q') || '';
+    if (gameSearchVal) {
+        document.getElementById('gameSearch').value = gameSearchVal;
+    }
 }
 
 // --- BROWSE GAMES: shared frontend-only helpers (no backend changes) ---
@@ -1110,19 +1294,48 @@ function toggleMoreFilters() {
 function clearGameSearch() {
     const searchInput = document.getElementById('gameSearch');
     const genreFilter = document.getElementById('genreFilter');
+    const genreFilterSearch = document.getElementById('genreFilterSearch');
     const platformFilter = document.getElementById('platformFilter');
+    const platformFilterSearch = document.getElementById('platformFilterSearch');
     const yearFilter = document.getElementById('yearFilter');
+    const yearFilterSearch = document.getElementById('yearFilterSearch');
     const requirementFilter = document.getElementById('requirementFilter');
+    const requirementFilterSearch = document.getElementById('requirementFilterSearch');
     const sortOrder = document.getElementById('sortOrder');
+    const sortOrderSearch = document.getElementById('sortOrderSearch');
     const noGameMessage = document.getElementById('noGameMessage');
 
     if (searchInput) searchInput.value = '';
-    if (genreFilter) genreFilter.value = '';
-    if (platformFilter) platformFilter.value = '';
-    if (yearFilter) yearFilter.value = '';
-    if (requirementFilter) requirementFilter.value = '';
+    // Reset each converted filter through its dropdown API when available, so
+    // the visible label falls back to the "All …/Any …" default exactly like
+    // the native select it replaced (instead of leaving an empty box).
+    const resetFilter = (type, hiddenEl, searchEl, fallbackLabel) => {
+        if (hiddenEl) hiddenEl.value = '';
+        if (searchDropdownApis[type]) {
+            searchDropdownApis[type].setValue('');
+        } else if (searchEl) {
+            searchEl.value = fallbackLabel;
+        }
+    };
+    resetFilter('genreFilter', genreFilter, genreFilterSearch, 'All Genres');
+    resetFilter('platformFilter', platformFilter, platformFilterSearch, 'All computers');
+    resetFilter('yearFilter', yearFilter, yearFilterSearch, 'Any year');
+    resetFilter('requirementFilter', requirementFilter, requirementFilterSearch, 'All levels');
+    // Sorting falls back to the default option rather than an empty box, so the
+    // visible label always matches the stored value.
     if (sortOrder) sortOrder.value = 'newest';
+    if (searchDropdownApis.sortOrder) {
+        searchDropdownApis.sortOrder.setValue('newest');
+    } else if (sortOrderSearch) {
+        sortOrderSearch.value = 'Newest → Oldest';
+    }
     if (noGameMessage) noGameMessage.style.display = 'none';
+
+    // Also close any open dropdowns
+    ['genreFilterDropdown', 'platformFilterDropdown', 'yearFilterDropdown', 'requirementFilterDropdown', 'sortOrderDropdown'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('active');
+    });
 
     filterGames();
 }
@@ -1616,6 +1829,16 @@ function filterFeedback() {
 }
 
 async function loadFeedbackPage() {
+    // Initialize the rating filter searchable dropdown
+    initSearchDropdown('ratingFilter', [
+        { label: 'All Ratings', value: '' },
+        { label: '★★★★★ (5 Stars)', value: '5' },
+        { label: '★★★★☆ (4 Stars)', value: '4' },
+        { label: '★★★☆☆ (3 Stars)', value: '3' },
+        { label: '★★☆☆☆ (2 Stars)', value: '2' },
+        { label: '★☆☆☆☆ (1 Star)', value: '1' }
+    ], item => item.label, item => item.value, filterFeedback);
+
     const listContainer = document.getElementById("feedbackList");
 
     if (listContainer) {
@@ -1674,9 +1897,9 @@ function findBestHardwareMatch(items, detectedModel) {
 }
 
 function findClosestRamOption(ramGb) {
-    const options = Array.from(document.getElementById('ramSelect')?.options || [])
-        .map(option => Number(option.value))
-        .filter(value => Number.isFinite(value) && value > 0);
+    // RAM options are now rendered by the searchable dropdown as hidden input options.
+    // Build the expected set from the known RAM tiers and match against the hidden input.
+    const options = [4, 8, 16, 32, 64];
 
     if (!options.length || !Number.isFinite(ramGb)) return null;
 
@@ -1713,8 +1936,14 @@ async function detectHardware() {
         if (gpuSelect) gpuSelect.value = gpuMatch ? gpuMatch.score : '';
 
         if (ramClosest !== null) {
-            const ramSelect = document.getElementById('ramSelect');
-            if (ramSelect) ramSelect.value = String(ramClosest);
+            // Keep the visible search box and the stored hidden value in sync
+            // (both are produced by the same dropdown API).
+            if (searchDropdownApis.ram) {
+                searchDropdownApis.ram.setValue(String(ramClosest));
+            } else {
+                const ramSelect = document.getElementById('ramSelect');
+                if (ramSelect) ramSelect.value = String(ramClosest);
+            }
         }
 
         const detectedParts = [];
@@ -1744,13 +1973,27 @@ async function initHardwareBenchmark() {
     // Pre-load CPU and GPU data
     await Promise.all([loadCPUsFromCSV(), loadGPUsFromCSV()]);
 
+    // Hardware type is now a searchable dropdown (same pattern as game/cpu/gpu/ram)
+    initSearchDropdown('hardwareType', [
+        { label: 'Select Hardware Type', value: '' },
+        { label: 'CPU', value: 'cpu' },
+        { label: 'GPU', value: 'gpu' },
+        { label: 'RAM', value: 'ram' }
+    ], item => item.label, item => item.value, () => {
+        // When hardware type is selected, rebuild the hardware list dropdown
+        loadHardwareOptions();
+    });
+
     // Hardware options depend on the selected hardware type, so pass a
     // data provider function instead of a static array.
     initSearchDropdown('hardware', () => hardwareOptions, item => item.label, item => item.score);
 }
 
 function loadHardwareOptions() {
-    const hardwareType = document.getElementById('hardwareType').value;
+    // `hardwareTypeSearch` shows the label ("CPU"); the hidden input keeps the
+    // real value ("cpu") that decides which suggestion list to build.
+    const hardwareTypeSelect = document.getElementById('hardwareTypeSelect');
+    const hardwareType = hardwareTypeSelect ? hardwareTypeSelect.value : '';
     const hardwareSelect = document.getElementById('hardwareSelect');
     const hardwareSearch = document.getElementById('hardwareSearch');
     const hardwareDropdown = document.getElementById('hardwareDropdown');
@@ -1808,7 +2051,10 @@ function loadHardwareOptions() {
 }
 
 function getBenchmarkScore() {
-    const hardwareType = document.getElementById('hardwareType').value;
+    // Read the stored value ("cpu"/"gpu"/"ram") from the hidden input — the
+    // visible search box only holds the label.
+    const hardwareTypeSelect = document.getElementById('hardwareTypeSelect');
+    const hardwareType = hardwareTypeSelect ? hardwareTypeSelect.value : '';
     const hardwareSelect = document.getElementById('hardwareSelect');
     
     if (!hardwareType) {

@@ -38,14 +38,11 @@
 
            
 
-            <select id="ratingFilter" onchange="filterFeedback()">
-                <option value="">All Ratings</option>
-                <option value="5">★★★★★ (5 Stars)</option>
-                <option value="4">★★★★☆ (4 Stars)</option>
-                <option value="3">★★★☆☆ (3 Stars)</option>
-                <option value="2">★★☆☆☆ (2 Stars)</option>
-                <option value="1">★☆☆☆☆ (1 Star)</option>
-            </select>
+                        <div class="search-dropdown" id="ratingFilterDropdown">
+                <input type="text" class="search-input" id="ratingFilterSearch" placeholder="Filter by rating..." autocomplete="off">
+                <input type="hidden" id="ratingFilter" value="">
+                <div class="dropdown-list" id="ratingFilterDropdownList"></div>
+            </div>
 
              <button class="feedback-add-btn" type="button" onclick="openFeedbackModal()">
                 <i class="fas fa-plus"></i>

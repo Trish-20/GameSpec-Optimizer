@@ -20,6 +20,11 @@
         --color-brand: #b5ff3d;
         --color-brand-hover: #c6ff66;
         --color-danger: #f43f5e;
+
+        /* Render native form controls (select option panels, scrollbars)
+           in the dark theme so opened dropdown panels match the app's
+           rounded dark UI instead of appearing bright and square. */
+        color-scheme: dark;
     }
 
     /* ==========================================================
@@ -3160,6 +3165,50 @@ a:focus-visible {
 }
 
 /* ==========================================================
+   Shared layout for the converted filter/setting dropdowns
+   Browse Games filters, FPS Prediction, Hardware Benchmark and
+   Community Feedback now all use the SAME .search-dropdown markup,
+   so they inherit one panel style, one hover state and one thin dark
+   scrollbar from the .search-dropdown rules above.
+   These containers previously sized a native <select>; the exact same
+   footprint is re-applied to the custom dropdown that replaced it.
+   ========================================================== */
+
+.genre-filter .search-dropdown {
+    min-width: 150px;
+}
+
+.feedback-toolbar .search-dropdown {
+    flex: 0 0 180px;
+    min-width: 140px;
+}
+
+.filter-group .search-dropdown,
+.tab-card .search-dropdown {
+    width: 100%;
+}
+
+.sort-filter .search-dropdown {
+    min-width: 160px;
+}
+
+@media (max-width: 900px) {
+    .genre-filter .search-dropdown,
+    .sort-filter .search-dropdown {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .feedback-toolbar .search-dropdown {
+        flex: 1 1 auto;
+        min-width: 0;
+        width: 100%;
+    }
+}
+
+/* ==========================================================
    Uniform native dropdown (<select>) styling
    All filter/setting selects across Browse Games, FPS Prediction,
    Hardware Benchmark and Community Feedback share the same look:
@@ -3227,6 +3276,125 @@ a:focus-visible {
 .feedback-form select option {
     background-color: var(--bg-card);
     color: var(--color-text-main);
+}
+
+/* ==========================================================
+   Rounded native select popups (progressive enhancement)
+   Chromium 135+ renders the opened option panel as a styleable
+   page element (appearance: base-select), so the popup can match
+   the rounded .search-dropdown suggestion lists. Unsupported
+   browsers ignore these rules and keep the OS popup, which is
+   already dark via color-scheme: dark.
+   ========================================================== */
+
+.tab-card select,
+.genre-filter select,
+.sort-filter select,
+.filter-group select,
+.fps-input-panel select,
+.feedback-toolbar select,
+.feedback-form select {
+    appearance: base-select;
+}
+
+/* Hide the built-in picker arrow — the custom chevron background stays */
+.tab-card select::picker-icon,
+.genre-filter select::picker-icon,
+.sort-filter select::picker-icon,
+.filter-group select::picker-icon,
+.fps-input-panel select::picker-icon,
+.feedback-toolbar select::picker-icon,
+.feedback-form select::picker-icon {
+    display: none;
+}
+
+/* The opened option panel — mirrors .search-dropdown .dropdown-list */
+.tab-card select::picker(select),
+.genre-filter select::picker(select),
+.sort-filter select::picker(select),
+.filter-group select::picker(select),
+.fps-input-panel select::picker(select),
+.feedback-toolbar select::picker(select),
+.feedback-form select::picker(select) {
+    appearance: base-select;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    padding: 0;
+    max-height: 200px;      /* same height cap as the custom dropdown lists */
+    scrollbar-width: thin;  /* same thin dark scrollbar as the custom lists */
+    scrollbar-color: #3b3b4d #111114;
+}
+
+/* Options inside the opened panel — same row rhythm as .dropdown-item.
+   NOTE: options are styled via their own selectors, NOT through
+   "…::picker(select) option" — a pseudo-element followed by a descendant
+   is not a valid/reliable selector chain and gets silently dropped. */
+.tab-card select option,
+.genre-filter select option,
+.sort-filter select option,
+.filter-group select option,
+.fps-input-panel select option,
+.feedback-toolbar select option,
+.feedback-form select option {
+    background: transparent;
+    color: var(--color-text-main);
+    font-size: 13px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: inset 0 -1px 0 var(--border-color); /* fallback separator if option borders are ignored */
+    cursor: pointer;
+}
+
+.tab-card select option:last-child,
+.genre-filter select option:last-child,
+.sort-filter select option:last-child,
+.filter-group select option:last-child,
+.fps-input-panel select option:last-child,
+.feedback-toolbar select option:last-child,
+.feedback-form select option:last-child {
+    border-bottom: none;
+    box-shadow: none;
+}
+
+.tab-card select option:hover,
+.tab-card select option:focus,
+.genre-filter select option:hover,
+.genre-filter select option:focus,
+.sort-filter select option:hover,
+.sort-filter select option:focus,
+.filter-group select option:hover,
+.filter-group select option:focus,
+.fps-input-panel select option:hover,
+.fps-input-panel select option:focus,
+.feedback-toolbar select option:hover,
+.feedback-toolbar select option:focus,
+.feedback-form select option:hover,
+.feedback-form select option:focus {
+    background: rgba(181, 255, 61, 0.35); /* strong highlight like the custom dropdowns */
+    outline: none;
+}
+
+.tab-card select option:checked,
+.genre-filter select option:checked,
+.sort-filter select option:checked,
+.filter-group select option:checked,
+.fps-input-panel select option:checked,
+.feedback-toolbar select option:checked,
+.feedback-form select option:checked {
+    background: rgba(181, 255, 61, 0.35); /* current value reads highlighted, matching the custom look */
+}
+
+/* Keep the panel list clean — no checkmark column */
+.tab-card select option::checkmark,
+.genre-filter select option::checkmark,
+.sort-filter select option::checkmark,
+.filter-group select option::checkmark,
+.fps-input-panel select option::checkmark,
+.feedback-toolbar select option::checkmark,
+.feedback-form select option::checkmark {
+    display: none;
 }
 
 .fps-action-row button,
@@ -3625,12 +3793,30 @@ a:focus-visible {
     color: var(--color-text-main);
 }
 
-.help-image img {
-    width: 101%;
-    max-width: 680px;
-    height: auto;
-    display: block;
+/* Consistent tutorial/help image presentation.
+   Different source image dimensions share the same visual behaviour:
+   - images keep their natural size when small (never awkwardly enlarged)
+   - wide screenshots scale down to fit the help column width
+   - tall/square screenshots are capped by max-height so they never
+     become excessively large inside the Help & Tutorial modal
+   - aspect ratio is always preserved (no stretching or cropping)
+   - images are centered when narrower than the available column */
+.help-image {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 80%;
     margin: 20px auto 8px;
+}
+
+.help-image img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 420px;
+    object-fit: contain;
 
     border: 1.5px dashed rgba(181, 255, 61, 0.35);
     border-radius: 16px;
@@ -3642,7 +3828,7 @@ a:focus-visible {
 
 .help-image img:hover {
     border-color: rgba(181, 255, 61, 0.55);
-}   
+}
 
 /* FPS rating component (colors match .fps-legend-dot) */
 .help-fps-rating {

@@ -18,6 +18,7 @@
             <!-- CPU Management -->
             <div class="admin-card hardware-card">
                 <h3>CPU Management</h3>
+                <hr>
                 <form id="cpuForm">
                     <label for="cpuModel">CPU Model:</label>
                     <input type="text" id="cpuModel" list="cpuModelOptions" placeholder="e.g., Intel Core i7-12700K" required>
@@ -30,7 +31,6 @@
                         <button type="submit" class="btn-primary">Save CPU</button>
                     </div>
                 </form>
-
                 <hr>
                 <div class="search-box inventory-search-box">
                     <i class="fas fa-search search-icon"></i>
@@ -43,6 +43,7 @@
             <!-- GPU Management -->
             <div class="admin-card hardware-card">
                 <h3>GPU Management</h3>
+                <hr>
                 <form id="gpuForm">
                     <label for="gpuModel">GPU Model:</label>
                     <input type="text" id="gpuModel" list="gpuModelOptions" placeholder="e.g., NVIDIA RTX 4080" required>
@@ -55,7 +56,6 @@
                         <button type="submit" class="btn-primary">Save CPU</button>
                     </div>
                 </form>
-
                 <hr>
                 <div class="search-box inventory-search-box">
                     <i class="fas fa-search search-icon"></i>
@@ -68,6 +68,7 @@
             <!-- RAM Management -->
             <div class="admin-card hardware-card">
                 <h3>RAM Management</h3>
+                <hr>
                 <form id="ramForm">
                     <label for="ramModel">RAM Model:</label>
                     <input type="text" id="ramModel" list="ramModelOptions" placeholder="e.g., 32GB DDR5-6000" required>
@@ -80,7 +81,6 @@
                         <button type="submit" class="btn-primary">Save CPU</button>
                     </div>
                 </form>
-
                 <hr>
                 <div class="search-box inventory-search-box">
                     <i class="fas fa-search search-icon"></i>
