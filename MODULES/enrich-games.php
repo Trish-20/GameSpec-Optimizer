@@ -103,12 +103,22 @@ function enrichGames(PDO $database, int $limit = 10): array
                 'release_year' => $releaseDate ? (int) substr($releaseDate, 0, 4) : null,
                 'genres' => json_encode(array_values(array_map(static fn (array $genre): string => (string) ($genre['name'] ?? ''), $details['genres'] ?? []))),
                 'platforms' => json_encode(array_values(array_map(static fn (array $platform): string => (string) ($platform['platform']['name'] ?? ''), $details['platforms'] ?? []))),
-                'is_active' => 1,
+                'is_active' => 0, // Will be set to 1 after benchmark resolution
                 'steam_synced_at' => $steamAppId !== null ? date('Y-m-d H:i:s') : null,
             ]);
             $queueBenchmark->execute(['game_id' => $item['game_id']]);
             $finish->execute(['status' => 'complete', 'last_error' => null, 'job_id' => $item['job_id']]);
             $complete++;
+        } catch (PDOException $e) {
+            if ($e->getCode() == '23000') {
+                // Duplicate steam_app_id or similar, mark as failed permanently or handle
+                $finish->execute(['status' => 'failed', 'last_error' => 'Duplicate constraint: ' . $e->getMessage(), 'job_id' => $item['job_id']]);
+                // Delete duplicate game record to clean up
+                $database->prepare('DELETE FROM games WHERE game_id = ? AND is_active = 0')->execute([$item['game_id']]);
+            } else {
+                $finish->execute(['status' => 'failed', 'last_error' => $e->getMessage(), 'job_id' => $item['job_id']]);
+            }
+            $failed++;
         } catch (Throwable $error) {
             $finish->execute(['status' => 'failed', 'last_error' => $error->getMessage(), 'job_id' => $item['job_id']]);
             $failed++;

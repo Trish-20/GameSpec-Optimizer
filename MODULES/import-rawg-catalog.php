@@ -22,7 +22,22 @@ function importRawgCatalog(PDO $database, int $page = 1, int $pageSize = 40, ?in
         'INSERT INTO sync_jobs (game_id, job_type, status, run_after)
          SELECT game_id, "rawg_metadata", "queued", NOW()
          FROM games WHERE rawg_id = :rawg_id
-         AND NOT EXISTS (SELECT 1 FROM sync_jobs WHERE game_id = games.game_id AND job_type = "rawg_metadata" AND status IN ("queued", "running"))'
+         AND NOT EXISTS (SELECT 1 FROM sync_jobs WHERE game_id = games.game_id AND job_type = "rawg_metadata" AND status IN ("queued", "running", "complete"))'
+    );
+
+    $stateSelect = $database->prepare('SELECT last_cursor FROM game_sync_state WHERE source = "rawg" AND sync_scope = "catalog"');
+    $stateSelect->execute();
+    $savedState = $stateSelect->fetchColumn();
+    
+    // Use saved state if start page not explicitly provided via args
+    if ($page === 1 && $savedState) {
+        $page = (int) $savedState;
+    }
+
+    $stateUpdate = $database->prepare(
+        'INSERT INTO game_sync_state (source, sync_scope, last_cursor, last_success_at)
+         VALUES ("rawg", "catalog", :cursor, NOW())
+         ON DUPLICATE KEY UPDATE last_cursor = VALUES(last_cursor), last_success_at = VALUES(last_success_at)'
     );
 
     $imported = 0;
@@ -34,7 +49,13 @@ function importRawgCatalog(PDO $database, int $page = 1, int $pageSize = 40, ?in
             'ordering' => '-added',
             'platforms' => '4',
         ]);
-        foreach ($response['results'] ?? [] as $game) {
+        
+        $results = $response['results'] ?? [];
+        if (empty($results)) {
+            break; // No more results
+        }
+
+        foreach ($results as $game) {
             $rawgId = (int) ($game['id'] ?? 0);
             if ($rawgId <= 0 || empty($game['name'])) {
                 continue;
@@ -58,6 +79,10 @@ function importRawgCatalog(PDO $database, int $page = 1, int $pageSize = 40, ?in
         $pages++;
         $page++;
         $hasNext = !empty($response['next']);
+        
+        // Save state after each successful page
+        $stateUpdate->execute(['cursor' => (string)$page]);
+        
     } while ($hasNext && ($maxPages === null || $pages < $maxPages));
 
     return ['pages' => $pages, 'games' => $imported, 'next_page' => $page];

@@ -1,12 +1,19 @@
 <?php
-header('Content-Type: text/csv');
-header('Content-Disposition: attachment; filename="gpu-benchmarks-report.csv"');
-
-$csvFile = __DIR__ . '/../../DATA/GPU-benchmarks-v7.csv';
-
-if (!file_exists($csvFile)) {
-    die('File not found');
+declare(strict_types=1);
+require_once __DIR__ . "/../db.php";
+header("Content-Type: text/csv; charset=utf-8");
+header("Content-Disposition: attachment; filename=\"gpu-benchmarks-report.csv\"");
+try {
+    $pdo = databaseConnection();
+    $stmt = $pdo->query("SELECT model, score, g2d_score, tdp, category FROM gpu_benchmarks ORDER BY score DESC");
+    $fp = fopen("php://output", "w");
+    fputcsv($fp, ["Model", "Score", "G2D Score", "TDP", "Category"]);
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        fputcsv($fp, $row);
+    }
+    fclose($fp);
+} catch (Throwable $e) {
+    http_response_code(500);
+    echo "Error generating CSV";
 }
 
-readfile($csvFile);
-?>

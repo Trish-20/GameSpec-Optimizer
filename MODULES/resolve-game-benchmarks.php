@@ -7,57 +7,80 @@ require_once __DIR__ . '/benchmark-resolver.php';
 
 function resolveDatabaseModel(PDO $database, string $table, string $requiredText): array
 {
-    $required = normalizeBenchmarkName($requiredText);
-    if ($required === '') {
-        return ['matched_model' => null, 'score' => null, 'match_status' => 'unresolved', 'source_version' => null];
-    }
+    $parts = preg_split('/\b(?:or|and)\b|[,\|\/]/i', $requiredText);
+    $bestMatch = null;
 
     $modelMarkers = $table === 'gpu_benchmarks'
-        ? ['gt', 'gtx', 'rtx', 'rx', 'arc', 'quadro', 'tesla', 'titan']
+        ? ['gt', 'gtx', 'rtx', 'rx', 'arc', 'quadro', 'tesla', 'titan', 'radeon', 'geforce', 'intel', 'hd']
         : ['core', 'ryzen', 'threadripper', 'athlon', 'phenom', 'fx', 'xeon', 'pentium', 'celeron'];
-    $hasModelMarker = false;
-    foreach ($modelMarkers as $marker) {
-        if (preg_match('/\b' . preg_quote($marker, '/') . '\b/', $required)) {
-            $hasModelMarker = true;
-            break;
-        }
-    }
-    if (!$hasModelMarker) {
-        return ['matched_model' => null, 'score' => null, 'match_status' => 'unresolved', 'source_version' => null];
-    }
-
-    $statement = $database->prepare("SELECT model, score, source_version FROM {$table} WHERE normalized_model = :normalized LIMIT 1");
-    $statement->execute(['normalized' => $required]);
-    $exact = $statement->fetch();
-    if ($exact) {
-        return ['matched_model' => $exact['model'], 'score' => (int) $exact['score'], 'match_status' => 'exact', 'source_version' => $exact['source_version']];
-    }
 
     $rows = $database->query("SELECT model, normalized_model, score, source_version FROM {$table}")->fetchAll();
-    $requiredTokens = array_values(array_filter(explode(' ', $required), static fn (string $token): bool => strlen($token) > 1));
-    $candidates = [];
-    foreach ($rows as $row) {
-        $candidateTokens = array_values(array_filter(explode(' ', (string) $row['normalized_model']), static fn (string $token): bool => strlen($token) > 1));
-        $hits = count(array_intersect($requiredTokens, $candidateTokens));
-        $coverage = count($requiredTokens) > 0 ? $hits / count($requiredTokens) : 0;
-        if ($coverage >= 0.5) {
-            $candidates[] = ['row' => $row, 'coverage' => $coverage];
+
+    foreach ($parts as $part) {
+        $required = normalizeBenchmarkName($part);
+        if ($required === '') {
+            continue;
+        }
+
+        $hasModelMarker = false;
+        foreach ($modelMarkers as $marker) {
+            if (preg_match('/\b' . preg_quote($marker, '/') . '\b/', $required)) {
+                $hasModelMarker = true;
+                break;
+            }
+        }
+        if (!$hasModelMarker) {
+            continue;
+        }
+
+        $statement = $database->prepare("SELECT model, score, source_version FROM {$table} WHERE normalized_model = :normalized LIMIT 1");
+        $statement->execute(['normalized' => $required]);
+        $exact = $statement->fetch();
+        if ($exact) {
+            return ['matched_model' => $exact['model'], 'score' => (int) $exact['score'], 'match_status' => 'exact', 'source_version' => $exact['source_version']];
+        }
+
+        $requiredTokens = array_values(array_filter(explode(' ', $required), static fn (string $token): bool => strlen($token) > 1));
+        $candidates = [];
+        foreach ($rows as $row) {
+            $candidateTokens = array_values(array_filter(explode(' ', (string) $row['normalized_model']), static fn (string $token): bool => strlen($token) > 1));
+            
+            $hits = 0;
+            foreach ($candidateTokens as $cToken) {
+                if (in_array($cToken, $requiredTokens, true)) {
+                    $hits++;
+                }
+            }
+            
+            // Calculate coverage based on candidate tokens to allow matching specific models inside verbose strings
+            $candidateCoverage = count($candidateTokens) > 0 ? $hits / count($candidateTokens) : 0;
+            
+            if ($candidateCoverage >= 0.99) { // Candidate is fully present in the string
+                $candidates[] = ['row' => $row, 'coverage' => $candidateCoverage, 'hits' => $hits];
+            }
+        }
+
+        if ($candidates !== []) {
+            usort($candidates, static function (array $left, array $right): int {
+                if ($left['hits'] === $right['hits']) {
+                    return (int) $left['row']['score'] <=> (int) $right['row']['score'];
+                }
+                return $right['hits'] <=> $left['hits'];
+            });
+
+            $match = $candidates[0]['row'];
+            $result = ['matched_model' => $match['model'], 'score' => (int) $match['score'], 'match_status' => 'nearest', 'source_version' => $match['source_version']];
+            if ($bestMatch === null || $result['score'] < $bestMatch['score']) {
+                $bestMatch = $result;
+            }
         }
     }
 
-    if ($candidates === []) {
-        return ['matched_model' => null, 'score' => null, 'match_status' => 'unresolved', 'source_version' => null];
+    if ($bestMatch !== null) {
+        return $bestMatch;
     }
 
-    usort($candidates, static function (array $left, array $right): int {
-        if ($left['coverage'] === $right['coverage']) {
-            return (int) $left['row']['score'] <=> (int) $right['row']['score'];
-        }
-        return $right['coverage'] <=> $left['coverage'];
-    });
-
-    $match = $candidates[0]['row'];
-    return ['matched_model' => $match['model'], 'score' => (int) $match['score'], 'match_status' => 'nearest', 'source_version' => $match['source_version']];
+    return ['matched_model' => null, 'score' => null, 'match_status' => 'unresolved', 'source_version' => null];
 }
 
 function resolveDatabaseRam(PDO $database, ?int $capacityGb, ?int $speedMhz): array
