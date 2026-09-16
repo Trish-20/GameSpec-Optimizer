@@ -1,0 +1,395 @@
+gpu_id,model,normalized_model,score,g2d_score,TDP,category,source_version
+1,GeForce RTX 3080 Ti,rtx 3080 ti,26887,1031,350.0,Desktop,GPU-benchmarks-v7
+2,GeForce RTX 3090,rtx 3090,26395,999,350.0,Desktop,GPU-benchmarks-v7
+3,Radeon RX 6900 XT,rx 6900 xt,25458,1102,300.0,Desktop,GPU-benchmarks-v7
+4,Iris Xe,iris xe,11963,386,15.0,Desktop,GPU-benchmarks-v7
+5,GeForce RTX 3080,rtx 3080,24853,1003,320.0,Desktop,GPU-benchmarks-v7
+6,GeForce RTX 3070 Ti,rtx 3070 ti,23367,1003,290.0,Desktop,GPU-benchmarks-v7
+7,Radeon RX 6800 XT,rx 6800 xt,23364,1078,300.0,Desktop,GPU-benchmarks-v7
+8,GeForce RTX 3070,rtx 3070,22093,969,220.0,Desktop,GPU-benchmarks-v7
+9,GeForce RTX 2080 Ti,rtx 2080 ti,21796,940,250.0,Desktop,GPU-benchmarks-v7
+10,Radeon RX 6800,rx 6800,20667,1030,250.0,Desktop,GPU-benchmarks-v7
+11,GeForce RTX 3060 Ti,rtx 3060 ti,20206,961,200.0,Desktop,GPU-benchmarks-v7
+12,GeForce RTX 2080 SUPER,rtx 2080 super,19519,934,250.0,Desktop,GPU-benchmarks-v7
+13,Radeon RX 6700 XT,rx 6700 xt,18993,1014,230.0,Desktop,GPU-benchmarks-v7
+14,TITAN V,titan v,18816,845,250.0,Desktop,GPU-benchmarks-v7
+15,GeForce RTX 2080,rtx 2080,18732,917,250.0,Desktop,GPU-benchmarks-v7
+16,TITAN Xp COLLECTORS EDITION,titan xp collectors edition,18721,924,250.0,Desktop,GPU-benchmarks-v7
+17,GeForce GTX 1080 Ti,gtx 1080 ti,18284,934,250.0,Desktop,GPU-benchmarks-v7
+18,NVIDIA TITAN Xp,titan xp,18280,812,250.0,Desktop,GPU-benchmarks-v7
+19,GeForce RTX 2070 SUPER,rtx 2070 super,18168,896,215.0,Desktop,GPU-benchmarks-v7
+20,TITAN V CEO Edition,titan v ceo edition,16988,1086,250.0,Desktop,GPU-benchmarks-v7
+21,GeForce RTX 3060,rtx 3060,16958,951,170.0,Desktop,GPU-benchmarks-v7
+22,Radeon RX 5700 XT,rx 5700 xt,16892,955,225.0,Desktop,GPU-benchmarks-v7
+23,Radeon VII,vii,16767,788,300.0,Desktop,GPU-benchmarks-v7
+24,Radeon RX 5700 XT 50th Anniversary,rx 5700 xt 50th anniversary,16650,965,235.0,Desktop,GPU-benchmarks-v7
+25,GeForce RTX 2060 SUPER,rtx 2060 super,16514,881,175.0,Desktop,GPU-benchmarks-v7
+26,GeForce RTX 2070,rtx 2070,16079,833,175.0,Desktop,GPU-benchmarks-v7
+27,Radeon RX 6600 XT,rx 6600 xt,15853,1003,160.0,Desktop,GPU-benchmarks-v7
+28,GeForce GTX 1080,gtx 1080,15265,890,180.0,Desktop,GPU-benchmarks-v7
+29,Radeon Pro W5700,pro w5700,15085,908,205.0,Desktop,GPU-benchmarks-v7
+30,Radeon RX 5700,rx 5700,14729,926,180.0,Desktop,GPU-benchmarks-v7
+31,Radeon RX Vega 64,rx vega 64,14636,810,295.0,Desktop,GPU-benchmarks-v7
+32,GeForce GTX 1070 Ti,gtx 1070 ti,14500,877,180.0,Desktop,GPU-benchmarks-v7
+33,Radeon Pro WX 8200,pro wx 8200,14110,824,230.0,Desktop,GPU-benchmarks-v7
+34,GeForce RTX 2060,rtx 2060,13953,752,160.0,Desktop,GPU-benchmarks-v7
+35,GeForce GTX 980 Ti,gtx 980 ti,13864,854,250.0,Desktop,GPU-benchmarks-v7
+36,Radeon RX 5600 XT,rx 5600 xt,13836,914,150.0,Desktop,GPU-benchmarks-v7
+37,Radeon Vega Frontier Edition,vega frontier edition,13748,753,350.0,Desktop,GPU-benchmarks-v7
+38,NVIDIA TITAN X,titan x,13660,912,250.0,Desktop,GPU-benchmarks-v7
+39,Radeon RX Vega 56,rx vega 56,13636,784,210.0,Desktop,GPU-benchmarks-v7
+40,GeForce GTX 1070,gtx 1070,13482,857,150.0,Desktop,GPU-benchmarks-v7
+41,Radeon Pro WX 9100,pro wx 9100,13241,772,230.0,Desktop,GPU-benchmarks-v7
+42,GeForce GTX TITAN X,gtx titan x,13173,843,250.0,Desktop,GPU-benchmarks-v7
+43,GeForce GTX 1660 SUPER,gtx 1660 super,12732,823,125.0,Desktop,GPU-benchmarks-v7
+44,Radeon Pro 5700 XT,pro 5700 xt,12537,831,130.0,Desktop,GPU-benchmarks-v7
+45,Radeon Pro Vega 56,pro vega 56,12386,860,,Desktop,GPU-benchmarks-v7
+46,Radeon Pro 5700,pro 5700,11844,829,130.0,Desktop,GPU-benchmarks-v7
+47,GeForce GTX 1660 Ti,gtx 1660 ti,11794,702,120.0,Desktop,GPU-benchmarks-v7
+48,GeForce GTX 1660,gtx 1660,11695,796,120.0,Desktop,GPU-benchmarks-v7
+49,GeForce GTX 980,gtx 980,11237,815,165.0,Desktop,GPU-benchmarks-v7
+50,Radeon RX 5600,rx 5600,11030,935,150.0,Desktop,GPU-benchmarks-v7
+51,GeForce GTX 1060,gtx 1060,10070,762,120.0,Desktop,GPU-benchmarks-v7
+52,GeForce GTX 1650 SUPER,gtx 1650 super,10032,761,100.0,Desktop,GPU-benchmarks-v7
+53,Radeon R9 Fury + Fury X,r9 fury fury x,9741,811,275.0,Desktop,GPU-benchmarks-v7
+54,GeForce GTX 1060 3GB,gtx 1060 3gb,9728,779,120.0,Desktop,GPU-benchmarks-v7
+55,GeForce GTX 970,gtx 970,9688,781,145.0,Desktop,GPU-benchmarks-v7
+56,Radeon RX 590,rx 590,9665,810,175.0,Desktop,GPU-benchmarks-v7
+57,Radeon R9 390X,r9 390x,9503,840,275.0,Desktop,GPU-benchmarks-v7
+58,GeForce GTX 780 Ti,gtx 780 ti,9312,626,250.0,Desktop,GPU-benchmarks-v7
+59,Radeon Pro W5500,pro w5500,9269,896,125.0,Desktop,GPU-benchmarks-v7
+60,GeForce GTX TITAN Z,gtx titan z,9189,648,375.0,Desktop,GPU-benchmarks-v7
+61,Radeon RX 5500 XT,rx 5500 xt,9188,824,130.0,Desktop,GPU-benchmarks-v7
+62,GeForce GTX TITAN Black,gtx titan black,9140,616,250.0,Desktop,GPU-benchmarks-v7
+63,Radeon R9 390,r9 390,9008,816,275.0,Desktop,GPU-benchmarks-v7
+64,Radeon RX 580,rx 580,8907,772,185.0,Desktop,GPU-benchmarks-v7
+65,Radeon RX 5500,rx 5500,8817,864,150.0,Desktop,GPU-benchmarks-v7
+66,GeForce GTX 1060 5GB,gtx 1060 5gb,8704,680,120.0,Desktop,GPU-benchmarks-v7
+67,Radeon RX 480,rx 480,8674,779,150.0,Desktop,GPU-benchmarks-v7
+68,Radeon RX590 GME,rx590 gme,8628,704,175.0,Desktop,GPU-benchmarks-v7
+69,Radeon R9 295X2,r9 295x2,8619,804,500.0,Desktop,GPU-benchmarks-v7
+70,GeForce GTX Titan,gtx titan,8556,660,250.0,Desktop,GPU-benchmarks-v7
+71,Radeon R9 290X / 390X,r9 290x 390x,8389,699,290.0,Desktop,GPU-benchmarks-v7
+72,Radeon Pro Duo,pro duo,8324,715,350.0,Desktop,GPU-benchmarks-v7
+73,Radeon R9 290 / 390,r9 290 390,8150,695,275.0,Desktop,GPU-benchmarks-v7
+74,Radeon RX 470/570,rx 470 570,8070,726,120.0,Desktop,GPU-benchmarks-v7
+75,GeForce GTX 780,gtx 780,8022,601,250.0,Desktop,GPU-benchmarks-v7
+76,GeForce GTX 1650,gtx 1650,7807,592,75.0,Desktop,GPU-benchmarks-v7
+77,Radeon RX 580X,rx 580x,7798,885,185.0,Desktop,GPU-benchmarks-v7
+78,Radeon RX 5300,rx 5300,7611,854,100.0,Desktop,GPU-benchmarks-v7
+79,Radeon Pro 580X,pro 580x,7540,698,150.0,Desktop,GPU-benchmarks-v7
+80,GeForce GTX 1050 Ti,gtx 1050 ti,6314,651,75.0,Desktop,GPU-benchmarks-v7
+81,Radeon R9 280X,r9 280x,6284,692,250.0,Desktop,GPU-benchmarks-v7
+82,Radeon R9 380,r9 380,6275,675,190.0,Desktop,GPU-benchmarks-v7
+83,Radeon R9 380X,r9 380x,6189,670,190.0,Desktop,GPU-benchmarks-v7
+84,GeForce GTX 960,gtx 960,6042,671,120.0,Desktop,GPU-benchmarks-v7
+85,GeForce GTX 770,gtx 770,5892,551,230.0,Desktop,GPU-benchmarks-v7
+86,Radeon R9 280,r9 280,5668,679,250.0,Desktop,GPU-benchmarks-v7
+87,GeForce GTX 690,gtx 690,5654,458,300.0,Desktop,GPU-benchmarks-v7
+88,Radeon HD 7990,hd 7990,5566,766,375.0,Desktop,GPU-benchmarks-v7
+89,Radeon R9 285 / 380,r9 285 380,5550,655,190.0,Desktop,GPU-benchmarks-v7
+90,GeForce GTX 680,gtx 680,5535,528,195.0,Desktop,GPU-benchmarks-v7
+91,GeForce GTX 950,gtx 950,5392,641,90.0,Desktop,GPU-benchmarks-v7
+92,GeForce GTX 670,gtx 670,5304,523,170.0,Desktop,GPU-benchmarks-v7
+93,Radeon HD 7970 / R9 280X,hd 7970 r9 280x,5248,730,250.0,Desktop,GPU-benchmarks-v7
+94,Radeon HD 8990,hd 8990,5214,658,375.0,Desktop,GPU-benchmarks-v7
+95,GeForce GTX 760 Ti,gtx 760 ti,5206,555,170.0,Desktop,GPU-benchmarks-v7
+96,GeForce GTX 1050,gtx 1050,5090,475,75.0,Desktop,GPU-benchmarks-v7
+97,Radeon R9 270X,r9 270x,4923,607,180.0,Desktop,GPU-benchmarks-v7
+98,GeForce GTX 760,gtx 760,4775,523,170.0,Desktop,GPU-benchmarks-v7
+99,Radeon HD 7950 / R9 280,hd 7950 r9 280,4765,691,200.0,Desktop,GPU-benchmarks-v7
+100,Radeon R9 370,r9 370,4722,781,150.0,Desktop,GPU-benchmarks-v7
+101,Radeon HD 7870,hd 7870,4661,587,175.0,Desktop,GPU-benchmarks-v7
+102,GeForce GTX 580,gtx 580,4538,456,244.0,Desktop,GPU-benchmarks-v7
+103,Radeon R7 370,r7 370,4479,595,150.0,Desktop,GPU-benchmarks-v7
+104,Radeon HD 7870 XT,hd 7870 xt,4470,661,185.0,Desktop,GPU-benchmarks-v7
+105,GeForce GTX 660 Ti,gtx 660 ti,4367,449,150.0,Desktop,GPU-benchmarks-v7
+106,Radeon R9 270 / R7 370,r9 270 r7 370,4260,645,150.0,Desktop,GPU-benchmarks-v7
+107,Radeon RX 460,rx 460,4114,570,75.0,Desktop,GPU-benchmarks-v7
+108,GeForce GTX 480,gtx 480,4110,447,250.0,Desktop,GPU-benchmarks-v7
+109,GeForce GTX 660,gtx 660,4004,476,140.0,Desktop,GPU-benchmarks-v7
+110,GeForce GTX 750 Ti,gtx 750 ti,3919,498,60.0,Desktop,GPU-benchmarks-v7
+111,GeForce GTX 570,gtx 570,3902,466,219.0,Desktop,GPU-benchmarks-v7
+112,Radeon HD 7850,hd 7850,3826,550,130.0,Desktop,GPU-benchmarks-v7
+113,Radeon Pro WX 4100,pro wx 4100,3766,690,50.0,Desktop,GPU-benchmarks-v7
+114,Radeon RX 560,rx 560,3594,506,80.0,Desktop,GPU-benchmarks-v7
+115,GeForce GTX 750,gtx 750,3399,480,55.0,Desktop,GPU-benchmarks-v7
+116,GeForce GTX 650 Ti BOOST,gtx 650 ti boost,3330,452,134.0,Desktop,GPU-benchmarks-v7
+117,GeForce GTX 590,gtx 590,3307,470,365.0,Desktop,GPU-benchmarks-v7
+118,Radeon RX 560X,rx 560x,3181,487,75.0,Desktop,GPU-benchmarks-v7
+119,GeForce GTX 470,gtx 470,3147,381,215.0,Desktop,GPU-benchmarks-v7
+120,Radeon R7 260X,r7 260x,3147,506,115.0,Desktop,GPU-benchmarks-v7
+121,Radeon HD 7790,hd 7790,3090,459,85.0,Desktop,GPU-benchmarks-v7
+122,GeForce GTX 560 Ti,gtx 560 ti,3056,416,170.0,Desktop,GPU-benchmarks-v7
+123,Radeon R7 360,r7 360,3034,495,100.0,Desktop,GPU-benchmarks-v7
+124,Radeon R9 360,r9 360,3032,460,85.0,Desktop,GPU-benchmarks-v7
+125,Radeon HD 6990,hd 6990,3013,630,375.0,Desktop,GPU-benchmarks-v7
+126,Radeon R7 260,r7 260,2892,559,95.0,Desktop,GPU-benchmarks-v7
+127,Radeon HD 6970,hd 6970,2863,430,250.0,Desktop,GPU-benchmarks-v7
+128,Radeon RX 550,rx 550,2718,484,50.0,Desktop,GPU-benchmarks-v7
+129,GeForce GTX 560,gtx 560,2711,418,150.0,Desktop,GPU-benchmarks-v7
+130,GeForce GTX 465,gtx 465,2681,454,200.0,Desktop,GPU-benchmarks-v7
+131,Radeon HD 6950,hd 6950,2650,421,200.0,Desktop,GPU-benchmarks-v7
+132,GeForce GT 1030,gt 1030,2545,449,30.0,Desktop,GPU-benchmarks-v7
+133,GeForce GTX 650 Ti,gtx 650 ti,2527,400,110.0,Desktop,GPU-benchmarks-v7
+134,Radeon RX 550X,rx 550x,2370,508,50.0,Desktop,GPU-benchmarks-v7
+135,GeForce GTX 460,gtx 460,2289,381,150.0,Desktop,GPU-benchmarks-v7
+136,Radeon R7 250X,r7 250x,2269,637,95.0,Desktop,GPU-benchmarks-v7
+137,Radeon HD 8950,hd 8950,2267,423,225.0,Desktop,GPU-benchmarks-v7
+138,Radeon HD 5870,hd 5870,2266,410,228.0,Desktop,GPU-benchmarks-v7
+139,Radeon HD 5970,hd 5970,2249,393,294.0,Desktop,GPU-benchmarks-v7
+140,Radeon HD 6870,hd 6870,2223,397,151.0,Desktop,GPU-benchmarks-v7
+141,Radeon HD 7770,hd 7770,2204,471,80.0,Desktop,GPU-benchmarks-v7
+142,GeForce GTX 745,gtx 745,2175,469,55.0,Desktop,GPU-benchmarks-v7
+143,Radeon RX Vega 11,rx vega 11,2137,535,,Desktop,GPU-benchmarks-v7
+144,GeForce GTX 560 SE,gtx 560 se,2087,413,150.0,Desktop,GPU-benchmarks-v7
+145,Radeon R9 350,r9 350,2007,552,60.0,Desktop,GPU-benchmarks-v7
+146,GeForce GTX 460 v2,gtx 460 v2,2005,459,160.0,Desktop,GPU-benchmarks-v7
+147,Radeon HD 6850,hd 6850,1979,425,127.0,Desktop,GPU-benchmarks-v7
+148,GeForce GTX 460 SE,gtx 460 se,1974,359,150.0,Desktop,GPU-benchmarks-v7
+149,Radeon HD 5850,hd 5850,1966,404,151.0,Desktop,GPU-benchmarks-v7
+150,Radeon R7 450,r7 450,1966,573,65.0,Desktop,GPU-benchmarks-v7
+151,Radeon RX 570X,rx 570x,1923,750,120.0,Desktop,GPU-benchmarks-v7
+152,GeForce GTX 645,gtx 645,1858,432,64.0,Desktop,GPU-benchmarks-v7
+153,GeForce GTX 555,gtx 555,1807,485,150.0,Desktop,GPU-benchmarks-v7
+154,Radeon RX 540,rx 540,1793,399,,Desktop,GPU-benchmarks-v7
+155,GeForce GTX 650,gtx 650,1769,346,64.0,Desktop,GPU-benchmarks-v7
+156,Radeon HD 5830,hd 5830,1735,382,175.0,Desktop,GPU-benchmarks-v7
+157,Radeon HD 7750,hd 7750,1696,398,55.0,Desktop,GPU-benchmarks-v7
+158,Radeon HD 6790,hd 6790,1613,370,150.0,Desktop,GPU-benchmarks-v7
+159,GeForce GTX 550 Ti,gtx 550 ti,1557,363,116.0,Desktop,GPU-benchmarks-v7
+160,GeForce GTX 285,gtx 285,1550,117,204.0,Desktop,GPU-benchmarks-v7
+161,Radeon HD 4890,hd 4890,1533,103,190.0,Desktop,GPU-benchmarks-v7
+162,GeForce GT 740,gt 740,1529,344,64.0,Desktop,GPU-benchmarks-v7
+163,Radeon R9 255,r9 255,1485,395,,Desktop,GPU-benchmarks-v7
+164,GeForce GTX 275,gtx 275,1401,106,219.0,Desktop,GPU-benchmarks-v7
+165,Radeon HD 4870,hd 4870,1391,72,150.0,Desktop,GPU-benchmarks-v7
+166,Radeon HD 5770,hd 5770,1351,328,108.0,Desktop,GPU-benchmarks-v7
+167,GeForce GTS 450,gts 450,1321,303,106.0,Desktop,GPU-benchmarks-v7
+168,Radeon HD 4870 X2,hd 4870 x2,1309,565,286.0,Desktop,GPU-benchmarks-v7
+169,Radeon HD 6770,hd 6770,1231,313,108.0,Desktop,GPU-benchmarks-v7
+170,GeForce GTX 260,gtx 260,1221,88,202.0,Desktop,GPU-benchmarks-v7
+171,Radeon HD 7730,hd 7730,1217,402,47.0,Desktop,GPU-benchmarks-v7
+172,GeForce GT 640,gt 640,1182,285,65.0,Desktop,GPU-benchmarks-v7
+173,GeForce GTX 280,gtx 280,1181,121,236.0,Desktop,GPU-benchmarks-v7
+174,GeForce GTX 295,gtx 295,1171,150,289.0,Desktop,GPU-benchmarks-v7
+175,Radeon HD 5750,hd 5750,1156,336,86.0,Desktop,GPU-benchmarks-v7
+176,Radeon R7 250,r7 250,1151,296,75.0,Desktop,GPU-benchmarks-v7
+177,Radeon HD 4850 X2,hd 4850 x2,1132,542,250.0,Desktop,GPU-benchmarks-v7
+178,Intel UHD Graphics 620,uhd graphics 620,1037,247,,Desktop,GPU-benchmarks-v7
+179,Radeon HD 6750,hd 6750,1005,304,86.0,Desktop,GPU-benchmarks-v7
+180,Radeon HD 8570,hd 8570,991,308,66.0,Desktop,GPU-benchmarks-v7
+181,Radeon R7 A10-7850K,r7 a10 7850k,982,286,95.0,Desktop,GPU-benchmarks-v7
+182,Radeon HD 4850,hd 4850,953,110,110.0,Desktop,GPU-benchmarks-v7
+183,Radeon HD 4770,hd 4770,906,172,80.0,Desktop,GPU-benchmarks-v7
+184,Radeon R7 240,r7 240,863,258,30.0,Desktop,GPU-benchmarks-v7
+185,Radeon HD 4830,hd 4830,860,81,95.0,Desktop,GPU-benchmarks-v7
+186,Radeon HD 3850 X2,hd 3850 x2,822,422,349.0,Desktop,GPU-benchmarks-v7
+187,Radeon HD 7670,hd 7670,813,301,66.0,Desktop,GPU-benchmarks-v7
+188,GeForce GT 730,gt 730,812,238,49.0,Desktop,GPU-benchmarks-v7
+189,GeForce 9800 GX2,9800 gx2,798,518,197.0,Desktop,GPU-benchmarks-v7
+190,Radeon HD 5670,hd 5670,784,279,64.0,Desktop,GPU-benchmarks-v7
+191,GeForce GT 340,gt 340,774,469,69.0,Desktop,GPU-benchmarks-v7
+192,GeForce 9800 GTX,9800 gtx,769,366,140.0,Desktop,GPU-benchmarks-v7
+193,Radeon HD 4810,hd 4810,769,425,95.0,Desktop,GPU-benchmarks-v7
+194,GeForce GT 440,gt 440,766,238,65.0,Desktop,GPU-benchmarks-v7
+195,Radeon HD 6670,hd 6670,745,236,66.0,Desktop,GPU-benchmarks-v7
+196,Radeon HD 3870 X2,hd 3870 x2,709,224,165.0,Desktop,GPU-benchmarks-v7
+197,GeForce GT 630,gt 630,683,208,50.0,Desktop,GPU-benchmarks-v7
+198,GeForce GT 530,gt 530,676,227,50.0,Desktop,GPU-benchmarks-v7
+199,Radeon HD 2900 XT,hd 2900 xt,660,397,215.0,Desktop,GPU-benchmarks-v7
+200,GeForce GT 140,gt 140,658,225,105.0,Desktop,GPU-benchmarks-v7
+201,GeForce 8800 Ultra,8800 ultra,639,372,171.0,Desktop,GPU-benchmarks-v7
+202,GeForce GT 710,gt 710,637,214,25.0,Desktop,GPU-benchmarks-v7
+203,Radeon HD 2900 PRO,hd 2900 pro,628,397,200.0,Desktop,GPU-benchmarks-v7
+204,Intel HD 4600,hd 4600,627,315,45.0,Desktop,GPU-benchmarks-v7
+205,GeForce GTS 240,gts 240,622,212,120.0,Desktop,GPU-benchmarks-v7
+206,GeForce GTS 250,gts 250,618,91,150.0,Desktop,GPU-benchmarks-v7
+207,Radeon HD 7570,hd 7570,613,265,44.0,Desktop,GPU-benchmarks-v7
+208,GeForce GT 720,gt 720,606,196,19.0,Desktop,GPU-benchmarks-v7
+209,GeForce GT 430,gt 430,603,191,49.0,Desktop,GPU-benchmarks-v7
+210,GeForce 8800 GTX,8800 gtx,597,105,155.0,Desktop,GPU-benchmarks-v7
+211,GeForce 8800 GTS 512,8800 gts 512,591,109,135.0,Desktop,GPU-benchmarks-v7
+212,Radeon HD 3870,hd 3870,576,82,106.0,Desktop,GPU-benchmarks-v7
+213,GeForce GT 240,gt 240,543,78,69.0,Desktop,GPU-benchmarks-v7
+214,GeForce 9800 GTX+,9800 gtx,538,139,141.0,Desktop,GPU-benchmarks-v7
+215,Radeon R5 240,r5 240,520,191,50.0,Desktop,GPU-benchmarks-v7
+216,GeForce 8800 GT,8800 gt,519,85,125.0,Desktop,GPU-benchmarks-v7
+217,Radeon R5 330,r5 330,513,200,30.0,Desktop,GPU-benchmarks-v7
+218,GeForce 9600 GT,9600 gt,505,60,95.0,Desktop,GPU-benchmarks-v7
+219,Radeon HD 7660D,hd 7660d,504,182,100.0,Desktop,GPU-benchmarks-v7
+220,Radeon HD 6570,hd 6570,496,193,44.0,Desktop,GPU-benchmarks-v7
+221,GeForce 9800 GT,9800 gt,481,94,125.0,Desktop,GPU-benchmarks-v7
+222,Radeon HD 5570,hd 5570,473,177,39.0,Desktop,GPU-benchmarks-v7
+223,Radeon HD 7560D,hd 7560d,472,168,100.0,Desktop,GPU-benchmarks-v7
+224,GeForce 710A,710a,451,258,33.0,Desktop,GPU-benchmarks-v7
+225,GeForce GT 320,gt 320,444,92,43.0,Desktop,GPU-benchmarks-v7
+226,GeForce 8800 GTS,8800 gts,440,56,146.0,Desktop,GPU-benchmarks-v7
+227,Radeon HD 3850 AGP,hd 3850 agp,432,92,75.0,Desktop,GPU-benchmarks-v7
+228,Radeon HD 6550D,hd 6550d,417,149,100.0,Desktop,GPU-benchmarks-v7
+229,GeForce GT 420,gt 420,411,187,50.0,Desktop,GPU-benchmarks-v7
+230,Radeon HD 3850,hd 3850,410,43,75.0,Desktop,GPU-benchmarks-v7
+231,GeForce 7900 GTX,7900 gtx,388,165,,Desktop,GPU-benchmarks-v7
+232,Radeon HD 4670,hd 4670,384,50,59.0,Desktop,GPU-benchmarks-v7
+233,Radeon HD 5550,hd 5550,383,187,39.0,Desktop,GPU-benchmarks-v7
+234,GeForce GT 620,gt 620,365,162,30.0,Desktop,GPU-benchmarks-v7
+235,GeForce GT 705,gt 705,355,180,29.0,Desktop,GPU-benchmarks-v7
+236,GeForce 9600 GSO,9600 gso,350,118,84.0,Desktop,GPU-benchmarks-v7
+237,GeForce GT 130,gt 130,347,143,75.0,Desktop,GPU-benchmarks-v7
+238,GeForce 9600 GSO 512,9600 gso 512,345,111,90.0,Desktop,GPU-benchmarks-v7
+239,GeForce 7950 GT,7950 gt,344,189,,Desktop,GPU-benchmarks-v7
+240,Radeon HD 7540D,hd 7540d,336,125,65.0,Desktop,GPU-benchmarks-v7
+241,GeForce 8800 GS,8800 gs,332,154,105.0,Desktop,GPU-benchmarks-v7
+242,GeForce GT 625,gt 625,329,194,30.0,Desktop,GPU-benchmarks-v7
+243,Radeon R5 235,r5 235,329,176,35.0,Desktop,GPU-benchmarks-v7
+244,Radeon HD 6530D,hd 6530d,325,138,100.0,Desktop,GPU-benchmarks-v7
+245,Radeon HD 7470,hd 7470,316,177,27.0,Desktop,GPU-benchmarks-v7
+246,GeForce GT 610,gt 610,303,127,29.0,Desktop,GPU-benchmarks-v7
+247,GeForce GT 520,gt 520,297,126,29.0,Desktop,GPU-benchmarks-v7
+248,Radeon HD 2900 GT,hd 2900 gt,292,344,150.0,Desktop,GPU-benchmarks-v7
+249,GeForce 7800 GTX,7800 gtx,291,196,86.0,Desktop,GPU-benchmarks-v7
+250,Radeon HD 7480D,hd 7480d,285,117,65.0,Desktop,GPU-benchmarks-v7
+251,Radeon HD 2600 XT,hd 2600 xt,283,371,45.0,Desktop,GPU-benchmarks-v7
+252,Radeon R5 235X,r5 235x,280,210,18.0,Desktop,GPU-benchmarks-v7
+253,GeForce 9600 GS,9600 gs,279,52,,Desktop,GPU-benchmarks-v7
+254,Radeon HD 8490,hd 8490,265,173,35.0,Desktop,GPU-benchmarks-v7
+255,GeForce 7900 GT,7900 gt,258,160,,Desktop,GPU-benchmarks-v7
+256,GeForce 510,510,257,199,25.0,Desktop,GPU-benchmarks-v7
+257,Radeon HD 8470,hd 8470,257,172,35.0,Desktop,GPU-benchmarks-v7
+258,GeForce 7900 GS,7900 gs,254,68,,Desktop,GPU-benchmarks-v7
+259,Radeon HD 6370D,hd 6370d,254,147,65.0,Desktop,GPU-benchmarks-v7
+260,GeForce 7900 GT/GTO,7900 gt gto,247,469,,Desktop,GPU-benchmarks-v7
+261,GeForce 7800 GT,7800 gt,244,273,,Desktop,GPU-benchmarks-v7
+262,Radeon HD 6410D,hd 6410d,243,120,65.0,Desktop,GPU-benchmarks-v7
+263,Radeon HD 4550,hd 4550,236,429,20.0,Desktop,GPU-benchmarks-v7
+264,Radeon HD 7450,hd 7450,221,147,18.0,Desktop,GPU-benchmarks-v7
+265,Radeon HD 4650,hd 4650,219,39,48.0,Desktop,GPU-benchmarks-v7
+266,GeForce GT 220,gt 220,211,56,58.0,Desktop,GPU-benchmarks-v7
+267,Radeon HD 2600 PRO,hd 2600 pro,211,337,35.0,Desktop,GPU-benchmarks-v7
+268,GeForce 7600 GT,7600 gt,204,101,,Desktop,GPU-benchmarks-v7
+269,GeForce 7950 GX2,7950 gx2,202,413,,Desktop,GPU-benchmarks-v7
+270,Radeon HD 6450,hd 6450,200,120,18.0,Desktop,GPU-benchmarks-v7
+271,GeForce 6800 GS,6800 gs,195,121,,Desktop,GPU-benchmarks-v7
+272,Radeon HD 7350,hd 7350,193,248,19.1,Desktop,GPU-benchmarks-v7
+273,GeForce 7800 GS,7800 gs,177,199,,Desktop,GPU-benchmarks-v7
+274,GeForce GT 120,gt 120,175,91,50.0,Desktop,GPU-benchmarks-v7
+275,Radeon HD 8350,hd 8350,165,233,4.4,Desktop,GPU-benchmarks-v7
+276,GeForce 8600 GTS,8600 gts,161,35,75.0,Desktop,GPU-benchmarks-v7
+277,GeForce 315,315,159,66,33.0,Desktop,GPU-benchmarks-v7
+278,GeForce 7600 GS,7600 gs,158,55,,Desktop,GPU-benchmarks-v7
+279,Radeon X1950 CrossFire Edition,x1950 crossfire edition,151,466,,Desktop,GPU-benchmarks-v7
+280,Radeon X1900 GT,x1900 gt,146,409,75.0,Desktop,GPU-benchmarks-v7
+281,GeForce 6800 GT,6800 gt,142,212,,Desktop,GPU-benchmarks-v7
+282,Radeon HD 4290,hd 4290,141,442,,Desktop,GPU-benchmarks-v7
+283,RADEON HD 6350,hd 6350,141,171,19.1,Desktop,GPU-benchmarks-v7
+284,Radeon X1800 GTO,x1800 gto,141,415,48.0,Desktop,GPU-benchmarks-v7
+285,GeForce 6800 Ultra,6800 ultra,139,153,,Desktop,GPU-benchmarks-v7
+286,Radeon HD 5450,hd 5450,138,149,19.1,Desktop,GPU-benchmarks-v7
+287,GeForce 6600 GT,6600 gt,137,67,,Desktop,GPU-benchmarks-v7
+288,Radeon X1900 CrossFire Edition,x1900 crossfire edition,137,507,100.0,Desktop,GPU-benchmarks-v7
+289,GeForce 7300 GT,7300 gt,135,39,,Desktop,GPU-benchmarks-v7
+290,GeForce 9500 GT,9500 gt,135,40,50.0,Desktop,GPU-benchmarks-v7
+291,Radeon R5 220,r5 220,135,112,19.0,Desktop,GPU-benchmarks-v7
+292,RADEON X800 SE,x800 se,130,384,,Desktop,GPU-benchmarks-v7
+293,GeForce 6800 XT,6800 xt,128,150,,Desktop,GPU-benchmarks-v7
+294,GeForce 8400 GS,8400 gs,128,32,40.0,Desktop,GPU-benchmarks-v7
+295,GeForce 205,205,126,309,30.5,Desktop,GPU-benchmarks-v7
+296,Radeon HD 4250,hd 4250,123,408,,Desktop,GPU-benchmarks-v7
+297,GeForce 310,310,122,61,30.5,Desktop,GPU-benchmarks-v7
+298,Radeon HD 2400 XT,hd 2400 xt,119,357,25.0,Desktop,GPU-benchmarks-v7
+299,Radeon HD 3450,hd 3450,118,29,25.0,Desktop,GPU-benchmarks-v7
+300,GeForce 8600 GT,8600 gt,117,63,47.0,Desktop,GPU-benchmarks-v7
+301,Radeon X1600 XT,x1600 xt,116,356,42.0,Desktop,GPU-benchmarks-v7
+302,GeForce 8500 GT,8500 gt,115,39,45.0,Desktop,GPU-benchmarks-v7
+303,RADEON X800 GTO,x800 gto,115,162,,Desktop,GPU-benchmarks-v7
+304,Radeon HD 2400 Pro,hd 2400 pro,114,346,20.0,Desktop,GPU-benchmarks-v7
+305,GeForce 6800,6800,113,258,,Desktop,GPU-benchmarks-v7
+306,Radeon X1950 Pro,x1950 pro,113,318,66.0,Desktop,GPU-benchmarks-v7
+307,Radeon HD 4200,hd 4200,112,372,,Desktop,GPU-benchmarks-v7
+308,GeForce 9300 GS,9300 gs,111,95,,Desktop,GPU-benchmarks-v7
+309,GeForce 6800 LE,6800 le,110,166,,Desktop,GPU-benchmarks-v7
+310,Radeon X1950 GT,x1950 gt,106,279,57.0,Desktop,GPU-benchmarks-v7
+311,GeForce 9400 GT,9400 gt,105,60,50.0,Desktop,GPU-benchmarks-v7
+312,GeForce 6800 GS/XT,6800 gs xt,103,196,,Desktop,GPU-benchmarks-v7
+313,Radeon HD 4350,hd 4350,103,34,20.0,Desktop,GPU-benchmarks-v7
+314,Radeon X1600 Pro,x1600 pro,99,273,41.0,Desktop,GPU-benchmarks-v7
+315,RADEON X800 XT,x800 xt,98,271,,Desktop,GPU-benchmarks-v7
+316,GeForce 210,210,97,39,30.5,Desktop,GPU-benchmarks-v7
+317,GeForce 8600 GS,8600 gs,92,100,47.0,Desktop,GPU-benchmarks-v7
+318,Radeon HD 3470,hd 3470,90,95,30.0,Desktop,GPU-benchmarks-v7
+319,GeForce 6600,6600,88,69,,Desktop,GPU-benchmarks-v7
+320,GeForce 7500 LE,7500 le,87,82,,Desktop,GPU-benchmarks-v7
+321,Intel G33/G31 Express,g33 g31 express,86,25,,Desktop,GPU-benchmarks-v7
+322,Radeon X1650 Pro,x1650 pro,85,241,44.0,Desktop,GPU-benchmarks-v7
+323,GeForce 9300 GE,9300 ge,84,54,,Desktop,GPU-benchmarks-v7
+324,RADEON X800 GT,x800 gt,84,423,,Desktop,GPU-benchmarks-v7
+325,GeForce 7300 GS,7300 gs,82,57,,Desktop,GPU-benchmarks-v7
+326,RADEON X850 XT Platinum Edition,x850 xt platinum edition,82,261,,Desktop,GPU-benchmarks-v7
+327,RADEON X800 XT Platinum Edition,x800 xt platinum edition,81,170,,Desktop,GPU-benchmarks-v7
+328,RADEON X850 XT,x850 xt,81,326,,Desktop,GPU-benchmarks-v7
+329,GeForce 7300 LE,7300 le,78,85,,Desktop,GPU-benchmarks-v7
+330,Radeon HD 2350,hd 2350,77,262,20.0,Desktop,GPU-benchmarks-v7
+331,RADEON X700 PRO,x700 pro,76,302,,Desktop,GPU-benchmarks-v7
+332,Intel G45/G43 Express Chipset,g45 g43 express chipset,75,30,24.0,Desktop,GPU-benchmarks-v7
+333,RADEON X700,x700,73,248,,Desktop,GPU-benchmarks-v7
+334,RADEON X800 PRO/GTO,x800 pro gto,73,181,,Desktop,GPU-benchmarks-v7
+335,RADEON X850 PRO,x850 pro,73,157,,Desktop,GPU-benchmarks-v7
+336,RADEON X700 SE,x700 se,71,348,,Desktop,GPU-benchmarks-v7
+337,RADEON X800 XL,x800 xl,69,271,,Desktop,GPU-benchmarks-v7
+338,GeForce 8300 GS,8300 gs,67,314,40.0,Desktop,GPU-benchmarks-v7
+339,Radeon X1550,x1550,67,253,27.0,Desktop,GPU-benchmarks-v7
+340,RADEON X800 PRO,x800 pro,65,190,,Desktop,GPU-benchmarks-v7
+341,GeForce FX 5950 Ultra,fx 5950 ultra,59,274,,Desktop,GPU-benchmarks-v7
+342,RADEON 9800 PRO,9800 pro,59,153,,Desktop,GPU-benchmarks-v7
+343,RADEON 9800,9800,58,191,,Desktop,GPU-benchmarks-v7
+344,Radeon X1300,x1300,58,237,,Desktop,GPU-benchmarks-v7
+345,RADEON 9800 XT,9800 xt,57,160,,Desktop,GPU-benchmarks-v7
+346,RADEON X600 256MB HyperMemory,x600 256mb hypermemory,57,210,,Desktop,GPU-benchmarks-v7
+347,RADEON 9700 PRO,9700 pro,54,149,,Desktop,GPU-benchmarks-v7
+348,GeForce 7100 GS,7100 gs,52,133,,Desktop,GPU-benchmarks-v7
+349,GeForce 6600 LE,6600 le,51,234,,Desktop,GPU-benchmarks-v7
+350,RADEON X550,x550,51,266,,Desktop,GPU-benchmarks-v7
+351,Radeon X1050,x1050,49,245,,Desktop,GPU-benchmarks-v7
+352,RADEON 9600 PRO,9600 pro,43,163,,Desktop,GPU-benchmarks-v7
+353,GeForce FX 5700,fx 5700,41,173,,Desktop,GPU-benchmarks-v7
+354,GeForce FX 5900 Ultra,fx 5900 ultra,41,170,,Desktop,GPU-benchmarks-v7
+355,GeForce FX 5900XT,fx 5900xt,40,134,,Desktop,GPU-benchmarks-v7
+356,GeForce 7300 SE,7300 se,39,251,,Desktop,GPU-benchmarks-v7
+357,GeForce 6500,6500,38,300,,Desktop,GPU-benchmarks-v7
+358,RADEON 9500,9500,36,173,,Desktop,GPU-benchmarks-v7
+359,GeForce 6200,6200,35,58,,Desktop,GPU-benchmarks-v7
+360,GeForce 7100 / nForce 630i,7100 nforce 630i,35,67,,Desktop,GPU-benchmarks-v7
+361,GeForce FX 5900,fx 5900,35,188,,Desktop,GPU-benchmarks-v7
+362,GeForce PCX 5750,pcx 5750,35,310,,Desktop,GPU-benchmarks-v7
+363,RADEON 9550,9550,35,145,,Desktop,GPU-benchmarks-v7
+364,RADEON 9600 XT,9600 xt,35,147,,Desktop,GPU-benchmarks-v7
+365,GeForce FX 5700 Ultra,fx 5700 ultra,34,126,,Desktop,GPU-benchmarks-v7
+366,GeForce PCX 5900,pcx 5900,34,258,,Desktop,GPU-benchmarks-v7
+367,GeForce FX 5700VE,fx 5700ve,33,161,,Desktop,GPU-benchmarks-v7
+368,GeForce FX 5900ZT,fx 5900zt,33,129,,Desktop,GPU-benchmarks-v7
+369,GeForce 6200 A-LE,6200 a le,32,192,,Desktop,GPU-benchmarks-v7
+370,GeForce 6200 LE,6200 le,31,89,,Desktop,GPU-benchmarks-v7
+371,GeForce FX 5700LE,fx 5700le,25,147,,Desktop,GPU-benchmarks-v7
+372,RADEON 9800 SE,9800 se,24,131,,Desktop,GPU-benchmarks-v7
+373,GeForce 7200 GS,7200 gs,23,98,,Desktop,GPU-benchmarks-v7
+374,GeForce FX 5600 Ultra,fx 5600 ultra,17,122,,Desktop,GPU-benchmarks-v7
+375,GeForce FX 5600,fx 5600,13,168,,Desktop,GPU-benchmarks-v7
+376,GeForce FX 5200 Ultra,fx 5200 ultra,12,138,,Desktop,GPU-benchmarks-v7
+377,GeForce FX 5200,fx 5200,8,154,,Desktop,GPU-benchmarks-v7
+378,GeForce FX 5500,fx 5500,8,152,,Desktop,GPU-benchmarks-v7
+379,GeForce PCX 5300,pcx 5300,6,197,,Desktop,GPU-benchmarks-v7
+380,GeForce2 Ultra,geforce2 ultra,6,147,,Desktop,GPU-benchmarks-v7
+381,GeForce4 Ti 4600,geforce4 ti 4600,6,173,,Desktop,GPU-benchmarks-v7
+382,GeForce2 Ti,geforce2 ti,5,149,,Desktop,GPU-benchmarks-v7
+383,GeForce3,geforce3,5,120,,Desktop,GPU-benchmarks-v7
+384,GeForce4 MX 420,geforce4 mx 420,5,168,,Desktop,GPU-benchmarks-v7
+385,GeForce4 MX 440,geforce4 mx 440,5,140,,Desktop,GPU-benchmarks-v7
+386,GeForce4 MX 440 with AGP8X,geforce4 mx 440 with agp8x,5,157,,Desktop,GPU-benchmarks-v7
+387,RADEON 9000,9000,5,126,,Desktop,GPU-benchmarks-v7
+388,GeForce 6200A,6200a,4,117,,Desktop,GPU-benchmarks-v7
+389,GeForce4 MX 460,geforce4 mx 460,4,176,,Desktop,GPU-benchmarks-v7
+390,RADEON 9200,9200,4,135,,Desktop,GPU-benchmarks-v7
+391,GeForce2 MX,geforce2 mx,3,143,,Desktop,GPU-benchmarks-v7
+392,RADEON 7500,7500,3,35,,Desktop,GPU-benchmarks-v7
+393,RADEON 9200 SE,9200 se,3,129,,Desktop,GPU-benchmarks-v7
+394,RADEON 9250,9250,3,127,,Desktop,GPU-benchmarks-v7

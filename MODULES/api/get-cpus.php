@@ -1,34 +1,19 @@
 <?php
-header('Content-Type: application/json');
 
-$csvFile = __DIR__ . '/../../DATA/CPU-benchmarks-v4.csv';
-$cpus = [];
+declare(strict_types=1);
 
-if (($handle = fopen($csvFile, 'r')) !== FALSE) {
-    $header = fgetcsv($handle);
-    
-    while (($row = fgetcsv($handle)) !== FALSE) {
-        if (!empty($row[0])) {
-            $category = isset($row[11]) ? strtolower(trim($row[11])) : '';
-            if ($category !== 'desktop') {
-                continue;
-            }
+require_once __DIR__ . '/../db.php';
+header('Content-Type: application/json; charset=utf-8');
 
-            $cpus[] = [
-                'model' => $row[0],
-                'score' => (int)$row[2],
-                'cores' => isset($row[8]) ? (int)$row[8] : 0,
-                'threads' => null
-            ];
-        }
-    }
-    fclose($handle);
+try {
+    $rows = databaseConnection()->query('SELECT model, score, cores FROM cpu_benchmarks WHERE category = "Desktop" ORDER BY score DESC')->fetchAll();
+    echo json_encode(array_map(static fn (array $row): array => [
+        'model' => $row['model'],
+        'score' => (int) $row['score'],
+        'cores' => $row['cores'] !== null ? (int) $row['cores'] : 0,
+        'threads' => null,
+    ], $rows));
+} catch (Throwable $error) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Unable to retrieve CPU benchmarks.']);
 }
-
-// Sort by score descending
-usort($cpus, function($a, $b) {
-    return $b['score'] - $a['score'];
-});
-
-echo json_encode($cpus);
-?>

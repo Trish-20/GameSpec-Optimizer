@@ -4,11 +4,37 @@
 // Games will be loaded from CSV via PHP API
 let games = [];
 
+function normalizeGameRecord(game) {
+    const minimum = game?.requirements?.minimum || {};
+    const minimumBenchmarks = game?.benchmarks?.minimum || {};
+
+    return {
+        ...game,
+        title_raw: game.title_raw || game.slug || game.title,
+        image: game.image || game.cover || '',
+        genres: Array.isArray(game.genres) ? game.genres : [],
+        cpu_model: minimum.cpu || '',
+        gpu_model: minimum.gpu || '',
+        ram_model: minimum.ram || (minimum.ram_capacity_gb ? `${minimum.ram_capacity_gb} GB RAM` : ''),
+        ram_capacity_gb: minimum.ram_capacity_gb ?? null,
+        ram_speed_mhz: minimum.ram_speed_mhz ?? null,
+        cpu_benchmark: minimumBenchmarks.cpu?.score ?? null,
+        gpu_benchmark: minimumBenchmarks.gpu?.score ?? null,
+        ram_benchmark: minimumBenchmarks.ram?.score ?? null,
+        benchmark_matches: game.benchmarks || {}
+    };
+}
+
+function getGameImageUrl(image) {
+    if (!image) return '';
+    return /^https?:\/\//i.test(image) ? image : `../../RES/${image}`;
+}
+
 // Load games from CSV
 async function loadGamesFromCSV() {
     try {
         const response = await fetch('../../../MODULES/api/get-games.php');
-        games = await response.json();
+        games = (await response.json()).map(normalizeGameRecord);
         return games;
     } catch (error) {
         console.error('Error loading games:', error);
@@ -1067,6 +1093,9 @@ function guessBrowseGenre(game) {
 }
 
 function getBrowseGenreTags(game) {
+    if (Array.isArray(game?.genres) && game.genres.length) {
+        return game.genres.slice(0, 2).map(formatGenreLabel);
+    }
     const primary = guessBrowseGenre(game);
     const tags = [];
     if (primary) tags.push(formatGenreLabel(primary));
@@ -1099,7 +1128,7 @@ function openGameDetailsModal(titleRaw) {
     }
     const requirement = getBrowseRequirementInfo(game);
     const genres = getBrowseGenreTags(game);
-    const imageUrl = game.image ? `../../RES/${game.image}` : '';
+    const imageUrl = getGameImageUrl(game.image);
     const description = (game.description || '').trim() || 'No description is available for this game yet. The requirements below still apply.';
     const ramGb = parseInt(game.ram_capacity_gb, 10) || 0;
     const gpuScore = parseInt(game.gpu_benchmark, 10) || 0;
@@ -1220,7 +1249,7 @@ function loadGameGrid() {
         card.dataset.requirement = requirement.value;
         card.dataset.genre = guessBrowseGenre(game);
 
-        const imageUrl = game.image ? `../../RES/${game.image}` : '';
+        const imageUrl = getGameImageUrl(game.image);
         const description = (game.description || '').trim();
         card.dataset.description = description;
         card.dataset.displayTitle = game.title;

@@ -82,30 +82,6 @@
                     </div>
                 </div>
 
-                <div class="form-actions-row">
-                    <div class="form-actions-left">
-                        <label for="hasBloom">Graphics Settings Available:</label>
-                        <div class="toggle-group">
-                            <div class="toggle-item">
-                                <input type="checkbox" id="hasBloom" checked>
-                                <label for="hasBloom">Bloom</label>
-                            </div>
-                            <div class="toggle-item">
-                                <input type="checkbox" id="hasAntiAlias" checked>
-                                <label for="hasAntiAlias">Anti-Aliasing</label>
-                            </div>
-                            <div class="toggle-item">
-                                <input type="checkbox" id="hasShadows" checked>
-                                <label for="hasShadows">Shadows</label>
-                            </div>
-                            <div class="toggle-item">
-                                <input type="checkbox" id="hasVSync" checked>
-                                <label for="hasVSync">VSync</label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                </div>
                  <hr>
                  <div class="form-action-row" style="display: flex; gap: 12px; align-items: center;">
                     <button type="submit" id="gameSubmitBtn">Add Game</button>

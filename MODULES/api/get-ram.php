@@ -1,29 +1,18 @@
 <?php
-header('Content-Type: application/json');
 
-$csvFile = __DIR__ . '/../../DATA/RAM-benchmarks.csv';
-$ram = [];
+declare(strict_types=1);
 
-// ram_capacity_gb,ram_speed_mhz,ram_score
-if (($handle = fopen($csvFile, 'r')) !== FALSE) {
-    $header = fgetcsv($handle);
-    
-    while (($row = fgetcsv($handle)) !== FALSE) {
-        if (!empty($row[0])) {
-            $ram[] = [
-                'capacity' => (int)$row[0],
-                'speed' => (int)$row[1],
-                'score' => (int)$row[2]
-            ];
-        }
-    }
-    fclose($handle);
+require_once __DIR__ . '/../db.php';
+header('Content-Type: application/json; charset=utf-8');
+
+try {
+    $rows = databaseConnection()->query('SELECT capacity_gb AS capacity, speed_mhz AS speed, score FROM ram_benchmarks ORDER BY score DESC')->fetchAll();
+    echo json_encode(array_map(static fn (array $row): array => [
+        'capacity' => (int) $row['capacity'],
+        'speed' => (int) $row['speed'],
+        'score' => (int) $row['score'],
+    ], $rows));
+} catch (Throwable $error) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Unable to retrieve RAM benchmarks.']);
 }
-
-// Sort by score descending
-usort($ram, function($a, $b) {
-    return $b['score'] - $a['score'];
-});
-
-echo json_encode($ram);
-?>

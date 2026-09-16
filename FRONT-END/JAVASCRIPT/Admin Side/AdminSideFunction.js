@@ -104,6 +104,24 @@ function showTab(tabName) {
 // ============================================================================
 // Admin data
 let adminGames = [];
+
+function normalizeAdminGame(game) {
+    const minimum = game?.requirements?.minimum || {};
+    const benchmarks = game?.benchmarks?.minimum || {};
+    return {
+        ...game,
+        title_raw: game.title_raw || game.slug || game.title,
+        image: game.image || game.cover || '',
+        cpu_model: minimum.cpu || '',
+        gpu_model: minimum.gpu || '',
+        ram_model: minimum.ram || '',
+        ram_capacity_gb: minimum.ram_capacity_gb ?? null,
+        ram_speed_mhz: minimum.ram_speed_mhz ?? null,
+        cpu_benchmark: benchmarks.cpu?.score ?? null,
+        gpu_benchmark: benchmarks.gpu?.score ?? null,
+        ram_benchmark: benchmarks.ram?.score ?? null
+    };
+}
 let adminCPUs = [];
 let adminGPUs = [];
 let adminRAMs = [];
@@ -234,7 +252,7 @@ function addLocalHardwareItem(type, item) {
 async function loadAdminGames() {
     try {
         const response = await fetch('../../../MODULES/api/get-games.php');
-        adminGames = await response.json();
+        adminGames = (await response.json()).map(normalizeAdminGame);
         populateDatalist('gameTitleOptions', adminGames.map(game => game.title));
         const [cpuResponse, gpuResponse] = await Promise.all([
             fetch('../../../MODULES/api/get-cpus.php'),
@@ -368,14 +386,6 @@ function editGame(index) {
     if (descInput) descInput.value = game.description || '';
 
     // Restore graphics-setting checkboxes from existing game data.
-    const hasBloom = document.getElementById('hasBloom');
-    const hasAntiAlias = document.getElementById('hasAntiAlias');
-    const hasShadows = document.getElementById('hasShadows');
-    const hasVSync = document.getElementById('hasVSync');
-    if (hasBloom) hasBloom.checked = game.hasBloom !== 0 && game.hasBloom !== '0';
-    if (hasAntiAlias) hasAntiAlias.checked = game.hasAntiAlias !== 0 && game.hasAntiAlias !== '0';
-    if (hasShadows) hasShadows.checked = game.hasShadows !== 0 && game.hasShadows !== '0';
-    if (hasVSync) hasVSync.checked = game.hasVSync !== 0 && game.hasVSync !== '0';
 
     // Show existing cover image in the polished preview (no backend change).
     selectedGameCoverData = '';
@@ -482,12 +492,11 @@ function displayHardwareLists() {
             const cpuName = cpu.model || cpu.cpu_model || cpu.name || 'Unknown CPU';
             const cpuScore = cpu.score ?? cpu.cpu_score ?? 'N/A';
             const cpuCores = cpu.cores ?? 'N/A';
-            const cpuThreads = cpu.threads ?? 'N/A';
             cpuList.innerHTML += `
                 <div class="data-item" data-search="${`${cpuName} ${cpuScore}`.toLowerCase()}">
                     <div>
                         <span class="item-name">${cpuName}</span>
-                        <br><small>${cpuCores}C/${cpuThreads}T</small>
+                        <br><small>${cpuCores}C</small>
                     </div>
                     <span class="item-score">${cpuScore}</span>
                 </div>
@@ -728,10 +737,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         ram_capacity_gb: ramGB,
                         ram_speed_mhz: ramSpeedMhz,
                         ram_model: `${ramGB} GB DDR4-${ramSpeedMhz}`,
-                        hasBloom: document.getElementById('hasBloom')?.checked,
-                        hasAntiAlias: document.getElementById('hasAntiAlias')?.checked,
-                        hasShadows: document.getElementById('hasShadows')?.checked,
-                        hasVSync: document.getElementById('hasVSync')?.checked,
                         description: document.getElementById('gameDescription')?.value.trim() || existing.description || ''
                     };
                     displayGameList();
@@ -750,10 +755,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     gpuModel,
                     ramCapacityGb: ramGB,
                     ramSpeedMhz,
-                    hasBloom: document.getElementById('hasBloom')?.checked,
-                    hasAntiAlias: document.getElementById('hasAntiAlias')?.checked,
-                    hasShadows: document.getElementById('hasShadows')?.checked,
-                    hasVSync: document.getElementById('hasVSync')?.checked,
                     imageData: selectedGameCoverData
                 };
 
@@ -796,8 +797,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = addLocalHardwareItem('cpu', {
                 model,
                 score,
-                cores: 0,
-                threads: 0
+                cores: 0
             });
 
             if (!result.success) {

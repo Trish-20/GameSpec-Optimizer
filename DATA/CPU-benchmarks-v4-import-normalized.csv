@@ -1,0 +1,1154 @@
+cpu_id,model,normalized_model,score,cores,category,source_version
+1,AMD Ryzen Threadripper PRO 5995WX,ryzen threadripper pro 5995wx,108822,64,Desktop,CPU-benchmarks-v4
+2,AMD Ryzen Threadripper PRO 3995WX,ryzen threadripper pro 3995wx,83971,64,Desktop,CPU-benchmarks-v4
+3,AMD Ryzen Threadripper 3990X,ryzen threadripper 3990x,81568,64,Desktop,CPU-benchmarks-v4
+4,AMD Ryzen Threadripper PRO 5975WX,ryzen threadripper pro 5975wx,80842,32,Desktop,CPU-benchmarks-v4
+5,AMD Ryzen Threadripper PRO 5965WX,ryzen threadripper pro 5965wx,68405,24,Desktop,CPU-benchmarks-v4
+6,AMD Ryzen Threadripper 3970X,ryzen threadripper 3970x,63835,32,Desktop,CPU-benchmarks-v4
+7,AMD Ryzen Threadripper PRO 3975WX,ryzen threadripper pro 3975wx,63495,32,Desktop,CPU-benchmarks-v4
+8,AMD Ryzen Threadripper 3960X,ryzen threadripper 3960x,54757,24,Desktop,CPU-benchmarks-v4
+9,AMD Ryzen Threadripper PRO 5955WX,ryzen threadripper pro 5955wx,51656,16,Desktop,CPU-benchmarks-v4
+10,AMD Ryzen 9 5950X,ryzen 9 5950x,46195,16,Desktop,CPU-benchmarks-v4
+11,Intel Core i9-12900KS,core i9 12900ks,44243,8,Desktop,CPU-benchmarks-v4
+12,AMD Ryzen Threadripper PRO 5945WX,ryzen threadripper pro 5945wx,41578,12,Desktop,CPU-benchmarks-v4
+13,Apple M1 Ultra 20 Core,apple m1 ultra 20 core,41360,16,Desktop,CPU-benchmarks-v4
+14,Intel Core i9-12900KF,core i9 12900kf,41163,8,Desktop,CPU-benchmarks-v4
+15,Intel Core i9-12900K,core i9 12900k,41077,8,Desktop,CPU-benchmarks-v4
+16,AMD Ryzen Threadripper PRO 3955WX,ryzen threadripper pro 3955wx,40225,16,Desktop,CPU-benchmarks-v4
+17,AMD Ryzen 9 5900X,ryzen 9 5900x,39457,12,Desktop,CPU-benchmarks-v4
+18,AMD Ryzen 9 3950X,ryzen 9 3950x,39157,16,Desktop,CPU-benchmarks-v4
+19,Intel Core i9-12900,core i9 12900,38281,8,Desktop,CPU-benchmarks-v4
+20,Intel Xeon W-3175X @ 3.10GHz,xeon w 3175x 3 10ghz,37167,28,Desktop,CPU-benchmarks-v4
+21,Intel Core i9-12900F,core i9 12900f,35726,8,Desktop,CPU-benchmarks-v4
+22,Intel Core i9-12900T,core i9 12900t,34999,8,Desktop,CPU-benchmarks-v4
+23,AMD Ryzen 9 5900,ryzen 9 5900,34721,12,Desktop,CPU-benchmarks-v4
+24,Intel Core i7-12700K,core i7 12700k,34125,8,Desktop,CPU-benchmarks-v4
+25,Intel Core i7-12700KF,core i7 12700kf,34110,8,Desktop,CPU-benchmarks-v4
+26,AMD Ryzen Threadripper PRO 3945WX,ryzen threadripper pro 3945wx,33417,12,Desktop,CPU-benchmarks-v4
+27,Intel Core i9-10980XE @ 3.00GHz,core i9 10980xe 3 00ghz,33408,18,Desktop,CPU-benchmarks-v4
+28,AMD Ryzen 9 3900XT,ryzen 9 3900xt,32869,12,Desktop,CPU-benchmarks-v4
+29,AMD Ryzen 9 3900X,ryzen 9 3900x,32751,12,Desktop,CPU-benchmarks-v4
+30,AMD Ryzen Threadripper 2990WX,ryzen threadripper 2990wx,32475,32,Desktop,CPU-benchmarks-v4
+31,Intel Core i7-12700F,core i7 12700f,32268,8,Desktop,CPU-benchmarks-v4
+32,Intel Core i9-9980XE @ 3.00GHz,core i9 9980xe 3 00ghz,31905,18,Desktop,CPU-benchmarks-v4
+33,Intel Core i7-12700,core i7 12700,31659,8,Desktop,CPU-benchmarks-v4
+34,AMD Ryzen 9 PRO 3900,ryzen 9 pro 3900,31372,12,Desktop,CPU-benchmarks-v4
+35,AMD Ryzen 9 3900,ryzen 9 3900,30660,12,Desktop,CPU-benchmarks-v4
+36,Intel Core i9-9960X @ 3.10GHz,core i9 9960x 3 10ghz,30655,16,Desktop,CPU-benchmarks-v4
+37,AMD Ryzen Threadripper 2970WX,ryzen threadripper 2970wx,30433,24,Desktop,CPU-benchmarks-v4
+38,Intel Core i9-9990XE @ 4.00GHz,core i9 9990xe 4 00ghz,30162,14,Desktop,CPU-benchmarks-v4
+39,AMD Ryzen Threadripper 2950X,ryzen threadripper 2950x,29981,16,Desktop,CPU-benchmarks-v4
+40,Intel Core i9-7980XE @ 2.60GHz,core i9 7980xe 2 60ghz,29842,18,Desktop,CPU-benchmarks-v4
+41,Intel Core i9-10940X @ 3.30GHz,core i9 10940x 3 30ghz,28619,14,Desktop,CPU-benchmarks-v4
+42,Intel Core i9-9940X @ 3.30GHz,core i9 9940x 3 30ghz,28411,14,Desktop,CPU-benchmarks-v4
+43,AMD Ryzen 7 5800X,ryzen 7 5800x,28368,8,Desktop,CPU-benchmarks-v4
+44,AMD Ryzen Threadripper 1950X,ryzen threadripper 1950x,28037,16,Desktop,CPU-benchmarks-v4
+45,Intel Xeon W-2275 @ 3.30GHz,xeon w 2275 3 30ghz,27904,14,Desktop,CPU-benchmarks-v4
+46,Intel Core i5-12600K,core i5 12600k,27429,6,Desktop,CPU-benchmarks-v4
+47,Intel Core i5-12600KF,core i5 12600kf,27186,6,Desktop,CPU-benchmarks-v4
+48,AMD Ryzen 7 5700X,ryzen 7 5700x,27065,8,Desktop,CPU-benchmarks-v4
+49,Intel Core i9-7960X @ 2.80GHz,core i9 7960x 2 80ghz,26699,16,Desktop,CPU-benchmarks-v4
+50,Intel Core i9-10920X @ 3.50GHz,core i9 10920x 3 50ghz,26696,12,Desktop,CPU-benchmarks-v4
+51,Intel Core i9-7940X @ 3.10GHz,core i9 7940x 3 10ghz,26508,14,Desktop,CPU-benchmarks-v4
+52,AMD Ryzen Threadripper 2990X,ryzen threadripper 2990x,26469,32,Desktop,CPU-benchmarks-v4
+53,AMD Ryzen 7 5800,ryzen 7 5800,25644,8,Desktop,CPU-benchmarks-v4
+54,Intel Core i9-11900K @ 3.50GHz,core i9 11900k 3 50ghz,25539,8,Desktop,CPU-benchmarks-v4
+55,AMD Ryzen 7 5800X3D,ryzen 7 5800x3d,25508,8,Desktop,CPU-benchmarks-v4
+56,Intel Core i9-11900KF @ 3.50GHz,core i9 11900kf 3 50ghz,25390,8,Desktop,CPU-benchmarks-v4
+57,Intel Core i9-9920X @ 3.50GHz,core i9 9920x 3 50ghz,25291,12,Desktop,CPU-benchmarks-v4
+58,AMD Ryzen Threadripper 2920X,ryzen threadripper 2920x,25203,12,Desktop,CPU-benchmarks-v4
+59,AMD Ryzen 7 PRO 5750G,ryzen 7 pro 5750g,25004,8,Desktop,CPU-benchmarks-v4
+60,Intel Core i7-11700K @ 3.60GHz,core i7 11700k 3 60ghz,24749,8,Desktop,CPU-benchmarks-v4
+61,AMD Ryzen 7 5700G,ryzen 7 5700g,24545,8,Desktop,CPU-benchmarks-v4
+62,Intel Core i7-11700KF @ 3.60GHz,core i7 11700kf 3 60ghz,24147,8,Desktop,CPU-benchmarks-v4
+63,AMD Ryzen 7 3800XT,ryzen 7 3800xt,23815,8,Desktop,CPU-benchmarks-v4
+64,Intel Core i9-11900F @ 2.50GHz,core i9 11900f 2 50ghz,23814,8,Desktop,CPU-benchmarks-v4
+65,Intel Core i9-10900K @ 3.70GHz,core i9 10900k 3 70ghz,23768,10,Desktop,CPU-benchmarks-v4
+66,Intel Core i9-10900KF @ 3.70GHz,core i9 10900kf 3 70ghz,23508,10,Desktop,CPU-benchmarks-v4
+67,Intel Core i9-7920X @ 2.90GHz,core i9 7920x 2 90ghz,23292,12,Desktop,CPU-benchmarks-v4
+68,AMD Ryzen 7 3800X,ryzen 7 3800x,23275,8,Desktop,CPU-benchmarks-v4
+69,Intel Core i9-11900 @ 2.50GHz,core i9 11900 2 50ghz,23117,8,Desktop,CPU-benchmarks-v4
+70,Intel Core i9-10850K @ 3.60GHz,core i9 10850k 3 60ghz,23055,10,Desktop,CPU-benchmarks-v4
+71,AMD Ryzen Threadripper 1920X,ryzen threadripper 1920x,22903,12,Desktop,CPU-benchmarks-v4
+72,AMD Ryzen 7 PRO 3700,ryzen 7 pro 3700,22800,8,Desktop,CPU-benchmarks-v4
+73,Intel Core i9-11900KB @ 3.30GHz,core i9 11900kb 3 30ghz,22769,8,Desktop,CPU-benchmarks-v4
+74,AMD Ryzen 7 3700X,ryzen 7 3700x,22716,8,Desktop,CPU-benchmarks-v4
+75,Intel Core i7-12700T,core i7 12700t,22688,8,Desktop,CPU-benchmarks-v4
+76,Intel Core i9-10900X @ 3.70GHz,core i9 10900x 3 70ghz,22683,10,Desktop,CPU-benchmarks-v4
+77,AMD Ryzen 7 5700GE,ryzen 7 5700ge,22566,8,Desktop,CPU-benchmarks-v4
+78,Intel Core i7-11700B @ 3.20GHz,core i7 11700b 3 20ghz,22539,8,Desktop,CPU-benchmarks-v4
+79,AMD Ryzen 7 PRO 5750GE,ryzen 7 pro 5750ge,22315,8,Desktop,CPU-benchmarks-v4
+80,AMD Ryzen 5 5600X,ryzen 5 5600x,22088,6,Desktop,CPU-benchmarks-v4
+81,AMD Ryzen Threadripper 1920,ryzen threadripper 1920,22066,12,Desktop,CPU-benchmarks-v4
+82,Intel Core i9-9900X @ 3.50GHz,core i9 9900x 3 50ghz,21868,10,Desktop,CPU-benchmarks-v4
+83,Intel Core i9-10910 @ 3.60GHz,core i9 10910 3 60ghz,21799,10,Desktop,CPU-benchmarks-v4
+84,Intel Core i7-11700F @ 2.50GHz,core i7 11700f 2 50ghz,21447,8,Desktop,CPU-benchmarks-v4
+85,Intel Core i5-12600,core i5 12600,21368,6,Desktop,CPU-benchmarks-v4
+86,AMD Ryzen 5 5600,ryzen 5 5600,21350,6,Desktop,CPU-benchmarks-v4
+87,Intel Core i9-7900X @ 3.30GHz,core i9 7900x 3 30ghz,21310,10,Desktop,CPU-benchmarks-v4
+88,Intel Core i9-10900F @ 2.80GHz,core i9 10900f 2 80ghz,20881,10,Desktop,CPU-benchmarks-v4
+89,AMD Ryzen 7 PRO 4700G,ryzen 7 pro 4700g,20848,8,Desktop,CPU-benchmarks-v4
+90,AMD Ryzen 5 PRO 5650G,ryzen 5 pro 5650g,20633,6,Desktop,CPU-benchmarks-v4
+91,Intel Core i7-11700 @ 2.50GHz,core i7 11700 2 50ghz,20588,8,Desktop,CPU-benchmarks-v4
+92,AMD Ryzen 7 PRO 4750G,ryzen 7 pro 4750g,20570,8,Desktop,CPU-benchmarks-v4
+93,Intel Core i9-10900 @ 2.80GHz,core i9 10900 2 80ghz,20446,10,Desktop,CPU-benchmarks-v4
+94,AMD Ryzen 7 4700GE,ryzen 7 4700ge,20392,8,Desktop,CPU-benchmarks-v4
+95,Intel Core i5-12500,core i5 12500,20309,6,Desktop,CPU-benchmarks-v4
+96,Intel Core i9-11900T @ 1.50GHz,core i9 11900t 1 50ghz,20225,8,Desktop,CPU-benchmarks-v4
+97,AMD Ryzen 7 4700G,ryzen 7 4700g,20138,8,Desktop,CPU-benchmarks-v4
+98,AMD Ryzen 5 5500,ryzen 5 5500,19949,6,Desktop,CPU-benchmarks-v4
+99,AMD Ryzen 5 5600G,ryzen 5 5600g,19830,6,Desktop,CPU-benchmarks-v4
+100,Intel Core i5-11600K @ 3.90GHz,core i5 11600k 3 90ghz,19781,6,Desktop,CPU-benchmarks-v4
+101,Intel Core i5-11600KF @ 3.90GHz,core i5 11600kf 3 90ghz,19742,6,Desktop,CPU-benchmarks-v4
+102,Intel Core i5-12400F,core i5 12400f,19659,6,Desktop,CPU-benchmarks-v4
+103,Intel Core i5-12400,core i5 12400,19571,6,Desktop,CPU-benchmarks-v4
+104,Intel Core i9-9900KS @ 4.00GHz,core i9 9900ks 4 00ghz,19518,8,Desktop,CPU-benchmarks-v4
+105,Intel Core i7-7900X @ 3.30GHz,core i7 7900x 3 30ghz,19358,10,Desktop,CPU-benchmarks-v4
+106,Intel Core i7-10700K @ 3.80GHz,core i7 10700k 3 80ghz,19277,8,Desktop,CPU-benchmarks-v4
+107,Intel Core i7-10700KF @ 3.80GHz,core i7 10700kf 3 80ghz,19143,8,Desktop,CPU-benchmarks-v4
+108,AMD Ryzen 5 5600GE,ryzen 5 5600ge,18879,6,Desktop,CPU-benchmarks-v4
+109,AMD Ryzen 5 3600XT,ryzen 5 3600xt,18780,6,Desktop,CPU-benchmarks-v4
+110,AMD Ryzen 5 PRO 5650GE,ryzen 5 pro 5650ge,18716,6,Desktop,CPU-benchmarks-v4
+111,Intel Core i9-9900K @ 3.60GHz,core i9 9900k 3 60ghz,18716,8,Desktop,CPU-benchmarks-v4
+112,Intel Core i9-9900KF @ 3.60GHz,core i9 9900kf 3 60ghz,18691,8,Desktop,CPU-benchmarks-v4
+113,AMD Ryzen 7 PRO 4750GE,ryzen 7 pro 4750ge,18550,8,Desktop,CPU-benchmarks-v4
+114,Intel Core i5-11600 @ 2.80GHz,core i5 11600 2 80ghz,18318,6,Desktop,CPU-benchmarks-v4
+115,Intel Core i9-9820X @ 3.30GHz,core i9 9820x 3 30ghz,18288,10,Desktop,CPU-benchmarks-v4
+116,AMD Ryzen 5 3600X,ryzen 5 3600x,18285,6,Desktop,CPU-benchmarks-v4
+117,Intel Core i7-9800X @ 3.80GHz,core i7 9800x 3 80ghz,18240,8,Desktop,CPU-benchmarks-v4
+118,AMD 4700S,4700s,18224,8,Desktop,CPU-benchmarks-v4
+119,Intel Core i5-12600T,core i5 12600t,18202,6,Desktop,CPU-benchmarks-v4
+120,AMD Ryzen 5 PRO 3600,ryzen 5 pro 3600,17900,6,Desktop,CPU-benchmarks-v4
+121,AMD Ryzen 5 3600,ryzen 5 3600,17822,6,Desktop,CPU-benchmarks-v4
+122,Intel Core i5-11500B @ 3.30GHz,core i5 11500b 3 30ghz,17783,6,Desktop,CPU-benchmarks-v4
+123,Intel Core i5-12500T,core i5 12500t,17728,6,Desktop,CPU-benchmarks-v4
+124,Intel Core i5-11500 @ 2.70GHz,core i5 11500 2 70ghz,17626,6,Desktop,CPU-benchmarks-v4
+125,AMD Ryzen 7 2700X,ryzen 7 2700x,17578,8,Desktop,CPU-benchmarks-v4
+126,Intel Core i7-7820X @ 3.60GHz,core i7 7820x 3 60ghz,17283,8,Desktop,CPU-benchmarks-v4
+127,AMD Ryzen 7 PRO 2700X,ryzen 7 pro 2700x,17221,8,Desktop,CPU-benchmarks-v4
+128,Intel Core i5-11400F @ 2.60GHz,core i5 11400f 2 60ghz,17213,6,Desktop,CPU-benchmarks-v4
+129,Intel Core i7-6950X @ 3.00GHz,core i7 6950x 3 00ghz,17142,10,Desktop,CPU-benchmarks-v4
+130,Intel Core i5-11400 @ 2.60GHz,core i5 11400 2 60ghz,17132,6,Desktop,CPU-benchmarks-v4
+131,Intel Core i7-10700F @ 2.90GHz,core i7 10700f 2 90ghz,16973,8,Desktop,CPU-benchmarks-v4
+132,AMD Ryzen Threadripper 1900X,ryzen threadripper 1900x,16955,8,Desktop,CPU-benchmarks-v4
+133,Intel Core i7-10700 @ 2.90GHz,core i7 10700 2 90ghz,16946,8,Desktop,CPU-benchmarks-v4
+134,Intel Core i9-9900 @ 3.10GHz,core i9 9900 3 10ghz,16873,8,Desktop,CPU-benchmarks-v4
+135,AMD Ryzen 5 4500,ryzen 5 4500,16698,6,Desktop,CPU-benchmarks-v4
+136,AMD Ryzen 5 PRO 4400G,ryzen 5 pro 4400g,16456,6,Desktop,CPU-benchmarks-v4
+137,AMD Ryzen 5 PRO 4650G,ryzen 5 pro 4650g,16428,6,Desktop,CPU-benchmarks-v4
+138,AMD Ryzen 7 1800X,ryzen 7 1800x,16306,8,Desktop,CPU-benchmarks-v4
+139,AMD Ryzen 5 PRO 4650GE,ryzen 5 pro 4650ge,15712,6,Desktop,CPU-benchmarks-v4
+140,AMD Ryzen 5 4600GE,ryzen 5 4600ge,15656,6,Desktop,CPU-benchmarks-v4
+141,AMD Ryzen 7 2700,ryzen 7 2700,15654,8,Desktop,CPU-benchmarks-v4
+142,AMD Ryzen 5 4600G,ryzen 5 4600g,15577,6,Desktop,CPU-benchmarks-v4
+143,AMD Ryzen 7 PRO 1700X,ryzen 7 pro 1700x,15530,8,Desktop,CPU-benchmarks-v4
+144,AMD Ryzen 7 1700X,ryzen 7 1700x,15496,8,Desktop,CPU-benchmarks-v4
+145,Intel Core i7-11700T @ 1.40GHz,core i7 11700t 1 40ghz,15271,8,Desktop,CPU-benchmarks-v4
+146,Intel Core i5-11600T @ 1.70GHz,core i5 11600t 1 70ghz,15254,6,Desktop,CPU-benchmarks-v4
+147,Intel Core i9-10900T @ 1.90GHz,core i9 10900t 1 90ghz,15134,10,Desktop,CPU-benchmarks-v4
+148,AMD Ryzen 7 PRO 2700,ryzen 7 pro 2700,15059,8,Desktop,CPU-benchmarks-v4
+149,Intel Core i3-12300,core i3 12300,14955,4,Desktop,CPU-benchmarks-v4
+150,AMD Ryzen 7 2700E,ryzen 7 2700e,14657,8,Desktop,CPU-benchmarks-v4
+151,AMD Ryzen 7 1700,ryzen 7 1700,14628,8,Desktop,CPU-benchmarks-v4
+152,AMD Ryzen 7 PRO 1700,ryzen 7 pro 1700,14590,8,Desktop,CPU-benchmarks-v4
+153,Intel Core i5-10600KF @ 4.10GHz,core i5 10600kf 4 10ghz,14575,6,Desktop,CPU-benchmarks-v4
+154,Intel Core i7-9700K @ 3.60GHz,core i7 9700k 3 60ghz,14550,8,Desktop,CPU-benchmarks-v4
+155,Intel Core i7-8086K @ 4.00GHz,core i7 8086k 4 00ghz,14550,6,Desktop,CPU-benchmarks-v4
+156,Intel Core i5-10600K @ 4.10GHz,core i5 10600k 4 10ghz,14534,6,Desktop,CPU-benchmarks-v4
+157,Intel Core i3-12100,core i3 12100,14503,4,Desktop,CPU-benchmarks-v4
+158,Intel Core i7-9700KF @ 3.60GHz,core i7 9700kf 3 60ghz,14499,8,Desktop,CPU-benchmarks-v4
+159,Intel Core i7-6900K @ 3.20GHz,core i7 6900k 3 20ghz,14291,8,Desktop,CPU-benchmarks-v4
+160,AMD Ryzen 5 2600X,ryzen 5 2600x,14053,6,Desktop,CPU-benchmarks-v4
+161,AMD Ryzen 3 PRO 5350G,ryzen 3 pro 5350g,13976,4,Desktop,CPU-benchmarks-v4
+162,Intel Core i9-9900T @ 2.10GHz,core i9 9900t 2 10ghz,13947,8,Desktop,CPU-benchmarks-v4
+163,Intel Core i5-10600 @ 3.30GHz,core i5 10600 3 30ghz,13928,6,Desktop,CPU-benchmarks-v4
+164,Intel Core i7-8700K @ 3.70GHz,core i7 8700k 3 70ghz,13850,6,Desktop,CPU-benchmarks-v4
+165,AMD Ryzen 3 5300GE,ryzen 3 5300ge,13843,4,Desktop,CPU-benchmarks-v4
+166,Intel Core i5-11500T @ 1.50GHz,core i5 11500t 1 50ghz,13820,6,Desktop,CPU-benchmarks-v4
+167,AMD Ryzen 3 PRO 5350GE,ryzen 3 pro 5350ge,13707,4,Desktop,CPU-benchmarks-v4
+168,Intel Core i7-9700F @ 3.00GHz,core i7 9700f 3 00ghz,13462,8,Desktop,CPU-benchmarks-v4
+169,Intel Core i7-9700 @ 3.00GHz,core i7 9700 3 00ghz,13385,8,Desktop,CPU-benchmarks-v4
+170,AMD Ryzen 5 3500X,ryzen 5 3500x,13319,6,Desktop,CPU-benchmarks-v4
+171,AMD Ryzen 5 PRO 2600,ryzen 5 pro 2600,13250,6,Desktop,CPU-benchmarks-v4
+172,AMD Ryzen 5 2600,ryzen 5 2600,13195,6,Desktop,CPU-benchmarks-v4
+173,AMD Ryzen 3 5300G,ryzen 3 5300g,13139,4,Desktop,CPU-benchmarks-v4
+174,Intel Core i7-10700T @ 2.00GHz,core i7 10700t 2 00ghz,13119,8,Desktop,CPU-benchmarks-v4
+175,Intel Core i5-11400T @ 1.30GHz,core i5 11400t 1 30ghz,13078,6,Desktop,CPU-benchmarks-v4
+176,Intel Core i5-10500 @ 3.10GHz,core i5 10500 3 10ghz,13056,6,Desktop,CPU-benchmarks-v4
+177,Intel Core i7-8700 @ 3.20GHz,core i7 8700 3 20ghz,13046,6,Desktop,CPU-benchmarks-v4
+178,AMD Ryzen 5 1600X,ryzen 5 1600x,12943,6,Desktop,CPU-benchmarks-v4
+179,Intel Core i7-7800X @ 3.50GHz,core i7 7800x 3 50ghz,12864,6,Desktop,CPU-benchmarks-v4
+180,AMD Ryzen 5 3500,ryzen 5 3500,12836,6,Desktop,CPU-benchmarks-v4
+181,Intel Core i3-12100T,core i3 12100t,12767,4,Desktop,CPU-benchmarks-v4
+182,AMD Ryzen 3 3300X,ryzen 3 3300x,12746,4,Desktop,CPU-benchmarks-v4
+183,Intel Core i7-5960X @ 3.00GHz,core i7 5960x 3 00ghz,12719,8,Desktop,CPU-benchmarks-v4
+184,Intel Core i5-10400F @ 2.90GHz,core i5 10400f 2 90ghz,12439,6,Desktop,CPU-benchmarks-v4
+185,Intel Core i5-10400 @ 2.90GHz,core i5 10400 2 90ghz,12320,6,Desktop,CPU-benchmarks-v4
+186,AMD Ryzen 5 1600,ryzen 5 1600,12314,6,Desktop,CPU-benchmarks-v4
+187,Intel Core i7-9700E @ 2.60GHz,core i7 9700e 2 60ghz,12239,8,Desktop,CPU-benchmarks-v4
+188,Intel Core i5-10505 @ 3.20GHz,core i5 10505 3 20ghz,12221,6,Desktop,CPU-benchmarks-v4
+189,AMD Ryzen 3 3100,ryzen 3 3100,11660,4,Desktop,CPU-benchmarks-v4
+190,Intel Core i5-10600T @ 2.40GHz,core i5 10600t 2 40ghz,11376,6,Desktop,CPU-benchmarks-v4
+191,Intel Core i3-11100B @ 3.60GHz,core i3 11100b 3 60ghz,11357,4,Desktop,CPU-benchmarks-v4
+192,AMD Ryzen 3 4300GE,ryzen 3 4300ge,11332,4,Desktop,CPU-benchmarks-v4
+193,AMD Ryzen 3 PRO 4200G,ryzen 3 pro 4200g,11315,4,Desktop,CPU-benchmarks-v4
+194,Intel Core i7-6850K @ 3.60GHz,core i7 6850k 3 60ghz,11295,6,Desktop,CPU-benchmarks-v4
+195,AMD Ryzen 3 PRO 4350GE,ryzen 3 pro 4350ge,11270,4,Desktop,CPU-benchmarks-v4
+196,Intel Core i5-9600KF @ 3.70GHz,core i5 9600kf 3 70ghz,10838,6,Desktop,CPU-benchmarks-v4
+197,AMD Ryzen 3 PRO 4350G,ryzen 3 pro 4350g,10833,4,Desktop,CPU-benchmarks-v4
+198,Intel Core i5-9600K @ 3.70GHz,core i5 9600k 3 70ghz,10793,6,Desktop,CPU-benchmarks-v4
+199,AMD Ryzen 3 4300G,ryzen 3 4300g,10792,4,Desktop,CPU-benchmarks-v4
+200,Intel Core i7-9700T @ 2.00GHz,core i7 9700t 2 00ghz,10736,8,Desktop,CPU-benchmarks-v4
+201,Intel Core i7-6800K @ 3.40GHz,core i7 6800k 3 40ghz,10681,6,Desktop,CPU-benchmarks-v4
+202,Intel Core i7-8700T @ 2.40GHz,core i7 8700t 2 40ghz,10431,6,Desktop,CPU-benchmarks-v4
+203,AMD Ryzen 5 PRO 1600,ryzen 5 pro 1600,10401,6,Desktop,CPU-benchmarks-v4
+204,Intel Core i5-9600 @ 3.10GHz,core i5 9600 3 10ghz,10369,6,Desktop,CPU-benchmarks-v4
+205,Intel Core i5-10500T @ 2.30GHz,core i5 10500t 2 30ghz,10365,6,Desktop,CPU-benchmarks-v4
+206,Intel Core i5-9500F @ 3.00GHz,core i5 9500f 3 00ghz,10330,6,Desktop,CPU-benchmarks-v4
+207,Intel Core i3-10325 @ 3.90GHz,core i3 10325 3 90ghz,10308,4,Desktop,CPU-benchmarks-v4
+208,Intel Core i7-5930K @ 3.50GHz,core i7 5930k 3 50ghz,10304,6,Desktop,CPU-benchmarks-v4
+209,Intel Core i5-8600K @ 3.60GHz,core i5 8600k 3 60ghz,10195,6,Desktop,CPU-benchmarks-v4
+210,Intel Core i3-10320 @ 3.80GHz,core i3 10320 3 80ghz,10115,4,Desktop,CPU-benchmarks-v4
+211,Intel Core i5-10400T @ 2.00GHz,core i5 10400t 2 00ghz,10052,6,Desktop,CPU-benchmarks-v4
+212,Intel Core i7-4960X @ 3.60GHz,core i7 4960x 3 60ghz,9906,6,Desktop,CPU-benchmarks-v4
+213,Intel Core i7-7740X @ 4.30GHz,core i7 7740x 4 30ghz,9864,4,Desktop,CPU-benchmarks-v4
+214,Intel Core i5-8600 @ 3.10GHz,core i5 8600 3 10ghz,9849,6,Desktop,CPU-benchmarks-v4
+215,Intel Core i7-5820K @ 3.30GHz,core i7 5820k 3 30ghz,9814,6,Desktop,CPU-benchmarks-v4
+216,Intel Core i5-9500 @ 3.00GHz,core i5 9500 3 00ghz,9698,6,Desktop,CPU-benchmarks-v4
+217,Intel Core i3-10305 @ 3.80GHz,core i3 10305 3 80ghz,9689,4,Desktop,CPU-benchmarks-v4
+218,AMD Ryzen 5 3350GE,ryzen 5 3350ge,9684,4,Desktop,CPU-benchmarks-v4
+219,Intel Core i7-7700K @ 4.20GHz,core i7 7700k 4 20ghz,9658,4,Desktop,CPU-benchmarks-v4
+220,AMD Ryzen 5 PRO 3350GE,ryzen 5 pro 3350ge,9643,4,Desktop,CPU-benchmarks-v4
+221,Intel Core i5-8500 @ 3.00GHz,core i5 8500 3 00ghz,9576,6,Desktop,CPU-benchmarks-v4
+222,AMD Ryzen 5 PRO 3350G,ryzen 5 pro 3350g,9498,4,Desktop,CPU-benchmarks-v4
+223,Intel Core i5-9400 @ 2.90GHz,core i5 9400 2 90ghz,9478,6,Desktop,CPU-benchmarks-v4
+224,AMD Ryzen 5 PRO 1500,ryzen 5 pro 1500,9402,4,Desktop,CPU-benchmarks-v4
+225,AMD Ryzen 5 2500X,ryzen 5 2500x,9384,4,Desktop,CPU-benchmarks-v4
+226,Intel Core i7-4930K @ 3.40GHz,core i7 4930k 3 40ghz,9360,6,Desktop,CPU-benchmarks-v4
+227,AMD Ryzen 5 3400G,ryzen 5 3400g,9331,4,Desktop,CPU-benchmarks-v4
+228,AMD Ryzen 5 PRO 3400G,ryzen 5 pro 3400g,9307,4,Desktop,CPU-benchmarks-v4
+229,Intel Core i3-10300 @ 3.70GHz,core i3 10300 3 70ghz,9284,4,Desktop,CPU-benchmarks-v4
+230,Intel Core i5-8400 @ 2.80GHz,core i5 8400 2 80ghz,9222,6,Desktop,CPU-benchmarks-v4
+231,Intel Core i3-10105F @ 3.70GHz,core i3 10105f 3 70ghz,9141,4,Desktop,CPU-benchmarks-v4
+232,AMD Ryzen 5 1500X,ryzen 5 1500x,9083,4,Desktop,CPU-benchmarks-v4
+233,AMD Ryzen 5 3350G,ryzen 5 3350g,9067,4,Desktop,CPU-benchmarks-v4
+234,AMD Ryzen 5 3400GE,ryzen 5 3400ge,8985,4,Desktop,CPU-benchmarks-v4
+235,Intel Core i7-6700K @ 4.00GHz,core i7 6700k 4 00ghz,8967,4,Desktop,CPU-benchmarks-v4
+236,Intel Core i3-10105 @ 3.70GHz,core i3 10105 3 70ghz,8928,4,Desktop,CPU-benchmarks-v4
+237,Intel Core i3-10100F @ 3.60GHz,core i3 10100f 3 60ghz,8854,4,Desktop,CPU-benchmarks-v4
+238,Intel Core i3-10100 @ 3.60GHz,core i3 10100 3 60ghz,8800,4,Desktop,CPU-benchmarks-v4
+239,AMD Ryzen 5 2400G,ryzen 5 2400g,8729,4,Desktop,CPU-benchmarks-v4
+240,Intel Core i7-7700 @ 3.60GHz,core i7 7700 3 60ghz,8638,4,Desktop,CPU-benchmarks-v4
+241,Intel Core i7-3960X @ 3.30GHz,core i7 3960x 3 30ghz,8596,6,Desktop,CPU-benchmarks-v4
+242,Intel Core i5-9600T @ 2.30GHz,core i5 9600t 2 30ghz,8393,6,Desktop,CPU-benchmarks-v4
+243,AMD Ryzen 5 PRO 2400G,ryzen 5 pro 2400g,8378,4,Desktop,CPU-benchmarks-v4
+244,Intel Core i7-3970X @ 3.50GHz,core i7 3970x 3 50ghz,8373,6,Desktop,CPU-benchmarks-v4
+245,AMD Ryzen 5 PRO 3400GE,ryzen 5 pro 3400ge,8269,4,Desktop,CPU-benchmarks-v4
+246,Intel Core i5-9500T @ 2.20GHz,core i5 9500t 2 20ghz,8256,6,Desktop,CPU-benchmarks-v4
+247,Intel Core i7-3930K @ 3.20GHz,core i7 3930k 3 20ghz,8244,6,Desktop,CPU-benchmarks-v4
+248,Intel Core i5-8600T @ 2.30GHz,core i5 8600t 2 30ghz,8227,6,Desktop,CPU-benchmarks-v4
+249,Intel Core i3-10305T @ 3.00GHz,core i3 10305t 3 00ghz,8136,4,Desktop,CPU-benchmarks-v4
+250,AMD Ryzen 5 2400GE,ryzen 5 2400ge,8134,4,Desktop,CPU-benchmarks-v4
+251,Intel Core i7-6700 @ 3.40GHz,core i7 6700 3 40ghz,8078,4,Desktop,CPU-benchmarks-v4
+252,Intel Core i7-4790K @ 4.00GHz,core i7 4790k 4 00ghz,8061,4,Desktop,CPU-benchmarks-v4
+253,Intel Core i3-10300T @ 3.00GHz,core i3 10300t 3 00ghz,7997,4,Desktop,CPU-benchmarks-v4
+254,Intel Core i3-10105T @ 3.00GHz,core i3 10105t 3 00ghz,7850,4,Desktop,CPU-benchmarks-v4
+255,Intel Core i5-9400T @ 1.80GHz,core i5 9400t 1 80ghz,7819,6,Desktop,CPU-benchmarks-v4
+256,Intel Core i7-5775C @ 3.30GHz,core i7 5775c 3 30ghz,7801,4,Desktop,CPU-benchmarks-v4
+257,AMD Ryzen 5 1400,ryzen 5 1400,7783,4,Desktop,CPU-benchmarks-v4
+258,AMD Ryzen 3 PRO 1300,ryzen 3 pro 1300,7717,4,Desktop,CPU-benchmarks-v4
+259,Intel Core i7-5775R @ 3.30GHz,core i7 5775r 3 30ghz,7714,4,Desktop,CPU-benchmarks-v4
+260,AMD Athlon Gold PRO 3150G,athlon gold pro 3150g,7702,4,Desktop,CPU-benchmarks-v4
+261,Intel Core i5-8500T @ 2.10GHz,core i5 8500t 2 10ghz,7699,6,Desktop,CPU-benchmarks-v4
+262,Intel Core i3-9350K @ 4.00GHz,core i3 9350k 4 00ghz,7694,4,Desktop,CPU-benchmarks-v4
+263,AMD Ryzen 3 2300X,ryzen 3 2300x,7566,4,Desktop,CPU-benchmarks-v4
+264,Intel Core i7-7700T @ 2.90GHz,core i7 7700t 2 90ghz,7561,4,Desktop,CPU-benchmarks-v4
+265,AMD Ryzen 5 PRO 2400GE,ryzen 5 pro 2400ge,7530,4,Desktop,CPU-benchmarks-v4
+266,Intel Core i5-8400T @ 1.70GHz,core i5 8400t 1 70ghz,7447,6,Desktop,CPU-benchmarks-v4
+267,Intel Core i3-9320 @ 3.70GHz,core i3 9320 3 70ghz,7358,4,Desktop,CPU-benchmarks-v4
+268,Intel Core i3-9350KF @ 4.00GHz,core i3 9350kf 4 00ghz,7318,4,Desktop,CPU-benchmarks-v4
+269,AMD Ryzen 3 3200GE,ryzen 3 3200ge,7317,4,Desktop,CPU-benchmarks-v4
+270,Intel Core i3-9300 @ 3.70GHz,core i3 9300 3 70ghz,7279,4,Desktop,CPU-benchmarks-v4
+271,Intel Core i7-6700T @ 2.80GHz,core i7 6700t 2 80ghz,7271,4,Desktop,CPU-benchmarks-v4
+272,Intel Core i7-4790 @ 3.60GHz,core i7 4790 3 60ghz,7235,4,Desktop,CPU-benchmarks-v4
+273,AMD Ryzen 3 3200G,ryzen 3 3200g,7188,4,Desktop,CPU-benchmarks-v4
+274,Intel Core i7-990X @ 3.47GHz,core i7 990x 3 47ghz,7137,6,Desktop,CPU-benchmarks-v4
+275,Intel Core i7-4770K @ 3.50GHz,core i7 4770k 3 50ghz,7129,4,Desktop,CPU-benchmarks-v4
+276,AMD Athlon Gold PRO 3150GE,athlon gold pro 3150ge,7093,4,Desktop,CPU-benchmarks-v4
+277,Intel Core i7-995X @ 3.60GHz,core i7 995x 3 60ghz,7079,6,Desktop,CPU-benchmarks-v4
+278,Intel Core i7-4771 @ 3.50GHz,core i7 4771 3 50ghz,7074,4,Desktop,CPU-benchmarks-v4
+279,AMD Ryzen 3 PRO 3200G,ryzen 3 pro 3200g,7037,4,Desktop,CPU-benchmarks-v4
+280,Intel Core i7-4770 @ 3.40GHz,core i7 4770 3 40ghz,7030,4,Desktop,CPU-benchmarks-v4
+281,Intel Core i7-980 @ 3.33GHz,core i7 980 3 33ghz,7018,6,Desktop,CPU-benchmarks-v4
+282,AMD Athlon Gold 3150G,athlon gold 3150g,7002,4,Desktop,CPU-benchmarks-v4
+283,Intel Core i7-4790S @ 3.20GHz,core i7 4790s 3 20ghz,6954,4,Desktop,CPU-benchmarks-v4
+284,AMD Ryzen 3 1300X,ryzen 3 1300x,6925,4,Desktop,CPU-benchmarks-v4
+285,Intel Pentium Gold G7400,pentium gold g7400,6896,2,Desktop,CPU-benchmarks-v4
+286,Intel Core i5-7600K @ 3.80GHz,core i5 7600k 3 80ghz,6869,4,Desktop,CPU-benchmarks-v4
+287,Intel Core i3-8350K @ 4.00GHz,core i3 8350k 4 00ghz,6862,4,Desktop,CPU-benchmarks-v4
+288,Intel Core i7-4770S @ 3.10GHz,core i7 4770s 3 10ghz,6819,4,Desktop,CPU-benchmarks-v4
+289,Intel Core i7-980X @ 3.33GHz,core i7 980x 3 33ghz,6813,6,Desktop,CPU-benchmarks-v4
+290,AMD Ryzen 3 2200G,ryzen 3 2200g,6781,4,Desktop,CPU-benchmarks-v4
+291,AMD FX-9590 Eight-Core,fx 9590 eight core,6768,4,Desktop,CPU-benchmarks-v4
+292,Intel Core i3-9100F @ 3.60GHz,core i3 9100f 3 60ghz,6768,4,Desktop,CPU-benchmarks-v4
+293,Intel Core i7-6700TE @ 2.40GHz,core i7 6700te 2 40ghz,6734,4,Desktop,CPU-benchmarks-v4
+294,AMD Ryzen 3 PRO 2200G,ryzen 3 pro 2200g,6703,4,Desktop,CPU-benchmarks-v4
+295,Intel Core i5-7640X @ 4.00GHz,core i5 7640x 4 00ghz,6675,4,Desktop,CPU-benchmarks-v4
+296,Intel Core i3-9100 @ 3.60GHz,core i3 9100 3 60ghz,6625,4,Desktop,CPU-benchmarks-v4
+297,Intel Core i5-7600 @ 3.50GHz,core i5 7600 3 50ghz,6598,4,Desktop,CPU-benchmarks-v4
+298,AMD Ryzen 3 2200GE,ryzen 3 2200ge,6537,4,Desktop,CPU-benchmarks-v4
+299,Intel Core i7-4820K @ 3.70GHz,core i7 4820k 3 70ghz,6501,4,Desktop,CPU-benchmarks-v4
+300,Intel Core i7-970 @ 3.20GHz,core i7 970 3 20ghz,6499,6,Desktop,CPU-benchmarks-v4
+301,Intel Core i7-3770K @ 3.50GHz,core i7 3770k 3 50ghz,6462,4,Desktop,CPU-benchmarks-v4
+302,Intel Core i7-4770R @ 3.20GHz,core i7 4770r 3 20ghz,6429,4,Desktop,CPU-benchmarks-v4
+303,Intel Core i7-3770 @ 3.40GHz,core i7 3770 3 40ghz,6397,4,Desktop,CPU-benchmarks-v4
+304,AMD Ryzen 3 PRO 1200,ryzen 3 pro 1200,6347,4,Desktop,CPU-benchmarks-v4
+305,Intel Core i5-6600K @ 3.50GHz,core i5 6600k 3 50ghz,6307,4,Desktop,CPU-benchmarks-v4
+306,AMD Ryzen 3 1200,ryzen 3 1200,6304,4,Desktop,CPU-benchmarks-v4
+307,Intel Core i7-4790T @ 2.70GHz,core i7 4790t 2 70ghz,6291,4,Desktop,CPU-benchmarks-v4
+308,Intel Core i7-3770S @ 3.10GHz,core i7 3770s 3 10ghz,6178,4,Desktop,CPU-benchmarks-v4
+309,Intel Core i3-8100 @ 3.60GHz,core i3 8100 3 60ghz,6163,4,Desktop,CPU-benchmarks-v4
+310,Intel Core i3-9300T @ 3.20GHz,core i3 9300t 3 20ghz,6162,4,Desktop,CPU-benchmarks-v4
+311,Intel Core i3-8300 @ 3.70GHz,core i3 8300 3 70ghz,6136,4,Desktop,CPU-benchmarks-v4
+312,AMD FX-8370 Eight-Core,fx 8370 eight core,6128,4,Desktop,CPU-benchmarks-v4
+313,Intel Core i5-6600 @ 3.30GHz,core i5 6600 3 30ghz,6107,4,Desktop,CPU-benchmarks-v4
+314,Intel Core i7-5675C @ 3.10GHz,core i7 5675c 3 10ghz,6089,4,Desktop,CPU-benchmarks-v4
+315,Intel Core i5-7600T @ 2.80GHz,core i5 7600t 2 80ghz,6073,4,Desktop,CPU-benchmarks-v4
+316,Intel Core i5-7500 @ 3.40GHz,core i5 7500 3 40ghz,6064,4,Desktop,CPU-benchmarks-v4
+317,AMD FX-9370 Eight-Core,fx 9370 eight core,5985,4,Desktop,CPU-benchmarks-v4
+318,AMD FX-8350 Eight-Core,fx 8350 eight core,5969,4,Desktop,CPU-benchmarks-v4
+319,AMD Ryzen 3 PRO 2200GE,ryzen 3 pro 2200ge,5897,4,Desktop,CPU-benchmarks-v4
+320,Intel Core i3-8300T @ 3.20GHz,core i3 8300t 3 20ghz,5827,4,Desktop,CPU-benchmarks-v4
+321,Intel Core i7-3820 @ 3.60GHz,core i7 3820 3 60ghz,5754,4,Desktop,CPU-benchmarks-v4
+322,Intel Core i7-4770T @ 2.50GHz,core i7 4770t 2 50ghz,5748,4,Desktop,CPU-benchmarks-v4
+323,Intel Core i5-6600T @ 2.70GHz,core i5 6600t 2 70ghz,5655,4,Desktop,CPU-benchmarks-v4
+324,Intel Core i5-6500 @ 3.20GHz,core i5 6500 3 20ghz,5655,4,Desktop,CPU-benchmarks-v4
+325,Intel Core i5-4690K @ 3.50GHz,core i5 4690k 3 50ghz,5623,4,Desktop,CPU-benchmarks-v4
+326,Intel Core i7-2700K @ 3.50GHz,core i7 2700k 3 50ghz,5604,4,Desktop,CPU-benchmarks-v4
+327,Intel Core i5-5675R @ 3.10GHz,core i5 5675r 3 10ghz,5589,4,Desktop,CPU-benchmarks-v4
+328,Intel Core i7-3770T @ 2.50GHz,core i7 3770t 2 50ghz,5573,4,Desktop,CPU-benchmarks-v4
+329,Intel Core i5-4690 @ 3.50GHz,core i5 4690 3 50ghz,5572,4,Desktop,CPU-benchmarks-v4
+330,Intel Core i5-5675C @ 3.10GHz,core i5 5675c 3 10ghz,5548,4,Desktop,CPU-benchmarks-v4
+331,Intel Core i5-4670K @ 3.40GHz,core i5 4670k 3 40ghz,5547,4,Desktop,CPU-benchmarks-v4
+332,Intel Core i7-2600K @ 3.40GHz,core i7 2600k 3 40ghz,5500,4,Desktop,CPU-benchmarks-v4
+333,Intel Core i5-7400 @ 3.00GHz,core i5 7400 3 00ghz,5499,4,Desktop,CPU-benchmarks-v4
+334,Intel Core i5-4670 @ 3.40GHz,core i5 4670 3 40ghz,5440,4,Desktop,CPU-benchmarks-v4
+335,Intel Core i7-4785T @ 2.20GHz,core i7 4785t 2 20ghz,5427,4,Desktop,CPU-benchmarks-v4
+336,Intel Core i3-9100T @ 3.10GHz,core i3 9100t 3 10ghz,5419,4,Desktop,CPU-benchmarks-v4
+337,Intel Core i5-6402P @ 2.80GHz,core i5 6402p 2 80ghz,5414,4,Desktop,CPU-benchmarks-v4
+338,AMD FX-8320 Eight-Core,fx 8320 eight core,5409,4,Desktop,CPU-benchmarks-v4
+339,Intel Core i5-4690S @ 3.20GHz,core i5 4690s 3 20ghz,5380,4,Desktop,CPU-benchmarks-v4
+340,Intel Core i5-4590 @ 3.30GHz,core i5 4590 3 30ghz,5344,4,Desktop,CPU-benchmarks-v4
+341,Intel Core i7-2600 @ 3.40GHz,core i7 2600 3 40ghz,5344,4,Desktop,CPU-benchmarks-v4
+342,Intel Core i5-7500T @ 2.70GHz,core i5 7500t 2 70ghz,5319,4,Desktop,CPU-benchmarks-v4
+343,Intel Core i3-8100T @ 3.10GHz,core i3 8100t 3 10ghz,5291,4,Desktop,CPU-benchmarks-v4
+344,AMD FX-8370E Eight-Core,fx 8370e eight core,5235,4,Desktop,CPU-benchmarks-v4
+345,Intel Core i5-4670R @ 3.00GHz,core i5 4670r 3 00ghz,5233,4,Desktop,CPU-benchmarks-v4
+346,AMD FX-8300 Eight-Core,fx 8300 eight core,5223,4,Desktop,CPU-benchmarks-v4
+347,Intel Core i5-4570 @ 3.20GHz,core i5 4570 3 20ghz,5199,4,Desktop,CPU-benchmarks-v4
+348,Intel Core i5-6400 @ 2.70GHz,core i5 6400 2 70ghz,5163,4,Desktop,CPU-benchmarks-v4
+349,AMD FX-8150 Eight-Core,fx 8150 eight core,5158,4,Desktop,CPU-benchmarks-v4
+350,AMD FX-8310 Eight-Core,fx 8310 eight core,5145,4,Desktop,CPU-benchmarks-v4
+351,Intel Core i5-4590S @ 3.00GHz,core i5 4590s 3 00ghz,5095,4,Desktop,CPU-benchmarks-v4
+352,Intel Core i5-5575R @ 2.80GHz,core i5 5575r 2 80ghz,5070,4,Desktop,CPU-benchmarks-v4
+353,Intel Core i7-4765T @ 2.00GHz,core i7 4765t 2 00ghz,5036,4,Desktop,CPU-benchmarks-v4
+354,Intel Core i5-4670K CPT @ 3.40GHz,core i5 4670k cpt 3 40ghz,5034,4,Desktop,CPU-benchmarks-v4
+355,AMD FX-8320E Eight-Core,fx 8320e eight core,4972,4,Desktop,CPU-benchmarks-v4
+356,Intel Core i7-4700EQ @ 2.40GHz,core i7 4700eq 2 40ghz,4941,4,Desktop,CPU-benchmarks-v4
+357,Intel Core i5-3570K @ 3.40GHz,core i5 3570k 3 40ghz,4936,4,Desktop,CPU-benchmarks-v4
+358,Intel Core i5-4670S @ 3.10GHz,core i5 4670s 3 10ghz,4919,4,Desktop,CPU-benchmarks-v4
+359,Intel Core i5-4570S @ 2.90GHz,core i5 4570s 2 90ghz,4914,4,Desktop,CPU-benchmarks-v4
+360,Intel Core i5-3570 @ 3.40GHz,core i5 3570 3 40ghz,4910,4,Desktop,CPU-benchmarks-v4
+361,AMD FX-8140 Eight-Core,fx 8140 eight core,4860,4,Desktop,CPU-benchmarks-v4
+362,Intel Core i3-7320 @ 4.10GHz,core i3 7320 4 10ghz,4856,2,Desktop,CPU-benchmarks-v4
+363,Intel Core i5-6500T @ 2.50GHz,core i5 6500t 2 50ghz,4845,4,Desktop,CPU-benchmarks-v4
+364,Intel Core i5-4460 @ 3.20GHz,core i5 4460 3 20ghz,4834,4,Desktop,CPU-benchmarks-v4
+365,Intel Core i3-7350K @ 4.20GHz,core i3 7350k 4 20ghz,4819,2,Desktop,CPU-benchmarks-v4
+366,Intel Core i5-3550 @ 3.30GHz,core i5 3550 3 30ghz,4783,4,Desktop,CPU-benchmarks-v4
+367,Intel Core i5-6500TE @ 2.30GHz,core i5 6500te 2 30ghz,4776,4,Desktop,CPU-benchmarks-v4
+368,Intel Core i5-4470S @ 3.00GHz,core i5 4470s 3 00ghz,4742,4,Desktop,CPU-benchmarks-v4
+369,Intel Core i5-4440 @ 3.10GHz,core i5 4440 3 10ghz,4718,4,Desktop,CPU-benchmarks-v4
+370,Intel Core i5-7400T @ 2.40GHz,core i5 7400t 2 40ghz,4710,4,Desktop,CPU-benchmarks-v4
+371,Intel Core i3-7300 @ 4.00GHz,core i3 7300 4 00ghz,4703,2,Desktop,CPU-benchmarks-v4
+372,Intel Core i5-4690T @ 2.50GHz,core i5 4690t 2 50ghz,4660,4,Desktop,CPU-benchmarks-v4
+373,Intel Core i5-3470 @ 3.20GHz,core i5 3470 3 20ghz,4657,4,Desktop,CPU-benchmarks-v4
+374,Intel Core i5-4430 @ 3.00GHz,core i5 4430 3 00ghz,4646,4,Desktop,CPU-benchmarks-v4
+375,AMD Athlon Silver PRO 3125GE,athlon silver pro 3125ge,4633,2,Desktop,CPU-benchmarks-v4
+376,Intel Celeron N5095A @ 2.00GHz,celeron n5095a 2 00ghz,4627,4,Desktop,CPU-benchmarks-v4
+377,Intel Core i5-3570S @ 3.10GHz,core i5 3570s 3 10ghz,4620,4,Desktop,CPU-benchmarks-v4
+378,AMD FX-8120 Eight-Core,fx 8120 eight core,4578,4,Desktop,CPU-benchmarks-v4
+379,AMD Athlon 240GE,athlon 240ge,4551,2,Desktop,CPU-benchmarks-v4
+380,Intel Core i5-3550S @ 3.00GHz,core i5 3550s 3 00ghz,4537,4,Desktop,CPU-benchmarks-v4
+381,Intel Core i5-4570R @ 2.70GHz,core i5 4570r 2 70ghz,4527,4,Desktop,CPU-benchmarks-v4
+382,Intel Core i7-2600S @ 2.80GHz,core i7 2600s 2 80ghz,4524,4,Desktop,CPU-benchmarks-v4
+383,Intel Core i5-4460S @ 2.90GHz,core i5 4460s 2 90ghz,4503,4,Desktop,CPU-benchmarks-v4
+384,Intel Core i5-3450 @ 3.10GHz,core i5 3450 3 10ghz,4497,4,Desktop,CPU-benchmarks-v4
+385,Intel Pentium Gold G6605 @ 4.30GHz,pentium gold g6605 4 30ghz,4493,2,Desktop,CPU-benchmarks-v4
+386,AMD Athlon 3000G,athlon 3000g,4480,2,Desktop,CPU-benchmarks-v4
+387,AMD Athlon PRO 300GE,athlon pro 300ge,4475,2,Desktop,CPU-benchmarks-v4
+388,AMD FX-6350 Six-Core,fx 6350 six core,4463,3,Desktop,CPU-benchmarks-v4
+389,AMD FX-6330 Six-Core,fx 6330 six core,4455,3,Desktop,CPU-benchmarks-v4
+390,Intel Pentium Gold G6600 @ 4.20GHz,pentium gold g6600 4 20ghz,4396,2,Desktop,CPU-benchmarks-v4
+391,Intel Core i3-6300 @ 3.80GHz,core i3 6300 3 80ghz,4386,2,Desktop,CPU-benchmarks-v4
+392,Intel Pentium Gold G6505 @ 4.20GHz,pentium gold g6505 4 20ghz,4378,2,Desktop,CPU-benchmarks-v4
+393,Intel Core i3-6320 @ 3.90GHz,core i3 6320 3 90ghz,4372,2,Desktop,CPU-benchmarks-v4
+394,AMD Athlon 300GE,athlon 300ge,4366,2,Desktop,CPU-benchmarks-v4
+395,Intel Core i5-4670T @ 2.30GHz,core i5 4670t 2 30ghz,4361,4,Desktop,CPU-benchmarks-v4
+396,AMD FX-6130 Six-Core,fx 6130 six core,4353,3,Desktop,CPU-benchmarks-v4
+397,Intel Core i5-3470S @ 2.90GHz,core i5 3470s 2 90ghz,4353,4,Desktop,CPU-benchmarks-v4
+398,Intel Core i3-7100 @ 3.90GHz,core i3 7100 3 90ghz,4342,2,Desktop,CPU-benchmarks-v4
+399,Intel Core i5-6400T @ 2.20GHz,core i5 6400t 2 20ghz,4302,4,Desktop,CPU-benchmarks-v4
+400,Intel Pentium Gold G6405 @ 4.10GHz,pentium gold g6405 4 10ghz,4285,2,Desktop,CPU-benchmarks-v4
+401,Intel Core i5-4440S @ 2.80GHz,core i5 4440s 2 80ghz,4277,4,Desktop,CPU-benchmarks-v4
+402,Intel Core i5-3450S @ 2.80GHz,core i5 3450s 2 80ghz,4264,4,Desktop,CPU-benchmarks-v4
+403,Intel Core i7-4770TE @ 2.30GHz,core i7 4770te 2 30ghz,4257,4,Desktop,CPU-benchmarks-v4
+404,AMD Athlon 320GE,athlon 320ge,4237,2,Desktop,CPU-benchmarks-v4
+405,Intel Core i5-3350P @ 3.10GHz,core i5 3350p 3 10ghz,4237,4,Desktop,CPU-benchmarks-v4
+406,AMD Ryzen 3 PRO 2100GE,ryzen 3 pro 2100ge,4187,2,Desktop,CPU-benchmarks-v4
+407,Intel Core i3-6100 @ 3.70GHz,core i3 6100 3 70ghz,4177,2,Desktop,CPU-benchmarks-v4
+408,Intel Core i5-3475S @ 2.90GHz,core i5 3475s 2 90ghz,4177,4,Desktop,CPU-benchmarks-v4
+409,Intel Core i3-6098P @ 3.60GHz,core i3 6098p 3 60ghz,4170,2,Desktop,CPU-benchmarks-v4
+410,Intel Core i5-4430S @ 2.70GHz,core i5 4430s 2 70ghz,4168,4,Desktop,CPU-benchmarks-v4
+411,Intel Core i5-3570T @ 2.30GHz,core i5 3570t 2 30ghz,4168,4,Desktop,CPU-benchmarks-v4
+412,Intel Core i5-3340 @ 3.10GHz,core i5 3340 3 10ghz,4165,4,Desktop,CPU-benchmarks-v4
+413,Intel Pentium Gold G5600F @ 3.90GHz,pentium gold g5600f 3 90ghz,4160,2,Desktop,CPU-benchmarks-v4
+414,Intel Core i3-7300T @ 3.50GHz,core i3 7300t 3 50ghz,4159,2,Desktop,CPU-benchmarks-v4
+415,AMD FX-6300 Six-Core,fx 6300 six core,4155,3,Desktop,CPU-benchmarks-v4
+416,Intel Pentium Gold G6500 @ 4.10GHz,pentium gold g6500 4 10ghz,4147,2,Desktop,CPU-benchmarks-v4
+417,AMD Athlon PRO 200GE,athlon pro 200ge,4139,2,Desktop,CPU-benchmarks-v4
+418,AMD Athlon 200GE,athlon 200ge,4135,2,Desktop,CPU-benchmarks-v4
+419,Intel Pentium Gold G6400 @ 4.00GHz,pentium gold g6400 4 00ghz,4130,2,Desktop,CPU-benchmarks-v4
+420,Intel Core i5-2550K @ 3.40GHz,core i5 2550k 3 40ghz,4123,4,Desktop,CPU-benchmarks-v4
+421,Intel Pentium Gold G5620 @ 4.00GHz,pentium gold g5620 4 00ghz,4102,2,Desktop,CPU-benchmarks-v4
+422,Intel Core i5-3340S @ 2.80GHz,core i5 3340s 2 80ghz,4102,4,Desktop,CPU-benchmarks-v4
+423,Intel Core i5-2500 @ 3.30GHz,core i5 2500 3 30ghz,4101,4,Desktop,CPU-benchmarks-v4
+424,Intel Core i5-2500K @ 3.30GHz,core i5 2500k 3 30ghz,4097,4,Desktop,CPU-benchmarks-v4
+425,Intel Core i5-3330 @ 3.00GHz,core i5 3330 3 00ghz,4090,4,Desktop,CPU-benchmarks-v4
+426,Intel Core i3-6300T @ 3.30GHz,core i3 6300t 3 30ghz,4040,2,Desktop,CPU-benchmarks-v4
+427,Intel Celeron N5095 @ 2.00GHz,celeron n5095 2 00ghz,4010,4,Desktop,CPU-benchmarks-v4
+428,Intel Pentium Gold G6500T @ 3.50GHz,pentium gold g6500t 3 50ghz,4005,2,Desktop,CPU-benchmarks-v4
+429,AMD FX-6200 Six-Core,fx 6200 six core,4001,3,Desktop,CPU-benchmarks-v4
+430,Intel Core i5-4590T @ 2.00GHz,core i5 4590t 2 00ghz,3982,4,Desktop,CPU-benchmarks-v4
+431,Intel Core i5-2450P @ 3.20GHz,core i5 2450p 3 20ghz,3974,4,Desktop,CPU-benchmarks-v4
+432,Intel Core i3-7101TE @ 3.40GHz,core i3 7101te 3 40ghz,3911,2,Desktop,CPU-benchmarks-v4
+433,AMD PRO A12-9800,pro a12 9800,3878,4,Desktop,CPU-benchmarks-v4
+434,AMD A8-7500,a8 7500,3878,2,Desktop,CPU-benchmarks-v4
+435,AMD FX-6120 Six-Core,fx 6120 six core,3863,3,Desktop,CPU-benchmarks-v4
+436,AMD PRO A12-8870,pro a12 8870,3848,4,Desktop,CPU-benchmarks-v4
+437,AMD FX-8100 Eight-Core,fx 8100 eight core,3847,4,Desktop,CPU-benchmarks-v4
+438,Intel Core i5-2400 @ 3.10GHz,core i5 2400 3 10ghz,3840,4,Desktop,CPU-benchmarks-v4
+439,Intel Core i5-3330S @ 2.70GHz,core i5 3330s 2 70ghz,3810,4,Desktop,CPU-benchmarks-v4
+440,Intel Core i3-4370 @ 3.80GHz,core i3 4370 3 80ghz,3807,2,Desktop,CPU-benchmarks-v4
+441,Intel Core i5-2380P @ 3.10GHz,core i5 2380p 3 10ghz,3797,4,Desktop,CPU-benchmarks-v4
+442,Intel Core i3-7100T @ 3.40GHz,core i3 7100t 3 40ghz,3787,2,Desktop,CPU-benchmarks-v4
+443,AMD Athlon X4 845,athlon x4 845,3784,2,Desktop,CPU-benchmarks-v4
+444,Intel Pentium G4620 @ 3.70GHz,pentium g4620 3 70ghz,3777,2,Desktop,CPU-benchmarks-v4
+445,Intel Pentium Gold G5500 @ 3.80GHz,pentium gold g5500 3 80ghz,3770,2,Desktop,CPU-benchmarks-v4
+446,Intel Pentium Gold G5600 @ 3.90GHz,pentium gold g5600 3 90ghz,3769,2,Desktop,CPU-benchmarks-v4
+447,Intel Core i5-3335S @ 2.70GHz,core i5 3335s 2 70ghz,3754,4,Desktop,CPU-benchmarks-v4
+448,AMD PRO A10-8850B,pro a10 8850b,3752,2,Desktop,CPU-benchmarks-v4
+449,Intel Pentium Gold G6405T @ 3.50GHz,pentium gold g6405t 3 50ghz,3746,2,Desktop,CPU-benchmarks-v4
+450,AMD Phenom II X6 1100T,phenom ii x6 1100t,3729,6,Desktop,CPU-benchmarks-v4
+451,Intel Pentium Gold G5400 @ 3.70GHz,pentium gold g5400 3 70ghz,3723,2,Desktop,CPU-benchmarks-v4
+452,Intel Core i3-4360 @ 3.70GHz,core i3 4360 3 70ghz,3688,2,Desktop,CPU-benchmarks-v4
+453,AMD FX-6100 Six-Core,fx 6100 six core,3679,3,Desktop,CPU-benchmarks-v4
+454,AMD Athlon X4 880K,athlon x4 880k,3676,2,Desktop,CPU-benchmarks-v4
+455,AMD Phenom II X6 1090T,phenom ii x6 1090t,3655,6,Desktop,CPU-benchmarks-v4
+456,AMD PRO A10-9700,pro a10 9700,3644,2,Desktop,CPU-benchmarks-v4
+457,Intel Pentium Gold G5420 @ 3.80GHz,pentium gold g5420 3 80ghz,3641,2,Desktop,CPU-benchmarks-v4
+458,Intel Core i5-2320 @ 3.00GHz,core i5 2320 3 00ghz,3632,4,Desktop,CPU-benchmarks-v4
+459,Intel Core i3-6100T @ 3.20GHz,core i3 6100t 3 20ghz,3617,2,Desktop,CPU-benchmarks-v4
+460,AMD Athlon X4 950,athlon x4 950,3611,4,Desktop,CPU-benchmarks-v4
+461,Intel Pentium Gold G6400T @ 3.40GHz,pentium gold g6400t 3 40ghz,3610,2,Desktop,CPU-benchmarks-v4
+462,Intel Pentium G4600 @ 3.60GHz,pentium g4600 3 60ghz,3605,2,Desktop,CPU-benchmarks-v4
+463,Intel Core i5-2310 @ 2.90GHz,core i5 2310 2 90ghz,3603,4,Desktop,CPU-benchmarks-v4
+464,Intel Pentium Gold G5600T @ 3.30GHz,pentium gold g5600t 3 30ghz,3601,2,Desktop,CPU-benchmarks-v4
+465,Intel Core i5-4460T @ 1.90GHz,core i5 4460t 1 90ghz,3595,4,Desktop,CPU-benchmarks-v4
+466,Intel Core i3-4170 @ 3.70GHz,core i3 4170 3 70ghz,3569,2,Desktop,CPU-benchmarks-v4
+467,AMD A10-9700,a10 9700,3546,4,Desktop,CPU-benchmarks-v4
+468,Intel Core i3-4330 @ 3.50GHz,core i3 4330 3 50ghz,3539,2,Desktop,CPU-benchmarks-v4
+469,AMD A10-8850,a10 8850,3525,2,Desktop,CPU-benchmarks-v4
+470,Intel Pentium Silver J5040 @ 2.00GHz,pentium silver j5040 2 00ghz,3518,4,Desktop,CPU-benchmarks-v4
+471,Intel Pentium G4560 @ 3.50GHz,pentium g4560 3 50ghz,3513,2,Desktop,CPU-benchmarks-v4
+472,Intel Pentium Gold G5420T @ 3.20GHz,pentium gold g5420t 3 20ghz,3508,2,Desktop,CPU-benchmarks-v4
+473,Intel Core i3-4340 @ 3.60GHz,core i3 4340 3 60ghz,3506,2,Desktop,CPU-benchmarks-v4
+474,Intel Core i3-4160 @ 3.60GHz,core i3 4160 3 60ghz,3495,2,Desktop,CPU-benchmarks-v4
+475,AMD A10-7870K,a10 7870k,3485,2,Desktop,CPU-benchmarks-v4
+476,AMD A10-7890K,a10 7890k,3477,2,Desktop,CPU-benchmarks-v4
+477,Intel Core i3-4350 @ 3.60GHz,core i3 4350 3 60ghz,3459,2,Desktop,CPU-benchmarks-v4
+478,Intel Core i5-2500S @ 2.70GHz,core i5 2500s 2 70ghz,3459,4,Desktop,CPU-benchmarks-v4
+479,AMD A10 PRO-7850B APU,a10 pro 7850b apu,3458,2,Desktop,CPU-benchmarks-v4
+480,AMD A12-9800E,a12 9800e,3447,4,Desktop,CPU-benchmarks-v4
+481,AMD A12-9800,a12 9800,3447,2,Desktop,CPU-benchmarks-v4
+482,Intel Celeron G6900,celeron g6900,3446,2,Desktop,CPU-benchmarks-v4
+483,AMD Athlon X4 860K,athlon x4 860k,3436,2,Desktop,CPU-benchmarks-v4
+484,AMD PRO A10-8770,pro a10 8770,3434,4,Desktop,CPU-benchmarks-v4
+485,AMD Athlon X4 870K,athlon x4 870k,3383,2,Desktop,CPU-benchmarks-v4
+486,Intel Core i5-2300 @ 2.80GHz,core i5 2300 2 80ghz,3380,4,Desktop,CPU-benchmarks-v4
+487,Intel Core i7-975 @ 3.33GHz,core i7 975 3 33ghz,3370,4,Desktop,CPU-benchmarks-v4
+488,AMD FX-B4150 Quad-Core,fx b4150 quad core,3369,2,Desktop,CPU-benchmarks-v4
+489,Intel Core i3-4370T @ 3.30GHz,core i3 4370t 3 30ghz,3368,2,Desktop,CPU-benchmarks-v4
+490,AMD A10-7850K APU,a10 7850k apu,3363,2,Desktop,CPU-benchmarks-v4
+491,Intel Core i3-4150 @ 3.50GHz,core i3 4150 3 50ghz,3360,2,Desktop,CPU-benchmarks-v4
+492,AMD PRO A8-9600,pro a8 9600,3347,2,Desktop,CPU-benchmarks-v4
+493,AMD Phenom II X6 1405T,phenom ii x6 1405t,3335,6,Desktop,CPU-benchmarks-v4
+494,AMD A10-7860K,a10 7860k,3333,2,Desktop,CPU-benchmarks-v4
+495,AMD FX-4150 Quad-Core,fx 4150 quad core,3327,4,Desktop,CPU-benchmarks-v4
+496,AMD Phenom II X6 1065T,phenom ii x6 1065t,3320,6,Desktop,CPU-benchmarks-v4
+497,AMD A10-8750,a10 8750,3320,2,Desktop,CPU-benchmarks-v4
+498,AMD A8-9600,a8 9600,3291,4,Desktop,CPU-benchmarks-v4
+499,Intel Core i3-4130 @ 3.40GHz,core i3 4130 3 40ghz,3291,2,Desktop,CPU-benchmarks-v4
+500,Intel Core i7-965 @ 3.20GHz,core i7 965 3 20ghz,3288,4,Desktop,CPU-benchmarks-v4
+501,AMD Athlon X4 840,athlon x4 840,3287,2,Desktop,CPU-benchmarks-v4
+502,AMD Phenom II X6 1075T,phenom ii x6 1075t,3284,6,Desktop,CPU-benchmarks-v4
+503,AMD FX-4350 Quad-Core,fx 4350 quad core,3262,2,Desktop,CPU-benchmarks-v4
+504,Intel Core i5-4400E @ 2.70GHz,core i5 4400e 2 70ghz,3251,2,Desktop,CPU-benchmarks-v4
+505,AMD FX-4330,fx 4330,3248,2,Desktop,CPU-benchmarks-v4
+506,Intel Core i7-960 @ 3.20GHz,core i7 960 3 20ghz,3245,4,Desktop,CPU-benchmarks-v4
+507,Intel Core i3-4570T @ 2.90GHz,core i3 4570t 2 90ghz,3244,2,Desktop,CPU-benchmarks-v4
+508,Intel Pentium Gold G5500T @ 3.20GHz,pentium gold g5500t 3 20ghz,3234,2,Desktop,CPU-benchmarks-v4
+509,AMD A8-7670K,a8 7670k,3224,4,Desktop,CPU-benchmarks-v4
+510,AMD A8-7600 APU,a8 7600 apu,3215,2,Desktop,CPU-benchmarks-v4
+511,AMD PRO A8-8650B,pro a8 8650b,3203,4,Desktop,CPU-benchmarks-v4
+512,AMD Phenom II X6 1055T,phenom ii x6 1055t,3195,6,Desktop,CPU-benchmarks-v4
+513,AMD A10 PRO-7800B APU,a10 pro 7800b apu,3184,2,Desktop,CPU-benchmarks-v4
+514,AMD PRO A12-9800E,pro a12 9800e,3182,4,Desktop,CPU-benchmarks-v4
+515,Intel Core i3-4360T @ 3.20GHz,core i3 4360t 3 20ghz,3164,2,Desktop,CPU-benchmarks-v4
+516,Intel Core i3-4170T @ 3.20GHz,core i3 4170t 3 20ghz,3162,2,Desktop,CPU-benchmarks-v4
+517,Intel Core i5-2400S @ 2.50GHz,core i5 2400s 2 50ghz,3160,4,Desktop,CPU-benchmarks-v4
+518,AMD A10-6800K APU,a10 6800k apu,3158,2,Desktop,CPU-benchmarks-v4
+519,Intel Core i7-950 @ 3.07GHz,core i7 950 3 07ghz,3154,4,Desktop,CPU-benchmarks-v4
+520,AMD A10-7700K APU,a10 7700k apu,3153,2,Desktop,CPU-benchmarks-v4
+521,AMD A10-7800 APU,a10 7800 apu,3142,2,Desktop,CPU-benchmarks-v4
+522,Intel Core i5-4570T @ 2.90GHz,core i5 4570t 2 90ghz,3136,2,Desktop,CPU-benchmarks-v4
+523,AMD FX-4200 Quad-Core,fx 4200 quad core,3134,4,Desktop,CPU-benchmarks-v4
+524,Intel Core i3-4160T @ 3.10GHz,core i3 4160t 3 10ghz,3133,2,Desktop,CPU-benchmarks-v4
+525,Intel Pentium G4600T @ 3.00GHz,pentium g4600t 3 00ghz,3130,2,Desktop,CPU-benchmarks-v4
+526,AMD A10-6790K APU,a10 6790k apu,3124,2,Desktop,CPU-benchmarks-v4
+527,Intel Core i7-875K @ 2.93GHz,core i7 875k 2 93ghz,3119,4,Desktop,CPU-benchmarks-v4
+528,Intel Core i5-4200H @ 2.80GHz,core i5 4200h 2 80ghz,3113,2,Desktop,CPU-benchmarks-v4
+529,AMD FX-4170 Quad-Core,fx 4170 quad core,3109,2,Desktop,CPU-benchmarks-v4
+530,AMD PRO A10-8770E,pro a10 8770e,3106,4,Desktop,CPU-benchmarks-v4
+531,Intel Core i5-4570TE @ 2.70GHz,core i5 4570te 2 70ghz,3106,2,Desktop,CPU-benchmarks-v4
+532,Intel Core i3-4330T @ 3.00GHz,core i3 4330t 3 00ghz,3098,2,Desktop,CPU-benchmarks-v4
+533,AMD FX-4320,fx 4320,3092,2,Desktop,CPU-benchmarks-v4
+534,AMD A10-6700 APU,a10 6700 apu,3090,4,Desktop,CPU-benchmarks-v4
+535,Intel Core i3-6100TE @ 2.70GHz,core i3 6100te 2 70ghz,3085,2,Desktop,CPU-benchmarks-v4
+536,AMD PRO A12-8870E,pro a12 8870e,3083,4,Desktop,CPU-benchmarks-v4
+537,Intel Core i7-870 @ 2.93GHz,core i7 870 2 93ghz,3074,4,Desktop,CPU-benchmarks-v4
+538,Intel Core i7-940 @ 2.93GHz,core i7 940 2 93ghz,3066,4,Desktop,CPU-benchmarks-v4
+539,Intel Core i5-24050S @ 2.50GHz,core i5 24050s 2 50ghz,3061,4,Desktop,CPU-benchmarks-v4
+540,Intel Pentium Silver J5005 @ 1.50GHz,pentium silver j5005 1 50ghz,3040,4,Desktop,CPU-benchmarks-v4
+541,AMD Phenom II X6 1045T,phenom ii x6 1045t,3034,6,Desktop,CPU-benchmarks-v4
+542,AMD A8-7650K,a8 7650k,3013,2,Desktop,CPU-benchmarks-v4
+543,Intel Celeron J4125 @ 2.00GHz,celeron j4125 2 00ghz,2994,4,Desktop,CPU-benchmarks-v4
+544,AMD PRO A8-8670E,pro a8 8670e,2989,4,Desktop,CPU-benchmarks-v4
+545,Intel Core i5-2405S @ 2.50GHz,core i5 2405s 2 50ghz,2980,4,Desktop,CPU-benchmarks-v4
+546,AMD A8-6600K APU,a8 6600k apu,2977,2,Desktop,CPU-benchmarks-v4
+547,Intel Core i5-3470T @ 2.90GHz,core i5 3470t 2 90ghz,2958,2,Desktop,CPU-benchmarks-v4
+548,AMD Phenom II X6 1035T,phenom ii x6 1035t,2947,6,Desktop,CPU-benchmarks-v4
+549,AMD A10-9700E,a10 9700e,2947,4,Desktop,CPU-benchmarks-v4
+550,Intel Core i5-2500T @ 2.30GHz,core i5 2500t 2 30ghz,2942,4,Desktop,CPU-benchmarks-v4
+551,AMD Athlon X4 760K Quad Core,athlon x4 760k quad core,2941,2,Desktop,CPU-benchmarks-v4
+552,Intel Celeron G5925 @ 3.60GHz,celeron g5925 3 60ghz,2939,2,Desktop,CPU-benchmarks-v4
+553,AMD FX-4300 Quad-Core,fx 4300 quad core,2937,2,Desktop,CPU-benchmarks-v4
+554,AMD A10-5800K APU,a10 5800k apu,2936,2,Desktop,CPU-benchmarks-v4
+555,Intel Pentium G4520 @ 3.60GHz,pentium g4520 3 60ghz,2926,2,Desktop,CPU-benchmarks-v4
+556,Intel Core i7-880 @ 3.07GHz,core i7 880 3 07ghz,2920,4,Desktop,CPU-benchmarks-v4
+557,Intel Celeron J4105 @ 1.50GHz,celeron j4105 1 50ghz,2911,4,Desktop,CPU-benchmarks-v4
+558,Intel Pentium G4560T @ 2.90GHz,pentium g4560t 2 90ghz,2909,2,Desktop,CPU-benchmarks-v4
+559,AMD Athlon X4 830,athlon x4 830,2901,2,Desktop,CPU-benchmarks-v4
+560,AMD A8-6500B APU,a8 6500b apu,2898,2,Desktop,CPU-benchmarks-v4
+561,AMD FX-670K Quad-Core,fx 670k quad core,2897,2,Desktop,CPU-benchmarks-v4
+562,AMD A10-5800B APU,a10 5800b apu,2897,2,Desktop,CPU-benchmarks-v4
+563,AMD PRO A10-8750B,pro a10 8750b,2897,2,Desktop,CPU-benchmarks-v4
+564,AMD PRO A10-9700E,pro a10 9700e,2896,2,Desktop,CPU-benchmarks-v4
+565,Intel Core i7-860 @ 2.80GHz,core i7 860 2 80ghz,2890,4,Desktop,CPU-benchmarks-v4
+566,Intel Core i7-930 @ 2.80GHz,core i7 930 2 80ghz,2877,4,Desktop,CPU-benchmarks-v4
+567,Intel Core i3-4130T @ 2.90GHz,core i3 4130t 2 90ghz,2874,2,Desktop,CPU-benchmarks-v4
+568,Intel Core i3-4150T @ 3.00GHz,core i3 4150t 3 00ghz,2867,2,Desktop,CPU-benchmarks-v4
+569,AMD A8-6500 APU,a8 6500 apu,2826,2,Desktop,CPU-benchmarks-v4
+570,AMD A10-6800B APU,a10 6800b apu,2824,2,Desktop,CPU-benchmarks-v4
+571,Intel Celeron G5905 @ 3.50GHz,celeron g5905 3 50ghz,2815,2,Desktop,CPU-benchmarks-v4
+572,AMD A8-5600K APU,a8 5600k apu,2803,2,Desktop,CPU-benchmarks-v4
+573,AMD A8 PRO-7600B APU,a8 pro 7600b apu,2793,4,Desktop,CPU-benchmarks-v4
+574,Intel Celeron G5900 @ 3.40GHz,celeron g5900 3 40ghz,2790,2,Desktop,CPU-benchmarks-v4
+575,Intel Core i7-870S @ 2.67GHz,core i7 870s 2 67ghz,2786,4,Desktop,CPU-benchmarks-v4
+576,Intel Core2 Extreme X9775 @ 3.20GHz,core2 extreme x9775 3 20ghz,2780,4,Desktop,CPU-benchmarks-v4
+577,AMD A8-8650,a8 8650,2774,4,Desktop,CPU-benchmarks-v4
+578,Intel Core i7-920 @ 2.67GHz,core i7 920 2 67ghz,2741,4,Desktop,CPU-benchmarks-v4
+579,AMD A10-5700 APU,a10 5700 apu,2735,2,Desktop,CPU-benchmarks-v4
+580,Intel Pentium G4500 @ 3.50GHz,pentium g4500 3 50ghz,2734,2,Desktop,CPU-benchmarks-v4
+581,AMD FX-4130 Quad-Core,fx 4130 quad core,2730,2,Desktop,CPU-benchmarks-v4
+582,Intel Celeron G4950 @ 3.30GHz,celeron g4950 3 30ghz,2714,2,Desktop,CPU-benchmarks-v4
+583,AMD A8-5500B APU,a8 5500b apu,2707,2,Desktop,CPU-benchmarks-v4
+584,Intel Celeron J4115 @ 1.80GHz,celeron j4115 1 80ghz,2706,4,Desktop,CPU-benchmarks-v4
+585,AMD Athlon X4 740 Quad Core,athlon x4 740 quad core,2655,2,Desktop,CPU-benchmarks-v4
+586,Intel Core i3-3250T @ 3.00GHz,core i3 3250t 3 00ghz,2650,2,Desktop,CPU-benchmarks-v4
+587,Intel Celeron G5900T @ 3.20GHz,celeron g5900t 3 20ghz,2648,2,Desktop,CPU-benchmarks-v4
+588,AMD FirePro A320 APU,firepro a320 apu,2634,4,Desktop,CPU-benchmarks-v4
+589,Intel Core2 Extreme X9770 @ 3.20GHz,core2 extreme x9770 3 20ghz,2632,4,Desktop,CPU-benchmarks-v4
+590,Intel Core i5-680 @ 3.60GHz,core i5 680 3 60ghz,2603,2,Desktop,CPU-benchmarks-v4
+591,Intel Pentium G4400 @ 3.30GHz,pentium g4400 3 30ghz,2599,2,Desktop,CPU-benchmarks-v4
+592,Intel Core i5-760 @ 2.80GHz,core i5 760 2 80ghz,2599,4,Desktop,CPU-benchmarks-v4
+593,AMD FX-770K Quad-Core,fx 770k quad core,2578,2,Desktop,CPU-benchmarks-v4
+594,AMD A8-5500 APU,a8 5500 apu,2577,2,Desktop,CPU-benchmarks-v4
+595,AMD Phenom II X4 B65,phenom ii x4 b65,2576,4,Desktop,CPU-benchmarks-v4
+596,Intel Celeron G4930 @ 3.20GHz,celeron g4930 3 20ghz,2571,2,Desktop,CPU-benchmarks-v4
+597,AMD Athlon II X4 557,athlon ii x4 557,2567,4,Desktop,CPU-benchmarks-v4
+598,AMD FX-4100 Quad-Core,fx 4100 quad core,2565,2,Desktop,CPU-benchmarks-v4
+599,AMD Phenom II X4 965,phenom ii x4 965,2546,4,Desktop,CPU-benchmarks-v4
+600,Intel Pentium G4500T @ 3.00GHz,pentium g4500t 3 00ghz,2518,2,Desktop,CPU-benchmarks-v4
+601,Intel Core i5-670 @ 3.47GHz,core i5 670 3 47ghz,2511,2,Desktop,CPU-benchmarks-v4
+602,AMD Phenom II X4 B97,phenom ii x4 b97,2498,4,Desktop,CPU-benchmarks-v4
+603,Intel Core i5-750 @ 2.67GHz,core i5 750 2 67ghz,2495,4,Desktop,CPU-benchmarks-v4
+604,Intel Celeron G5920 @ 3.50GHz,celeron g5920 3 50ghz,2482,2,Desktop,CPU-benchmarks-v4
+605,Intel Core i3-3245 @ 3.40GHz,core i3 3245 3 40ghz,2480,2,Desktop,CPU-benchmarks-v4
+606,AMD Phenom II X4 B55,phenom ii x4 b55,2465,4,Desktop,CPU-benchmarks-v4
+607,Intel Core i5-661 @ 3.33GHz,core i5 661 3 33ghz,2462,2,Desktop,CPU-benchmarks-v4
+608,Intel Core2 Extreme X9650 @ 3.00GHz,core2 extreme x9650 3 00ghz,2455,4,Desktop,CPU-benchmarks-v4
+609,Intel Celeron G4900 @ 3.10GHz,celeron g4900 3 10ghz,2448,2,Desktop,CPU-benchmarks-v4
+610,Intel Core i7-4610Y @ 1.70GHz,core i7 4610y 1 70ghz,2446,2,Desktop,CPU-benchmarks-v4
+611,AMD Phenom II X4 955,phenom ii x4 955,2432,4,Desktop,CPU-benchmarks-v4
+612,Intel Pentium G3470 @ 3.60GHz,pentium g3470 3 60ghz,2428,2,Desktop,CPU-benchmarks-v4
+613,Intel Core i7-860S @ 2.53GHz,core i7 860s 2 53ghz,2424,4,Desktop,CPU-benchmarks-v4
+614,Intel Core2 Quad Q9650 @ 3.00GHz,core2 quad q9650 3 00ghz,2411,4,Desktop,CPU-benchmarks-v4
+615,Intel Celeron G4920 @ 3.20GHz,celeron g4920 3 20ghz,2406,2,Desktop,CPU-benchmarks-v4
+616,Intel Celeron G4900T @ 2.90GHz,celeron g4900t 2 90ghz,2403,2,Desktop,CPU-benchmarks-v4
+617,Intel Core i3-3250 @ 3.50GHz,core i3 3250 3 50ghz,2401,2,Desktop,CPU-benchmarks-v4
+618,Intel Celeron G3950 @ 3.00GHz,celeron g3950 3 00ghz,2369,2,Desktop,CPU-benchmarks-v4
+619,Intel Pentium J4205 @ 1.50GHz,pentium j4205 1 50ghz,2367,4,Desktop,CPU-benchmarks-v4
+620,Intel Core i5-2390T @ 2.70GHz,core i5 2390t 2 70ghz,2364,2,Desktop,CPU-benchmarks-v4
+621,AMD Phenom II X4 840,phenom ii x4 840,2355,4,Desktop,CPU-benchmarks-v4
+622,Intel Core i5-660 @ 3.33GHz,core i5 660 3 33ghz,2352,2,Desktop,CPU-benchmarks-v4
+623,AMD Phenom II X4 B35,phenom ii x4 b35,2341,4,Desktop,CPU-benchmarks-v4
+624,AMD A8-3870K APU,a8 3870k apu,2336,4,Desktop,CPU-benchmarks-v4
+625,AMD Phenom II X4 B95,phenom ii x4 b95,2329,4,Desktop,CPU-benchmarks-v4
+626,Intel Pentium G4400T @ 2.90GHz,pentium g4400t 2 90ghz,2312,2,Desktop,CPU-benchmarks-v4
+627,AMD A10-6700T APU,a10 6700t apu,2311,2,Desktop,CPU-benchmarks-v4
+628,Intel Celeron G3920 @ 2.90GHz,celeron g3920 2 90ghz,2310,2,Desktop,CPU-benchmarks-v4
+629,Intel Celeron G5905T @ 3.30GHz,celeron g5905t 3 30ghz,2310,2,Desktop,CPU-benchmarks-v4
+630,AMD Phenom II X4 B70,phenom ii x4 b70,2303,4,Desktop,CPU-benchmarks-v4
+631,AMD Athlon II X4 645,athlon ii x4 645,2298,4,Desktop,CPU-benchmarks-v4
+632,Intel Core2 Quad Q9550 @ 2.83GHz,core2 quad q9550 2 83ghz,2291,4,Desktop,CPU-benchmarks-v4
+633,Intel Core i3-3240 @ 3.40GHz,core i3 3240 3 40ghz,2287,2,Desktop,CPU-benchmarks-v4
+634,Intel Celeron G3930 @ 2.90GHz,celeron g3930 2 90ghz,2270,2,Desktop,CPU-benchmarks-v4
+635,Intel Core2 Extreme Q6850 @ 3.00GHz,core2 extreme q6850 3 00ghz,2268,4,Desktop,CPU-benchmarks-v4
+636,Intel Core2 Extreme Q6800 @ 2.93GHz,core2 extreme q6800 2 93ghz,2267,4,Desktop,CPU-benchmarks-v4
+637,AMD Phenom II X4 945,phenom ii x4 945,2261,4,Desktop,CPU-benchmarks-v4
+638,Intel Core i3-4330TE @ 2.40GHz,core i3 4330te 2 40ghz,2255,2,Desktop,CPU-benchmarks-v4
+639,AMD A8-3850 APU,a8 3850 apu,2244,4,Desktop,CPU-benchmarks-v4
+640,AMD Phenom II X4 B40,phenom ii x4 b40,2238,4,Desktop,CPU-benchmarks-v4
+641,AMD Phenom II X4 B50,phenom ii x4 b50,2237,4,Desktop,CPU-benchmarks-v4
+642,Intel Celeron J3455 @ 1.50GHz,celeron j3455 1 50ghz,2237,4,Desktop,CPU-benchmarks-v4
+643,AMD Phenom II X4 940,phenom ii x4 940,2228,4,Desktop,CPU-benchmarks-v4
+644,Intel Core i3-3225 @ 3.30GHz,core i3 3225 3 30ghz,2222,2,Desktop,CPU-benchmarks-v4
+645,Intel Celeron G3930TE @ 2.70GHz,celeron g3930te 2 70ghz,2218,2,Desktop,CPU-benchmarks-v4
+646,Intel Core i5-650 @ 3.20GHz,core i5 650 3 20ghz,2215,2,Desktop,CPU-benchmarks-v4
+647,Intel Celeron G3900 @ 2.80GHz,celeron g3900 2 80ghz,2212,2,Desktop,CPU-benchmarks-v4
+648,Intel Celeron G4930T @ 3.00GHz,celeron g4930t 3 00ghz,2209,2,Desktop,CPU-benchmarks-v4
+649,Intel Core i3-3220 @ 3.30GHz,core i3 3220 3 30ghz,2203,2,Desktop,CPU-benchmarks-v4
+650,AMD Phenom II X4 960T,phenom ii x4 960t,2196,4,Desktop,CPU-benchmarks-v4
+651,Intel Core2 Quad Q9500 @ 2.83GHz,core2 quad q9500 2 83ghz,2192,4,Desktop,CPU-benchmarks-v4
+652,AMD Athlon II X4 638 Quad-Core,athlon ii x4 638 quad core,2183,4,Desktop,CPU-benchmarks-v4
+653,AMD Phenom II X4 925,phenom ii x4 925,2173,4,Desktop,CPU-benchmarks-v4
+654,AMD Athlon II X4 640,athlon ii x4 640,2171,4,Desktop,CPU-benchmarks-v4
+655,AMD A8-3820 APU,a8 3820 apu,2165,4,Desktop,CPU-benchmarks-v4
+656,Intel Pentium G3460 @ 3.50GHz,pentium g3460 3 50ghz,2165,2,Desktop,CPU-benchmarks-v4
+657,AMD Athlon II X4 641 Quad-Core,athlon ii x4 641 quad core,2143,4,Desktop,CPU-benchmarks-v4
+658,Intel Celeron J3455E @ 1.50GHz,celeron j3455e 1 50ghz,2139,4,Desktop,CPU-benchmarks-v4
+659,Intel Pentium G3440 @ 3.30GHz,pentium g3440 3 30ghz,2129,2,Desktop,CPU-benchmarks-v4
+660,Intel Pentium G3430 @ 3.30GHz,pentium g3430 3 30ghz,2125,2,Desktop,CPU-benchmarks-v4
+661,Intel Core i3-3210 @ 3.20GHz,core i3 3210 3 20ghz,2112,2,Desktop,CPU-benchmarks-v4
+662,Intel Celeron G3930T @ 2.70GHz,celeron g3930t 2 70ghz,2109,2,Desktop,CPU-benchmarks-v4
+663,Intel Core2 Quad Q9450 @ 2.66GHz,core2 quad q9450 2 66ghz,2109,4,Desktop,CPU-benchmarks-v4
+664,AMD Phenom II X4 B25,phenom ii x4 b25,2108,4,Desktop,CPU-benchmarks-v4
+665,AMD Athlon II X4 635,athlon ii x4 635,2108,4,Desktop,CPU-benchmarks-v4
+666,Intel Pentium G3440T @ 2.80GHz,pentium g3440t 2 80ghz,2107,2,Desktop,CPU-benchmarks-v4
+667,AMD Phenom II X4 B93,phenom ii x4 b93,2104,4,Desktop,CPU-benchmarks-v4
+668,AMD Phenom II X4 820,phenom ii x4 820,2103,4,Desktop,CPU-benchmarks-v4
+669,Intel Core i5-2415M @ 2.30GHz,core i5 2415m 2 30ghz,2094,2,Desktop,CPU-benchmarks-v4
+670,AMD Athlon II X4 630,athlon ii x4 630,2093,4,Desktop,CPU-benchmarks-v4
+671,Intel Core i3-2125 @ 3.30GHz,core i3 2125 3 30ghz,2093,2,Desktop,CPU-benchmarks-v4
+672,Intel Pentium G2140 @ 3.30GHz,pentium g2140 3 30ghz,2092,2,Desktop,CPU-benchmarks-v4
+673,Intel Pentium G3258 @ 3.20GHz,pentium g3258 3 20ghz,2091,2,Desktop,CPU-benchmarks-v4
+674,Intel Pentium G3450 @ 3.40GHz,pentium g3450 3 40ghz,2091,2,Desktop,CPU-benchmarks-v4
+675,AMD Athlon II X4 631 Quad-Core,athlon ii x4 631 quad core,2085,4,Desktop,CPU-benchmarks-v4
+676,Intel Celeron G3900T @ 2.60GHz,celeron g3900t 2 60ghz,2085,2,Desktop,CPU-benchmarks-v4
+677,Intel Core2 Quad Q9400 @ 2.66GHz,core2 quad q9400 2 66ghz,2068,4,Desktop,CPU-benchmarks-v4
+678,Intel Core2 Quad Q6700 @ 2.66GHz,core2 quad q6700 2 66ghz,2062,4,Desktop,CPU-benchmarks-v4
+679,AMD A6-3670 APU,a6 3670 apu,2055,4,Desktop,CPU-benchmarks-v4
+680,Intel Pentium G3260 @ 3.30GHz,pentium g3260 3 30ghz,2049,2,Desktop,CPU-benchmarks-v4
+681,AMD Phenom II X4 910e,phenom ii x4 910e,2044,4,Desktop,CPU-benchmarks-v4
+682,AMD A6-3650 APU,a6 3650 apu,2037,4,Desktop,CPU-benchmarks-v4
+683,Intel Core2 Quad Q8400 @ 2.66GHz,core2 quad q8400 2 66ghz,2036,4,Desktop,CPU-benchmarks-v4
+684,Intel Core i3-2102 @ 3.10GHz,core i3 2102 3 10ghz,2029,2,Desktop,CPU-benchmarks-v4
+685,Intel Core2 Quad Q9505 @ 2.83GHz,core2 quad q9505 2 83ghz,2020,4,Desktop,CPU-benchmarks-v4
+686,Intel Core i5-655K @ 3.20GHz,core i5 655k 3 20ghz,2017,2,Desktop,CPU-benchmarks-v4
+687,Intel Pentium G3450T @ 2.90GHz,pentium g3450t 2 90ghz,2016,2,Desktop,CPU-benchmarks-v4
+688,Intel Core i3-3240T @ 2.90GHz,core i3 3240t 2 90ghz,2013,2,Desktop,CPU-benchmarks-v4
+689,Intel Core2 Extreme Q9200 @ 2.40GHz,core2 extreme q9200 2 40ghz,2011,4,Desktop,CPU-benchmarks-v4
+690,Intel Core i7-2655LE @ 2.20GHz,core i7 2655le 2 20ghz,1999,2,Desktop,CPU-benchmarks-v4
+691,Intel Pentium G3420 @ 3.20GHz,pentium g3420 3 20ghz,1990,2,Desktop,CPU-benchmarks-v4
+692,AMD Athlon X4 750 Quad Core,athlon x4 750 quad core,1986,4,Desktop,CPU-benchmarks-v4
+693,Intel Core i3-2130 @ 3.40GHz,core i3 2130 3 40ghz,1986,2,Desktop,CPU-benchmarks-v4
+694,AMD Athlon II X4 615e,athlon ii x4 615e,1967,4,Desktop,CPU-benchmarks-v4
+695,Intel Core2 Quad Q9300 @ 2.50GHz,core2 quad q9300 2 50ghz,1962,4,Desktop,CPU-benchmarks-v4
+696,AMD Athlon II X4 605e,athlon ii x4 605e,1957,4,Desktop,CPU-benchmarks-v4
+697,Intel Core i3-3220T @ 2.80GHz,core i3 3220t 2 80ghz,1949,2,Desktop,CPU-benchmarks-v4
+698,AMD A8-3800 APU,a8 3800 apu,1939,4,Desktop,CPU-benchmarks-v4
+699,AMD Athlon X4 730,athlon x4 730,1936,2,Desktop,CPU-benchmarks-v4
+700,AMD Athlon II X4 620,athlon ii x4 620,1934,4,Desktop,CPU-benchmarks-v4
+701,AMD A6-7480,a6 7480,1931,2,Desktop,CPU-benchmarks-v4
+702,Intel Pentium G3250 @ 3.20GHz,pentium g3250 3 20ghz,1928,2,Desktop,CPU-benchmarks-v4
+703,Intel Celeron G1850 @ 2.90GHz,celeron g1850 2 90ghz,1926,2,Desktop,CPU-benchmarks-v4
+704,Intel Core i3-2120 @ 3.30GHz,core i3 2120 3 30ghz,1926,2,Desktop,CPU-benchmarks-v4
+705,AMD Athlon II X3 460,athlon ii x3 460,1924,3,Desktop,CPU-benchmarks-v4
+706,AMD Athlon 5370 APU,athlon 5370 apu,1923,4,Desktop,CPU-benchmarks-v4
+707,Intel Pentium G3240 @ 3.10GHz,pentium g3240 3 10ghz,1919,2,Desktop,CPU-benchmarks-v4
+708,Intel Pentium G3420T @ 2.70GHz,pentium g3420t 2 70ghz,1912,2,Desktop,CPU-benchmarks-v4
+709,Intel Core i5-3439Y @ 1.50GHz,core i5 3439y 1 50ghz,1907,2,Desktop,CPU-benchmarks-v4
+710,AMD Phenom II X4 920,phenom ii x4 920,1899,4,Desktop,CPU-benchmarks-v4
+711,AMD Phenom II X4 905e,phenom ii x4 905e,1895,4,Desktop,CPU-benchmarks-v4
+712,Intel Pentium G2130 @ 3.20GHz,pentium g2130 3 20ghz,1895,2,Desktop,CPU-benchmarks-v4
+713,AMD Phenom 9950 Quad-Core,phenom 9950 quad core,1892,4,Desktop,CPU-benchmarks-v4
+714,AMD PRO A6-8570,pro a6 8570,1889,2,Desktop,CPU-benchmarks-v4
+715,AMD PRO A6-8550B,pro a6 8550b,1885,1,Desktop,CPU-benchmarks-v4
+716,Intel Core i5-2515E @ 2.50GHz,core i5 2515e 2 50ghz,1882,2,Desktop,CPU-benchmarks-v4
+717,AMD PRO A6-9500,pro a6 9500,1875,2,Desktop,CPU-benchmarks-v4
+718,AMD Athlon II X4 610e,athlon ii x4 610e,1871,4,Desktop,CPU-benchmarks-v4
+719,Intel Core i3-2105 @ 3.10GHz,core i3 2105 3 10ghz,1871,2,Desktop,CPU-benchmarks-v4
+720,Intel Pentium G2120 @ 3.10GHz,pentium g2120 3 10ghz,1870,2,Desktop,CPU-benchmarks-v4
+721,AMD A6-9500,a6 9500,1864,2,Desktop,CPU-benchmarks-v4
+722,AMD Phenom II X4 810,phenom ii x4 810,1849,4,Desktop,CPU-benchmarks-v4
+723,Intel Pentium G3220 @ 3.00GHz,pentium g3220 3 00ghz,1849,2,Desktop,CPU-benchmarks-v4
+724,Intel Core2 Extreme Q9300 @ 2.53GHz,core2 extreme q9300 2 53ghz,1845,4,Desktop,CPU-benchmarks-v4
+725,AMD Phenom II X4 805,phenom ii x4 805,1844,4,Desktop,CPU-benchmarks-v4
+726,AMD A6-9500E,a6 9500e,1841,2,Desktop,CPU-benchmarks-v4
+727,AMD Athlon II X3 455,athlon ii x3 455,1832,3,Desktop,CPU-benchmarks-v4
+728,AMD A6-3620 APU,a6 3620 apu,1830,4,Desktop,CPU-benchmarks-v4
+729,AMD Phenom II X4 B15e,phenom ii x4 b15e,1825,4,Desktop,CPU-benchmarks-v4
+730,Intel Core i3-2330E @ 2.20GHz,core i3 2330e 2 20ghz,1823,2,Desktop,CPU-benchmarks-v4
+731,Intel Core i3-2100 @ 3.10GHz,core i3 2100 3 10ghz,1819,2,Desktop,CPU-benchmarks-v4
+732,Intel Core i5-4302Y @ 1.60GHz,core i5 4302y 1 60ghz,1817,2,Desktop,CPU-benchmarks-v4
+733,AMD A8-6500T APU,a8 6500t apu,1816,2,Desktop,CPU-benchmarks-v4
+734,Intel Core2 Quad Q8300 @ 2.50GHz,core2 quad q8300 2 50ghz,1814,4,Desktop,CPU-benchmarks-v4
+735,AMD Athlon II X3 445,athlon ii x3 445,1808,3,Desktop,CPU-benchmarks-v4
+736,AMD Phenom 9750 Quad-Core,phenom 9750 quad core,1804,4,Desktop,CPU-benchmarks-v4
+737,AMD A6-7470K,a6 7470k,1799,1,Desktop,CPU-benchmarks-v4
+738,Intel Core2 Quad Q8200 @ 2.33GHz,core2 quad q8200 2 33ghz,1797,4,Desktop,CPU-benchmarks-v4
+739,AMD Athlon X4 530,athlon x4 530,1786,4,Desktop,CPU-benchmarks-v4
+740,AMD Phenom X4 Quad-Core GP-9730,phenom x4 quad core gp 9730,1784,4,Desktop,CPU-benchmarks-v4
+741,Intel Core2 Quad Q6600 @ 2.40GHz,core2 quad q6600 2 40ghz,1778,4,Desktop,CPU-benchmarks-v4
+742,AMD Phenom II X4 910,phenom ii x4 910,1776,4,Desktop,CPU-benchmarks-v4
+743,AMD Athlon II X3 450,athlon ii x3 450,1763,3,Desktop,CPU-benchmarks-v4
+744,Intel Celeron G1840 @ 2.80GHz,celeron g1840 2 80ghz,1758,2,Desktop,CPU-benchmarks-v4
+745,Intel Pentium G3240T @ 2.70GHz,pentium g3240t 2 70ghz,1755,2,Desktop,CPU-benchmarks-v4
+746,Intel Pentium G3260T @ 2.90GHz,pentium g3260t 2 90ghz,1755,2,Desktop,CPU-benchmarks-v4
+747,AMD Athlon 5350 APU,athlon 5350 apu,1737,4,Desktop,CPU-benchmarks-v4
+748,AMD Phenom 9600B Quad-Core,phenom 9600b quad core,1736,4,Desktop,CPU-benchmarks-v4
+749,Intel Pentium G3250T @ 2.80GHz,pentium g3250t 2 80ghz,1726,2,Desktop,CPU-benchmarks-v4
+750,AMD Athlon II X3 440,athlon ii x3 440,1718,3,Desktop,CPU-benchmarks-v4
+751,AMD Athlon II X4 600e,athlon ii x4 600e,1711,4,Desktop,CPU-benchmarks-v4
+752,Intel Pentium G2030 @ 3.00GHz,pentium g2030 3 00ghz,1711,2,Desktop,CPU-benchmarks-v4
+753,Intel Celeron G1630 @ 2.80GHz,celeron g1630 2 80ghz,1707,2,Desktop,CPU-benchmarks-v4
+754,AMD Phenom 9650 Quad-Core,phenom 9650 quad core,1699,4,Desktop,CPU-benchmarks-v4
+755,Intel Core i3-560 @ 3.33GHz,core i3 560 3 33ghz,1696,2,Desktop,CPU-benchmarks-v4
+756,Intel Pentium G2100T @ 2.60GHz,pentium g2100t 2 60ghz,1691,2,Desktop,CPU-benchmarks-v4
+757,Intel Celeron J4025 @ 2.00GHz,celeron j4025 2 00ghz,1688,2,Desktop,CPU-benchmarks-v4
+758,Intel Pentium G2020 @ 2.90GHz,pentium g2020 2 90ghz,1684,2,Desktop,CPU-benchmarks-v4
+759,AMD Phenom 9850 Quad-Core,phenom 9850 quad core,1680,4,Desktop,CPU-benchmarks-v4
+760,AMD A9-9430,a9 9430,1676,2,Desktop,CPU-benchmarks-v4
+761,AMD Athlon II X3 435,athlon ii x3 435,1670,3,Desktop,CPU-benchmarks-v4
+762,Intel Celeron G1820 @ 2.70GHz,celeron g1820 2 70ghz,1670,2,Desktop,CPU-benchmarks-v4
+763,AMD PRO A6-9500E,pro a6 9500e,1662,2,Desktop,CPU-benchmarks-v4
+764,AMD Phenom X4 Quad-Core GP-9600,phenom x4 quad core gp 9600,1649,4,Desktop,CPU-benchmarks-v4
+765,AMD A6-3600 APU,a6 3600 apu,1649,4,Desktop,CPU-benchmarks-v4
+766,AMD A6 PRO-7400B,a6 pro 7400b,1641,1,Desktop,CPU-benchmarks-v4
+767,AMD Phenom 9550 Quad-Core,phenom 9550 quad core,1636,4,Desktop,CPU-benchmarks-v4
+768,Intel Core i3-2100T @ 2.50GHz,core i3 2100t 2 50ghz,1634,2,Desktop,CPU-benchmarks-v4
+769,Intel Pentium G3320TE @ 2.30GHz,pentium g3320te 2 30ghz,1623,2,Desktop,CPU-benchmarks-v4
+770,AMD Phenom 9600 Quad-Core,phenom 9600 quad core,1619,4,Desktop,CPU-benchmarks-v4
+771,Intel Core i5 E 520 @ 2.40GHz,core i5 e 520 2 40ghz,1619,2,Desktop,CPU-benchmarks-v4
+772,AMD A6-6400B APU,a6 6400b apu,1616,1,Desktop,CPU-benchmarks-v4
+773,Intel Celeron G1820T @ 2.40GHz,celeron g1820t 2 40ghz,1614,2,Desktop,CPU-benchmarks-v4
+774,Intel Pentium G2120T @ 2.70GHz,pentium g2120t 2 70ghz,1613,2,Desktop,CPU-benchmarks-v4
+775,AMD A6-8550,a6 8550,1604,2,Desktop,CPU-benchmarks-v4
+776,Intel Core i3-550 @ 3.20GHz,core i3 550 3 20ghz,1588,2,Desktop,CPU-benchmarks-v4
+777,AMD A6-7400K APU,a6 7400k apu,1587,2,Desktop,CPU-benchmarks-v4
+778,Intel Celeron J4005 @ 2.00GHz,celeron j4005 2 00ghz,1581,2,Desktop,CPU-benchmarks-v4
+779,AMD Athlon II X3 425,athlon ii x3 425,1576,3,Desktop,CPU-benchmarks-v4
+780,Intel Celeron G1840T @ 2.50GHz,celeron g1840t 2 50ghz,1576,2,Desktop,CPU-benchmarks-v4
+781,Intel Core i5-3339Y @ 1.50GHz,core i5 3339y 1 50ghz,1569,2,Desktop,CPU-benchmarks-v4
+782,Intel Pentium G3220T @ 2.60GHz,pentium g3220t 2 60ghz,1564,2,Desktop,CPU-benchmarks-v4
+783,AMD A4-6320 APU,a4 6320 apu,1563,1,Desktop,CPU-benchmarks-v4
+784,AMD Phenom II X3 B75,phenom ii x3 b75,1560,3,Desktop,CPU-benchmarks-v4
+785,Intel Celeron G1830 @ 2.80GHz,celeron g1830 2 80ghz,1560,2,Desktop,CPU-benchmarks-v4
+786,Intel Core i5-4200Y @ 1.40GHz,core i5 4200y 1 40ghz,1558,2,Desktop,CPU-benchmarks-v4
+787,AMD Athlon II X3 420e,athlon ii x3 420e,1557,3,Desktop,CPU-benchmarks-v4
+788,AMD Phenom II X3 710,phenom ii x3 710,1554,3,Desktop,CPU-benchmarks-v4
+789,AMD PRO A4-8350B,pro a4 8350b,1552,1,Desktop,CPU-benchmarks-v4
+790,AMD A6-6420B APU,a6 6420b apu,1550,1,Desktop,CPU-benchmarks-v4
+791,AMD A4 PRO-7350B,a4 pro 7350b,1544,1,Desktop,CPU-benchmarks-v4
+792,Intel Pentium G2010 @ 2.80GHz,pentium g2010 2 80ghz,1541,2,Desktop,CPU-benchmarks-v4
+793,AMD Phenom II X3 B73,phenom ii x3 b73,1538,3,Desktop,CPU-benchmarks-v4
+794,AMD A6-6420K APU,a6 6420k apu,1538,2,Desktop,CPU-benchmarks-v4
+795,Intel Core i5-4210Y @ 1.50GHz,core i5 4210y 1 50ghz,1537,2,Desktop,CPU-benchmarks-v4
+796,Intel Pentium G2030T @ 2.60GHz,pentium g2030t 2 60ghz,1535,2,Desktop,CPU-benchmarks-v4
+797,AMD Phenom 9750B Quad-Core,phenom 9750b quad core,1520,4,Desktop,CPU-benchmarks-v4
+798,Intel Core i3-540 @ 3.07GHz,core i3 540 3 07ghz,1516,2,Desktop,CPU-benchmarks-v4
+799,AMD Phenom 9500 Quad-Core,phenom 9500 quad core,1512,4,Desktop,CPU-benchmarks-v4
+800,Intel Celeron G1620T @ 2.40GHz,celeron g1620t 2 40ghz,1507,2,Desktop,CPU-benchmarks-v4
+801,AMD Phenom II X4 900e,phenom ii x4 900e,1505,4,Desktop,CPU-benchmarks-v4
+802,AMD Phenom 9350e Quad-Core,phenom 9350e quad core,1501,4,Desktop,CPU-benchmarks-v4
+803,Intel Pentium G870 @ 3.10GHz,pentium g870 3 10ghz,1495,2,Desktop,CPU-benchmarks-v4
+804,AMD A4-7300 APU,a4 7300 apu,1492,1,Desktop,CPU-benchmarks-v4
+805,AMD PRO A6-8570E,pro a6 8570e,1489,2,Desktop,CPU-benchmarks-v4
+806,Intel Core i3-2120T @ 2.60GHz,core i3 2120t 2 60ghz,1486,2,Desktop,CPU-benchmarks-v4
+807,AMD A4 PRO-7300B APU,a4 pro 7300b apu,1481,1,Desktop,CPU-benchmarks-v4
+808,Intel Core i5-4300Y @ 1.60GHz,core i5 4300y 1 60ghz,1479,2,Desktop,CPU-benchmarks-v4
+809,Intel Celeron G1610 @ 2.60GHz,celeron g1610 2 60ghz,1478,2,Desktop,CPU-benchmarks-v4
+810,AMD Phenom II X3 720,phenom ii x3 720,1466,3,Desktop,CPU-benchmarks-v4
+811,Intel Celeron G1620 @ 2.70GHz,celeron g1620 2 70ghz,1466,2,Desktop,CPU-benchmarks-v4
+812,Intel Pentium J3710 @ 1.60GHz,pentium j3710 1 60ghz,1465,4,Desktop,CPU-benchmarks-v4
+813,AMD Phenom 9450e Quad-Core,phenom 9450e quad core,1455,4,Desktop,CPU-benchmarks-v4
+814,AMD A6-6400K APU,a6 6400k apu,1453,1,Desktop,CPU-benchmarks-v4
+815,Intel Core i3-530 @ 2.93GHz,core i3 530 2 93ghz,1449,2,Desktop,CPU-benchmarks-v4
+816,Intel Core i3-4020Y @ 1.50GHz,core i3 4020y 1 50ghz,1447,2,Desktop,CPU-benchmarks-v4
+817,AMD Athlon II X3 415e,athlon ii x3 415e,1441,3,Desktop,CPU-benchmarks-v4
+818,Intel Pentium G860 @ 3.00GHz,pentium g860 3 00ghz,1437,2,Desktop,CPU-benchmarks-v4
+819,AMD A4-6300 APU,a4 6300 apu,1431,1,Desktop,CPU-benchmarks-v4
+820,AMD Phenom II X3 700e,phenom ii x3 700e,1430,3,Desktop,CPU-benchmarks-v4
+821,AMD A6-5400B APU,a6 5400b apu,1428,1,Desktop,CPU-benchmarks-v4
+822,AMD Phenom 9150e Quad-Core,phenom 9150e quad core,1414,4,Desktop,CPU-benchmarks-v4
+823,AMD Phenom II X2 565,phenom ii x2 565,1405,2,Desktop,CPU-benchmarks-v4
+824,Intel Pentium G6951 @ 2.80GHz,pentium g6951 2 80ghz,1401,2,Desktop,CPU-benchmarks-v4
+825,AMD Phenom 8600B Triple-Core,phenom 8600b triple core,1390,3,Desktop,CPU-benchmarks-v4
+826,AMD Athlon 5150 APU,athlon 5150 apu,1389,4,Desktop,CPU-benchmarks-v4
+827,AMD A6-3500 APU,a6 3500 apu,1382,3,Desktop,CPU-benchmarks-v4
+828,Intel Pentium G850 @ 2.90GHz,pentium g850 2 90ghz,1373,2,Desktop,CPU-benchmarks-v4
+829,Intel Core2 Duo E8600 @ 3.33GHz,core2 duo e8600 3 33ghz,1362,2,Desktop,CPU-benchmarks-v4
+830,AMD Phenom II X2 570,phenom ii x2 570,1360,2,Desktop,CPU-benchmarks-v4
+831,Intel Pentium G645 @ 2.90GHz,pentium g645 2 90ghz,1353,2,Desktop,CPU-benchmarks-v4
+832,Intel Core i3-4010Y @ 1.30GHz,core i3 4010y 1 30ghz,1350,2,Desktop,CPU-benchmarks-v4
+833,AMD A4-5300 APU,a4 5300 apu,1349,2,Desktop,CPU-benchmarks-v4
+834,AMD Phenom 8750 Triple-Core,phenom 8750 triple core,1343,3,Desktop,CPU-benchmarks-v4
+835,Intel Pentium G2020T @ 2.50GHz,pentium g2020t 2 50ghz,1337,2,Desktop,CPU-benchmarks-v4
+836,Intel Celeron G1610T @ 2.30GHz,celeron g1610t 2 30ghz,1334,2,Desktop,CPU-benchmarks-v4
+837,AMD Athlon II X3 405e,athlon ii x3 405e,1331,3,Desktop,CPU-benchmarks-v4
+838,AMD A4-6300B APU,a4 6300b apu,1328,1,Desktop,CPU-benchmarks-v4
+839,Intel Core i5 750S @ 2.40GHz,core i5 750s 2 40ghz,1326,4,Desktop,CPU-benchmarks-v4
+840,AMD Athlon II X3 400e,athlon ii x3 400e,1320,3,Desktop,CPU-benchmarks-v4
+841,Intel Core i5-4202Y @ 1.60GHz,core i5 4202y 1 60ghz,1309,2,Desktop,CPU-benchmarks-v4
+842,AMD Phenom II X2 555,phenom ii x2 555,1308,2,Desktop,CPU-benchmarks-v4
+843,AMD Phenom X4 Quad-Core GP-9500,phenom x4 quad core gp 9500,1297,4,Desktop,CPU-benchmarks-v4
+844,Intel Pentium G6960 @ 2.93GHz,pentium g6960 2 93ghz,1293,2,Desktop,CPU-benchmarks-v4
+845,AMD Phenom 8850B Triple-Core,phenom 8850b triple core,1281,3,Desktop,CPU-benchmarks-v4
+846,AMD Phenom 9100e Quad-Core,phenom 9100e quad core,1279,4,Desktop,CPU-benchmarks-v4
+847,AMD A6-5400K APU,a6 5400k apu,1279,1,Desktop,CPU-benchmarks-v4
+848,AMD A6-9230,a6 9230,1279,2,Desktop,CPU-benchmarks-v4
+849,AMD Sempron 240,sempron 240,1278,2,Desktop,CPU-benchmarks-v4
+850,Intel Pentium G630 @ 2.70GHz,pentium g630 2 70ghz,1277,2,Desktop,CPU-benchmarks-v4
+851,Intel Pentium G640 @ 2.80GHz,pentium g640 2 80ghz,1270,2,Desktop,CPU-benchmarks-v4
+852,Intel Celeron G555 @ 2.70GHz,celeron g555 2 70ghz,1268,2,Desktop,CPU-benchmarks-v4
+853,Intel Pentium J2900 @ 2.41GHz,pentium j2900 2 41ghz,1246,4,Desktop,CPU-benchmarks-v4
+854,Intel Core2 Duo E8500 @ 3.16GHz,core2 duo e8500 3 16ghz,1238,2,Desktop,CPU-benchmarks-v4
+855,AMD Athlon II X2 270,athlon ii x2 270,1234,2,Desktop,CPU-benchmarks-v4
+856,AMD Athlon II X2 265,athlon ii x2 265,1233,2,Desktop,CPU-benchmarks-v4
+857,AMD Phenom X4 Quad-Core GP-9530,phenom x4 quad core gp 9530,1228,4,Desktop,CPU-benchmarks-v4
+858,Intel Celeron J3160 @ 1.60GHz,celeron j3160 1 60ghz,1227,4,Desktop,CPU-benchmarks-v4
+859,AMD A4-4020 APU,a4 4020 apu,1225,2,Desktop,CPU-benchmarks-v4
+860,AMD Phenom II X3 705e,phenom ii x3 705e,1222,3,Desktop,CPU-benchmarks-v4
+861,AMD A4-5300B APU,a4 5300b apu,1220,2,Desktop,CPU-benchmarks-v4
+862,AMD Phenom 8450 Triple-Core,phenom 8450 triple core,1214,3,Desktop,CPU-benchmarks-v4
+863,AMD Phenom 8600 Triple-Core,phenom 8600 triple core,1210,3,Desktop,CPU-benchmarks-v4
+864,Intel Pentium G620 @ 2.60GHz,pentium g620 2 60ghz,1207,2,Desktop,CPU-benchmarks-v4
+865,AMD Phenom 8650 Triple-Core,phenom 8650 triple core,1205,3,Desktop,CPU-benchmarks-v4
+866,Intel Celeron G550 @ 2.60GHz,celeron g550 2 60ghz,1200,2,Desktop,CPU-benchmarks-v4
+867,AMD A4-4000 APU,a4 4000 apu,1190,1,Desktop,CPU-benchmarks-v4
+868,AMD Phenom 8750B Triple-Core,phenom 8750b triple core,1188,3,Desktop,CPU-benchmarks-v4
+869,AMD Athlon II X2 B28,athlon ii x2 b28,1177,2,Desktop,CPU-benchmarks-v4
+870,Intel Pentium G840 @ 2.80GHz,pentium g840 2 80ghz,1175,2,Desktop,CPU-benchmarks-v4
+871,Intel Celeron G540T @ 2.10GHz,celeron g540t 2 10ghz,1174,2,Desktop,CPU-benchmarks-v4
+872,AMD Phenom II X2 550,phenom ii x2 550,1169,2,Desktop,CPU-benchmarks-v4
+873,Intel Core2 Duo E8400 @ 3.00GHz,core2 duo e8400 3 00ghz,1169,2,Desktop,CPU-benchmarks-v4
+874,Intel Pentium E6800 @ 3.33GHz,pentium e6800 3 33ghz,1166,2,Desktop,CPU-benchmarks-v4
+875,Intel Pentium E5800 @ 3.20GHz,pentium e5800 3 20ghz,1165,2,Desktop,CPU-benchmarks-v4
+876,Intel Pentium G645T @ 2.50GHz,pentium g645t 2 50ghz,1164,2,Desktop,CPU-benchmarks-v4
+877,AMD Athlon II X2 255,athlon ii x2 255,1163,2,Desktop,CPU-benchmarks-v4
+878,Intel Core2 Duo E7600 @ 3.06GHz,core2 duo e7600 3 06ghz,1161,2,Desktop,CPU-benchmarks-v4
+879,AMD Athlon II X2 250e,athlon ii x2 250e,1155,2,Desktop,CPU-benchmarks-v4
+880,AMD Sempron 3850 APU,sempron 3850 apu,1153,4,Desktop,CPU-benchmarks-v4
+881,Intel Pentium E6700 @ 3.20GHz,pentium e6700 3 20ghz,1152,2,Desktop,CPU-benchmarks-v4
+882,AMD Phenom II X2 B55,phenom ii x2 b55,1151,2,Desktop,CPU-benchmarks-v4
+883,AMD Phenom 8850 Triple-Core,phenom 8850 triple core,1142,3,Desktop,CPU-benchmarks-v4
+884,Intel Core2 Duo E6850 @ 3.00GHz,core2 duo e6850 3 00ghz,1140,2,Desktop,CPU-benchmarks-v4
+885,Intel Pentium G640T @ 2.40GHz,pentium g640t 2 40ghz,1139,2,Desktop,CPU-benchmarks-v4
+886,Intel Celeron J1900 @ 1.99GHz,celeron j1900 1 99ghz,1137,4,Desktop,CPU-benchmarks-v4
+887,AMD Phenom 8450e Triple-Core,phenom 8450e triple core,1134,3,Desktop,CPU-benchmarks-v4
+888,AMD Phenom II X2 B53,phenom ii x2 b53,1126,2,Desktop,CPU-benchmarks-v4
+889,Intel Celeron G1820TE @ 2.20GHz,celeron g1820te 2 20ghz,1115,2,Desktop,CPU-benchmarks-v4
+890,AMD Phenom 8250 Triple-Core,phenom 8250 triple core,1114,3,Desktop,CPU-benchmarks-v4
+891,AMD Athlon II X2 260,athlon ii x2 260,1113,2,Desktop,CPU-benchmarks-v4
+892,Intel Celeron G540 @ 2.50GHz,celeron g540 2 50ghz,1110,2,Desktop,CPU-benchmarks-v4
+893,AMD Phenom II X2 545,phenom ii x2 545,1107,2,Desktop,CPU-benchmarks-v4
+894,AMD Athlon II X2 210e,athlon ii x2 210e,1105,2,Desktop,CPU-benchmarks-v4
+895,Intel Celeron G550T @ 2.20GHz,celeron g550t 2 20ghz,1102,2,Desktop,CPU-benchmarks-v4
+896,Intel Celeron G530 @ 2.40GHz,celeron g530 2 40ghz,1096,2,Desktop,CPU-benchmarks-v4
+897,AMD A4-3420 APU,a4 3420 apu,1094,2,Desktop,CPU-benchmarks-v4
+898,Intel Core2 Duo E7500 @ 2.93GHz,core2 duo e7500 2 93ghz,1090,2,Desktop,CPU-benchmarks-v4
+899,Intel Celeron G1101 @ 2.27GHz,celeron g1101 2 27ghz,1086,2,Desktop,CPU-benchmarks-v4
+900,AMD Phenom 8250e Triple-Core,phenom 8250e triple core,1084,3,Desktop,CPU-benchmarks-v4
+901,AMD Athlon II X2 250,athlon ii x2 250,1083,2,Desktop,CPU-benchmarks-v4
+902,AMD Phenom 8400 Triple-Core,phenom 8400 triple core,1079,3,Desktop,CPU-benchmarks-v4
+903,AMD Athlon II X2 245e,athlon ii x2 245e,1075,2,Desktop,CPU-benchmarks-v4
+904,AMD Athlon II X2 B24,athlon ii x2 b24,1073,2,Desktop,CPU-benchmarks-v4
+905,Intel Pentium E6500 @ 2.93GHz,pentium e6500 2 93ghz,1073,2,Desktop,CPU-benchmarks-v4
+906,Intel Pentium E6600 @ 3.06GHz,pentium e6600 3 06ghz,1072,2,Desktop,CPU-benchmarks-v4
+907,AMD A4-3400 APU,a4 3400 apu,1066,2,Desktop,CPU-benchmarks-v4
+908,Intel Core2 Duo E8200 @ 2.66GHz,core2 duo e8200 2 66ghz,1064,2,Desktop,CPU-benchmarks-v4
+909,Intel Pentium G6950 @ 2.80GHz,pentium g6950 2 80ghz,1061,2,Desktop,CPU-benchmarks-v4
+910,Intel Celeron G530T @ 2.00GHz,celeron g530t 2 00ghz,1056,2,Desktop,CPU-benchmarks-v4
+911,AMD Athlon II X2 235e,athlon ii x2 235e,1049,2,Desktop,CPU-benchmarks-v4
+912,Intel Atom E3845 @ 1.91GHz,atom e3845 1 91ghz,1038,4,Desktop,CPU-benchmarks-v4
+913,AMD Athlon 7850 Dual-Core,athlon 7850 dual core,1037,2,Desktop,CPU-benchmarks-v4
+914,AMD Athlon II X2 B22,athlon ii x2 b22,1036,2,Desktop,CPU-benchmarks-v4
+915,Intel Core2 Duo E8300 @ 2.83GHz,core2 duo e8300 2 83ghz,1034,2,Desktop,CPU-benchmarks-v4
+916,Intel Pentium G630T @ 2.30GHz,pentium g630t 2 30ghz,1029,2,Desktop,CPU-benchmarks-v4
+917,AMD Athlon II X2 220,athlon ii x2 220,1024,2,Desktop,CPU-benchmarks-v4
+918,AMD Athlon II X2 245,athlon ii x2 245,1022,2,Desktop,CPU-benchmarks-v4
+919,Intel Pentium E5700 @ 3.00GHz,pentium e5700 3 00ghz,1017,2,Desktop,CPU-benchmarks-v4
+920,Intel Pentium J2850 @ 2.41GHz,pentium j2850 2 41ghz,1016,4,Desktop,CPU-benchmarks-v4
+921,Intel Core2 Duo E6700 @ 2.66GHz,core2 duo e6700 2 66ghz,1012,2,Desktop,CPU-benchmarks-v4
+922,Intel Core2 Duo E6750 @ 2.66GHz,core2 duo e6750 2 66ghz,1010,2,Desktop,CPU-benchmarks-v4
+923,Intel Pentium E5500 @ 2.80GHz,pentium e5500 2 80ghz,1010,2,Desktop,CPU-benchmarks-v4
+924,Intel Core i3-3229Y @ 1.40GHz,core i3 3229y 1 40ghz,1004,2,Desktop,CPU-benchmarks-v4
+925,Intel Pentium E6300 @ 2.80GHz,pentium e6300 2 80ghz,1000,2,Desktop,CPU-benchmarks-v4
+926,Intel Pentium Extreme Edition 965 @ 3.73GHz,pentium extreme edition 965 3 73ghz,987,2,Desktop,CPU-benchmarks-v4
+927,AMD Athlon II X2 240e,athlon ii x2 240e,980,2,Desktop,CPU-benchmarks-v4
+928,Intel Core2 Duo E7400 @ 2.80GHz,core2 duo e7400 2 80ghz,980,2,Desktop,CPU-benchmarks-v4
+929,AMD Phenom X3 8550,phenom x3 8550,976,3,Desktop,CPU-benchmarks-v4
+930,AMD Athlon 64 FX-74,athlon 64 fx 74,972,2,Desktop,CPU-benchmarks-v4
+931,AMD A4-3300 APU,a4 3300 apu,971,2,Desktop,CPU-benchmarks-v4
+932,AMD Athlon 64 X2 Dual Core 6400+,athlon 64 x2 dual core 6400,967,2,Desktop,CPU-benchmarks-v4
+933,Intel Core2 Duo E7300 @ 2.66GHz,core2 duo e7300 2 66ghz,964,2,Desktop,CPU-benchmarks-v4
+934,AMD Athlon II X2 215,athlon ii x2 215,959,2,Desktop,CPU-benchmarks-v4
+935,AMD E2-3200 APU,e2 3200 apu,953,2,Desktop,CPU-benchmarks-v4
+936,AMD Athlon 7750 Dual-Core,athlon 7750 dual core,951,2,Desktop,CPU-benchmarks-v4
+937,Intel Core2 Duo E7200 @ 2.53GHz,core2 duo e7200 2 53ghz,947,2,Desktop,CPU-benchmarks-v4
+938,AMD Athlon 64 FX-62 Dual Core,athlon 64 fx 62 dual core,943,2,Desktop,CPU-benchmarks-v4
+939,Intel Celeron J1850 @ 1.99GHz,celeron j1850 1 99ghz,942,4,Desktop,CPU-benchmarks-v4
+940,Intel Pentium E5400 @ 2.70GHz,pentium e5400 2 70ghz,936,2,Desktop,CPU-benchmarks-v4
+941,AMD Athlon II X2 240,athlon ii x2 240,935,2,Desktop,CPU-benchmarks-v4
+942,Intel Celeron E3500 @ 2.70GHz,celeron e3500 2 70ghz,935,2,Desktop,CPU-benchmarks-v4
+943,AMD Sempron X2 198 Dual-Core,sempron x2 198 dual core,930,2,Desktop,CPU-benchmarks-v4
+944,AMD Athlon 64 X2 Dual Core 5600+,athlon 64 x2 dual core 5600,923,2,Desktop,CPU-benchmarks-v4
+945,AMD E2-9030,e2 9030,922,2,Desktop,CPU-benchmarks-v4
+946,AMD Athlon 64 X2 Dual Core 6000+,athlon 64 x2 dual core 6000,919,2,Desktop,CPU-benchmarks-v4
+947,AMD Athlon 64 X2 Dual Core 5400+,athlon 64 x2 dual core 5400,910,2,Desktop,CPU-benchmarks-v4
+948,Intel Pentium E5300 @ 2.60GHz,pentium e5300 2 60ghz,906,2,Desktop,CPU-benchmarks-v4
+949,Intel Core2 Duo E6600 @ 2.40GHz,core2 duo e6600 2 40ghz,901,2,Desktop,CPU-benchmarks-v4
+950,Intel Pentium G620T @ 2.20GHz,pentium g620t 2 20ghz,896,2,Desktop,CPU-benchmarks-v4
+951,Athlon 64 Dual Core 5600+,athlon 64 dual core 5600,875,2,Desktop,CPU-benchmarks-v4
+952,Intel Core2 Duo E6550 @ 2.33GHz,core2 duo e6550 2 33ghz,875,2,Desktop,CPU-benchmarks-v4
+953,AMD Athlon 5200 Dual-Core,athlon 5200 dual core,869,2,Desktop,CPU-benchmarks-v4
+954,AMD Athlon II X2 4450e,athlon ii x2 4450e,867,2,Desktop,CPU-benchmarks-v4
+955,Intel Pentium E5200 @ 2.50GHz,pentium e5200 2 50ghz,867,2,Desktop,CPU-benchmarks-v4
+956,Intel Celeron E3200 @ 2.40GHz,celeron e3200 2 40ghz,860,2,Desktop,CPU-benchmarks-v4
+957,AMD Athlon 7550 Dual-Core,athlon 7550 dual core,859,2,Desktop,CPU-benchmarks-v4
+958,Athlon 64 Dual Core 5000+,athlon 64 dual core 5000,850,2,Desktop,CPU-benchmarks-v4
+959,Intel Celeron E3300 @ 2.50GHz,celeron e3300 2 50ghz,837,2,Desktop,CPU-benchmarks-v4
+960,AMD Athlon Dual Core 5000B,athlon dual core 5000b,835,2,Desktop,CPU-benchmarks-v4
+961,AMD Athlon 5000 Dual-Core,athlon 5000 dual core,835,2,Desktop,CPU-benchmarks-v4
+962,Intel Core2 Duo E4600 @ 2.40GHz,core2 duo e4600 2 40ghz,829,2,Desktop,CPU-benchmarks-v4
+963,Intel Celeron E3400 @ 2.60GHz,celeron e3400 2 60ghz,829,2,Desktop,CPU-benchmarks-v4
+964,AMD Athlon Dual Core 5400B,athlon dual core 5400b,826,2,Desktop,CPU-benchmarks-v4
+965,Intel Core2 Extreme X6800 @ 2.93GHz,core2 extreme x6800 2 93ghz,823,2,Desktop,CPU-benchmarks-v4
+966,AMD Athlon 64 X2 Dual Core 5200+,athlon 64 x2 dual core 5200,812,2,Desktop,CPU-benchmarks-v4
+967,Intel Core2 Duo E4700 @ 2.60GHz,core2 duo e4700 2 60ghz,811,2,Desktop,CPU-benchmarks-v4
+968,Intel Core2 Duo E6540 @ 2.33GHz,core2 duo e6540 2 33ghz,808,2,Desktop,CPU-benchmarks-v4
+969,AMD Athlon64 X2 Dual Core 4600+,athlon64 x2 dual core 4600,803,2,Desktop,CPU-benchmarks-v4
+970,AMD Athlon 64 X2 Dual Core 5800+,athlon 64 x2 dual core 5800,797,2,Desktop,CPU-benchmarks-v4
+971,AMD Athlon Dual Core 5200B,athlon dual core 5200b,796,2,Desktop,CPU-benchmarks-v4
+972,Intel Pentium E2220 @ 2.40GHz,pentium e2220 2 40ghz,793,2,Desktop,CPU-benchmarks-v4
+973,AMD Athlon 7450 Dual-Core,athlon 7450 dual core,789,2,Desktop,CPU-benchmarks-v4
+974,Intel Core2 Duo E6400 @ 2.13GHz,core2 duo e6400 2 13ghz,772,2,Desktop,CPU-benchmarks-v4
+975,Athlon Dual Core 4850e,athlon dual core 4850e,769,2,Desktop,CPU-benchmarks-v4
+976,AMD Athlon 64 X2 Dual Core 5000+,athlon 64 x2 dual core 5000,760,2,Desktop,CPU-benchmarks-v4
+977,Intel Pentium E2200 @ 2.20GHz,pentium e2200 2 20ghz,752,2,Desktop,CPU-benchmarks-v4
+978,AMD Athlon Dual Core 5050e,athlon dual core 5050e,748,2,Desktop,CPU-benchmarks-v4
+979,Intel Celeron 1047UE @ 1.40GHz,celeron 1047ue 1 40ghz,748,2,Desktop,CPU-benchmarks-v4
+980,Intel Pentium D 960 @ 3.60GHz,pentium d 960 3 60ghz,743,2,Desktop,CPU-benchmarks-v4
+981,AMD Athlon Dual Core 5600B,athlon dual core 5600b,737,2,Desktop,CPU-benchmarks-v4
+982,AMD Athlon Dual Core 4850e,athlon dual core 4850e,735,2,Desktop,CPU-benchmarks-v4
+983,AMD Athlon Dual Core 4850B,athlon dual core 4850b,727,2,Desktop,CPU-benchmarks-v4
+984,AMD Athlon 64 X2 Dual Core 4800+,athlon 64 x2 dual core 4800,722,2,Desktop,CPU-benchmarks-v4
+985,Intel Core2 Duo E4500 @ 2.20GHz,core2 duo e4500 2 20ghz,718,2,Desktop,CPU-benchmarks-v4
+986,AMD Athlon 64 X2 Dual Core 4600+,athlon 64 x2 dual core 4600,716,2,Desktop,CPU-benchmarks-v4
+987,Intel Core2 Duo E6420 @ 2.13GHz,core2 duo e6420 2 13ghz,714,2,Desktop,CPU-benchmarks-v4
+988,Intel Celeron E1600 @ 2.40GHz,celeron e1600 2 40ghz,712,2,Desktop,CPU-benchmarks-v4
+989,AMD Athlon 64 FX-60 Dual Core,athlon 64 fx 60 dual core,709,2,Desktop,CPU-benchmarks-v4
+990,Intel Pentium E2210 @ 2.20GHz,pentium e2210 2 20ghz,702,2,Desktop,CPU-benchmarks-v4
+991,AMD Athlon Dual Core 4450e,athlon dual core 4450e,698,2,Desktop,CPU-benchmarks-v4
+992,AMD Athlon 64 X2 Dual Core 4400+,athlon 64 x2 dual core 4400,691,2,Desktop,CPU-benchmarks-v4
+993,Intel Celeron G470 @ 2.00GHz,celeron g470 2 00ghz,691,1,Desktop,CPU-benchmarks-v4
+994,AMD Athlon X2 Dual Core BE-2400,athlon x2 dual core be 2400,688,2,Desktop,CPU-benchmarks-v4
+995,AMD Athlon Dual Core 4450B,athlon dual core 4450b,684,2,Desktop,CPU-benchmarks-v4
+996,Athlon Dual Core 4450e,athlon dual core 4450e,681,2,Desktop,CPU-benchmarks-v4
+997,Intel Pentium D 950 @ 3.40GHz,pentium d 950 3 40ghz,679,2,Desktop,CPU-benchmarks-v4
+998,AMD Athlon II X2 270u,athlon ii x2 270u,675,2,Desktop,CPU-benchmarks-v4
+999,AMD Athlon 64 X2 Dual Core 4200+,athlon 64 x2 dual core 4200,672,2,Desktop,CPU-benchmarks-v4
+1000,Intel Pentium E2180 @ 2.00GHz,pentium e2180 2 00ghz,671,2,Desktop,CPU-benchmarks-v4
+1001,Intel Celeron E1400 @ 2.00GHz,celeron e1400 2 00ghz,671,2,Desktop,CPU-benchmarks-v4
+1002,Athlon Dual Core 4050e,athlon dual core 4050e,670,2,Desktop,CPU-benchmarks-v4
+1003,Intel Celeron J3060 @ 1.60GHz,celeron j3060 1 60ghz,668,2,Desktop,CPU-benchmarks-v4
+1004,VIA QuadCore U4650 @ 1.0+ GHz,via quadcore u4650 1 0 ghz,666,4,Desktop,CPU-benchmarks-v4
+1005,AMD Athlon II X2 260u,athlon ii x2 260u,663,2,Desktop,CPU-benchmarks-v4
+1006,AMD Athlon 64 X2 Dual Core 4000+,athlon 64 x2 dual core 4000,661,2,Desktop,CPU-benchmarks-v4
+1007,Intel Celeron E1500 @ 2.20GHz,celeron e1500 2 20ghz,649,2,Desktop,CPU-benchmarks-v4
+1008,Intel Pentium E2160 @ 1.80GHz,pentium e2160 1 80ghz,636,2,Desktop,CPU-benchmarks-v4
+1009,Intel Core2 Duo E4400 @ 2.00GHz,core2 duo e4400 2 00ghz,632,2,Desktop,CPU-benchmarks-v4
+1010,AMD Athlon Dual Core 4050e,athlon dual core 4050e,616,2,Desktop,CPU-benchmarks-v4
+1011,AMD Athlon 64 X2 Dual Core 3800+,athlon 64 x2 dual core 3800,611,2,Desktop,CPU-benchmarks-v4
+1012,AMD Athlon II X2 250u,athlon ii x2 250u,604,2,Desktop,CPU-benchmarks-v4
+1013,Intel Core2 Duo E6320 @ 1.86GHz,core2 duo e6320 1 86ghz,597,2,Desktop,CPU-benchmarks-v4
+1014,AMD Athlon 64 X2 Dual Core 3600+,athlon 64 x2 dual core 3600,596,2,Desktop,CPU-benchmarks-v4
+1015,Intel Celeron J1750 @ 2.41GHz,celeron j1750 2 41ghz,595,2,Desktop,CPU-benchmarks-v4
+1016,AMD Athlon 64 X2 Dual Core BE-2300,athlon 64 x2 dual core be 2300,594,2,Desktop,CPU-benchmarks-v4
+1017,Intel Core2 Duo E6300 @ 1.86GHz,core2 duo e6300 1 86ghz,592,2,Desktop,CPU-benchmarks-v4
+1018,AMD Athlon X2 Dual Core BE-2350,athlon x2 dual core be 2350,591,2,Desktop,CPU-benchmarks-v4
+1019,Intel Celeron J1800 @ 2.41GHz,celeron j1800 2 41ghz,581,2,Desktop,CPU-benchmarks-v4
+1020,Intel Celeron 1019Y @ 1.00GHz,celeron 1019y 1 00ghz,576,2,Desktop,CPU-benchmarks-v4
+1021,AMD Athlon 64 X2 Dual Core BE-2350,athlon 64 x2 dual core be 2350,573,2,Desktop,CPU-benchmarks-v4
+1022,AMD Athlon X2 Dual Core BE-2300,athlon x2 dual core be 2300,570,2,Desktop,CPU-benchmarks-v4
+1023,AMD Athlon 64 X2 3800+,athlon 64 x2 3800,566,2,Desktop,CPU-benchmarks-v4
+1024,AMD Sempron 2650 APU,sempron 2650 apu,561,2,Desktop,CPU-benchmarks-v4
+1025,Intel Core2 Duo E4300 @ 1.80GHz,core2 duo e4300 1 80ghz,561,2,Desktop,CPU-benchmarks-v4
+1026,Intel Pentium E2140 @ 1.60GHz,pentium e2140 1 60ghz,549,2,Desktop,CPU-benchmarks-v4
+1027,AMD Athlon 64 X2 Dual Core 3400+,athlon 64 x2 dual core 3400,531,2,Desktop,CPU-benchmarks-v4
+1028,AMD Athlon 64 FX-57,athlon 64 fx 57,517,1,Desktop,CPU-benchmarks-v4
+1029,AMD Sempron 145,sempron 145,505,1,Desktop,CPU-benchmarks-v4
+1030,AMD Sempron 150,sempron 150,498,1,Desktop,CPU-benchmarks-v4
+1031,Intel Pentium D 940 @ 3.20GHz,pentium d 940 3 20ghz,498,2,Desktop,CPU-benchmarks-v4
+1032,Intel Celeron G460 @ 1.80GHz,celeron g460 1 80ghz,494,1,Desktop,CPU-benchmarks-v4
+1033,Intel Pentium D 830 @ 3.00GHz,pentium d 830 3 00ghz,494,2,Desktop,CPU-benchmarks-v4
+1034,Intel Atom D2700 @ 2.13GHz,atom d2700 2 13ghz,492,2,Desktop,CPU-benchmarks-v4
+1035,Intel Celeron E1200 @ 1.60GHz,celeron e1200 1 60ghz,492,2,Desktop,CPU-benchmarks-v4
+1036,AMD Athlon 64 3100+,athlon 64 3100,484,1,Desktop,CPU-benchmarks-v4
+1037,Intel Celeron G465 @ 1.90GHz,celeron g465 1 90ghz,480,1,Desktop,CPU-benchmarks-v4
+1038,AMD Sempron 140,sempron 140,471,1,Desktop,CPU-benchmarks-v4
+1039,Intel Pentium Extreme Edition 955 @ 3.46GHz,pentium extreme edition 955 3 46ghz,469,2,Desktop,CPU-benchmarks-v4
+1040,AMD Athlon 64 FX-59,athlon 64 fx 59,465,1,Desktop,CPU-benchmarks-v4
+1041,Intel Celeron 450 @ 2.20GHz,celeron 450 2 20ghz,445,1,Desktop,CPU-benchmarks-v4
+1042,AMD E2-1800 APU,e2 1800 apu,442,2,Desktop,CPU-benchmarks-v4
+1043,Intel Atom D2560 @ 2.00GHz,atom d2560 2 00ghz,433,2,Desktop,CPU-benchmarks-v4
+1044,AMD Athlon LE-1640,athlon le 1640,430,1,Desktop,CPU-benchmarks-v4
+1045,Intel Celeron G440 @ 1.60GHz,celeron g440 1 60ghz,426,1,Desktop,CPU-benchmarks-v4
+1046,Intel Pentium D 915 @ 2.80GHz,pentium d 915 2 80ghz,423,2,Desktop,CPU-benchmarks-v4
+1047,AMD Athlon LE-1620,athlon le 1620,421,1,Desktop,CPU-benchmarks-v4
+1048,AMD Athlon LE-1660,athlon le 1660,416,1,Desktop,CPU-benchmarks-v4
+1049,AMD Athlon LE-1600,athlon le 1600,412,1,Desktop,CPU-benchmarks-v4
+1050,AMD Athlon 1640B,athlon 1640b,412,1,Desktop,CPU-benchmarks-v4
+1051,Intel Atom D2550 @ 1.86GHz,atom d2550 1 86ghz,408,2,Desktop,CPU-benchmarks-v4
+1052,AMD Athlon 64 FX-55,athlon 64 fx 55,404,1,Desktop,CPU-benchmarks-v4
+1053,Intel Atom D510 @ 1.66GHz,atom d510 1 66ghz,404,2,Desktop,CPU-benchmarks-v4
+1054,AMD Sempron LE-1300,sempron le 1300,400,1,Desktop,CPU-benchmarks-v4
+1055,Intel Atom D525 @ 1.80GHz,atom d525 1 80ghz,399,2,Desktop,CPU-benchmarks-v4
+1056,AMD Athlon 64 3700+,athlon 64 3700,394,1,Desktop,CPU-benchmarks-v4
+1057,Intel Core Duo L2300 @ 1.50GHz,core duo l2300 1 50ghz,387,2,Desktop,CPU-benchmarks-v4
+1058,Intel Atom E3825 @ 1.33GHz,atom e3825 1 33ghz,385,2,Desktop,CPU-benchmarks-v4
+1059,Intel Pentium 4 3.73GHz,pentium 4 3 73ghz,385,1,Desktop,CPU-benchmarks-v4
+1060,Intel Pentium D 805 @ 2.66GHz,pentium d 805 2 66ghz,374,2,Desktop,CPU-benchmarks-v4
+1061,Intel Celeron D 360 @ 3.46GHz,celeron d 360 3 46ghz,372,1,Desktop,CPU-benchmarks-v4
+1062,Intel Atom 330 @ 1.60GHz,atom 330 1 60ghz,371,2,Desktop,CPU-benchmarks-v4
+1063,Intel Celeron 440 @ 2.00GHz,celeron 440 2 00ghz,368,1,Desktop,CPU-benchmarks-v4
+1064,AMD Sempron 3600+,sempron 3600,364,1,Desktop,CPU-benchmarks-v4
+1065,AMD Sempron 3800+,sempron 3800,360,1,Desktop,CPU-benchmarks-v4
+1066,AMD Athlon II 160u,athlon ii 160u,358,1,Desktop,CPU-benchmarks-v4
+1067,AMD Athlon II 170u,athlon ii 170u,357,1,Desktop,CPU-benchmarks-v4
+1068,AMD Sempron LE-1200,sempron le 1200,349,1,Desktop,CPU-benchmarks-v4
+1069,AMD Athlon 2850e,athlon 2850e,333,1,Desktop,CPU-benchmarks-v4
+1070,Intel Pentium 4 3.20GHz,pentium 4 3 20ghz,326,1,Desktop,CPU-benchmarks-v4
+1071,Intel Core Duo T2050 @ 1.60GHz,core duo t2050 1 60ghz,320,2,Desktop,CPU-benchmarks-v4
+1072,AMD Sempron 3300+,sempron 3300,315,1,Desktop,CPU-benchmarks-v4
+1073,AMD Sempron LE-1100,sempron le 1100,315,1,Desktop,CPU-benchmarks-v4
+1074,Intel Pentium 4 3.60GHz,pentium 4 3 60ghz,315,1,Desktop,CPU-benchmarks-v4
+1075,Intel Celeron D 420 @ 1.60GHz,celeron d 420 1 60ghz,313,1,Desktop,CPU-benchmarks-v4
+1076,Intel Pentium 4 3.00GHz,pentium 4 3 00ghz,313,1,Desktop,CPU-benchmarks-v4
+1077,Intel Pentium 4 3.80GHz,pentium 4 3 80ghz,313,1,Desktop,CPU-benchmarks-v4
+1078,AMD Athlon 64 3000+,athlon 64 3000,303,1,Desktop,CPU-benchmarks-v4
+1079,AMD Sempron LE-1250,sempron le 1250,301,1,Desktop,CPU-benchmarks-v4
+1080,AMD Sempron 3100+,sempron 3100,298,1,Desktop,CPU-benchmarks-v4
+1081,Intel Pentium 4 3.46GHz,pentium 4 3 46ghz,295,1,Desktop,CPU-benchmarks-v4
+1082,Intel Celeron 430 @ 1.80GHz,celeron 430 1 80ghz,293,1,Desktop,CPU-benchmarks-v4
+1083,Intel Pentium 4 3.40GHz,pentium 4 3 40ghz,293,1,Desktop,CPU-benchmarks-v4
+1084,AMD Sempron 3400+,sempron 3400,292,1,Desktop,CPU-benchmarks-v4
+1085,AMD Sempron 3200+,sempron 3200,288,1,Desktop,CPU-benchmarks-v4
+1086,Intel Celeron D 352 @ 3.20GHz,celeron d 352 3 20ghz,283,1,Desktop,CPU-benchmarks-v4
+1087,Intel Atom D2500 @ 1.86GHz,atom d2500 1 86ghz,275,2,Desktop,CPU-benchmarks-v4
+1088,AMD Athlon 2650e,athlon 2650e,274,1,Desktop,CPU-benchmarks-v4
+1089,AMD Sempron 3000+,sempron 3000,268,1,Desktop,CPU-benchmarks-v4
+1090,AMD Athlon XP 3000+,athlon xp 3000,262,1,Desktop,CPU-benchmarks-v4
+1091,AMD Sempron 2600+,sempron 2600,253,1,Desktop,CPU-benchmarks-v4
+1092,AMD Sempron LE-1150,sempron le 1150,251,1,Desktop,CPU-benchmarks-v4
+1093,Intel Celeron D 356 @ 3.33GHz,celeron d 356 3 33ghz,251,1,Desktop,CPU-benchmarks-v4
+1094,Intel Pentium 4 3.06GHz,pentium 4 3 06ghz,249,1,Desktop,CPU-benchmarks-v4
+1095,AMD Sempron 2800+,sempron 2800,243,1,Desktop,CPU-benchmarks-v4
+1096,Intel Pentium 4 2.80GHz,pentium 4 2 80ghz,236,1,Desktop,CPU-benchmarks-v4
+1097,Intel Celeron 420 @ 1.60GHz,celeron 420 1 60ghz,235,1,Desktop,CPU-benchmarks-v4
+1098,AMD Sempron 3500+,sempron 3500,232,1,Desktop,CPU-benchmarks-v4
+1099,Mobile Intel Pentium 4 3.20GHz,mobile pentium 4 3 20ghz,232,1,Desktop,CPU-benchmarks-v4
+1100,Intel Celeron D 347 @ 3.06GHz,celeron d 347 3 06ghz,232,1,Desktop,CPU-benchmarks-v4
+1101,Intel Atom D425 @ 1.80GHz,atom d425 1 80ghz,222,1,Desktop,CPU-benchmarks-v4
+1102,Mobile Intel Pentium 4 3.06GHz,mobile pentium 4 3 06ghz,220,1,Desktop,CPU-benchmarks-v4
+1103,Intel Pentium 4 2.60GHz,pentium 4 2 60ghz,215,1,Desktop,CPU-benchmarks-v4
+1104,Intel Atom 230 @ 1.60GHz,atom 230 1 60ghz,210,1,Desktop,CPU-benchmarks-v4
+1105,Intel Celeron 220 @ 1.20GHz,celeron 220 1 20ghz,209,1,Desktop,CPU-benchmarks-v4
+1106,AMD Sempron 2300+,sempron 2300,207,1,Desktop,CPU-benchmarks-v4
+1107,AMD Sempron 2500+,sempron 2500,207,1,Desktop,CPU-benchmarks-v4
+1108,Mobile Intel Pentium 4 2.80GHz,mobile pentium 4 2 80ghz,205,1,Desktop,CPU-benchmarks-v4
+1109,AMD Sempron 2400+,sempron 2400,205,1,Desktop,CPU-benchmarks-v4
+1110,AMD Athlon XP 1800+,athlon xp 1800,195,1,Desktop,CPU-benchmarks-v4
+1111,AMD Athlon XP 2000+,athlon xp 2000,195,1,Desktop,CPU-benchmarks-v4
+1112,Intel Pentium III 1400S @ 1400MHz,pentium iii 1400s 1400mhz,194,1,Desktop,CPU-benchmarks-v4
+1113,Intel Pentium III 1400 @ 1400MHz,pentium iii 1400 1400mhz,193,1,Desktop,CPU-benchmarks-v4
+1114,Intel Celeron 2.80GHz,celeron 2 80ghz,190,1,Desktop,CPU-benchmarks-v4
+1115,AMD Sempron 2200+,sempron 2200,184,1,Desktop,CPU-benchmarks-v4
+1116,Mobile Intel Pentium 4 2.66GHz,mobile pentium 4 2 66ghz,182,1,Desktop,CPU-benchmarks-v4
+1117,Intel Atom D410 @ 1.66GHz,atom d410 1 66ghz,177,1,Desktop,CPU-benchmarks-v4
+1118,AMD Athlon XP 1700+,athlon xp 1700,176,1,Desktop,CPU-benchmarks-v4
+1119,Intel Pentium 4 2.53GHz,pentium 4 2 53ghz,162,1,Desktop,CPU-benchmarks-v4
+1120,Intel Pentium 4 2.50GHz,pentium 4 2 50ghz,160,1,Desktop,CPU-benchmarks-v4
+1121,Intel Atom E3815 @ 1.46GHz,atom e3815 1 46ghz,159,1,Desktop,CPU-benchmarks-v4
+1122,Intel Pentium 4 2.20GHz,pentium 4 2 20ghz,157,1,Desktop,CPU-benchmarks-v4
+1123,Intel Pentium 4 2.66GHz,pentium 4 2 66ghz,157,1,Desktop,CPU-benchmarks-v4
+1124,Intel Pentium 4 3.83GHz,pentium 4 3 83ghz,154,1,Desktop,CPU-benchmarks-v4
+1125,Intel Pentium 4 2.26GHz,pentium 4 2 26ghz,151,1,Desktop,CPU-benchmarks-v4
+1126,VIA C7-D 1800MHz,via c7 d 1800mhz,150,1,Desktop,CPU-benchmarks-v4
+1127,Intel Pentium 4 2.93GHz,pentium 4 2 93ghz,150,1,Desktop,CPU-benchmarks-v4
+1128,Intel Pentium 4 2.00GHz,pentium 4 2 00ghz,133,1,Desktop,CPU-benchmarks-v4
+1129,Intel Pentium 4 2.40GHz,pentium 4 2 40ghz,131,1,Desktop,CPU-benchmarks-v4
+1130,Intel Celeron 2.00GHz,celeron 2 00ghz,125,1,Desktop,CPU-benchmarks-v4
+1131,Intel Pentium 4 1.80GHz,pentium 4 1 80ghz,115,1,Desktop,CPU-benchmarks-v4
+1132,Intel Pentium 4 1800MHz,pentium 4 1800mhz,114,1,Desktop,CPU-benchmarks-v4
+1133,Intel Pentium 4 1.90GHz,pentium 4 1 90ghz,104,1,Desktop,CPU-benchmarks-v4
+1134,Intel Pentium 4 1700MHz,pentium 4 1700mhz,100,1,Desktop,CPU-benchmarks-v4
+1135,Intel Celeron 1.80GHz,celeron 1 80ghz,96,1,Desktop,CPU-benchmarks-v4
+1136,Intel Pentium 4 1.50GHz,pentium 4 1 50ghz,86,1,Desktop,CPU-benchmarks-v4
+1137,Intel Pentium 4 1.70GHz,pentium 4 1 70ghz,86,1,Desktop,CPU-benchmarks-v4
+1138,Intel Pentium 4 1.60GHz,pentium 4 1 60ghz,84,1,Desktop,CPU-benchmarks-v4
+1139,Intel Pentium 4 1400MHz,pentium 4 1400mhz,83,1,Desktop,CPU-benchmarks-v4
+1140,Intel Pentium 4 1500MHz,pentium 4 1500mhz,81,1,Desktop,CPU-benchmarks-v4
+1141,Intel Pentium 4 1300MHz,pentium 4 1300mhz,77,1,Desktop,CPU-benchmarks-v4
+1142,Apple M1 Max 10 Core 3200 MHz,apple m1 max 10 core 3200 mhz,22566,10,"Desktop, Laptop",CPU-benchmarks-v4
+1143,Apple M1 Pro 10 Core 3200 MHz,apple m1 pro 10 core 3200 mhz,22314,10,"Desktop, Laptop",CPU-benchmarks-v4
+1144,Apple M1 Pro 8 Core 3200 MHz,apple m1 pro 8 core 3200 mhz,17521,8,"Desktop, Laptop",CPU-benchmarks-v4
+1145,Intel Core i7-9700TE @ 1.80GHz,core i7 9700te 1 80ghz,10826,8,"Desktop, Laptop",CPU-benchmarks-v4
+1146,Intel Core i5-9400F @ 2.90GHz,core i5 9400f 2 90ghz,9544,6,"Desktop, Laptop",CPU-benchmarks-v4
+1147,Intel Core i7-9850HL @ 1.90GHz,core i7 9850hl 1 90ghz,9112,6,"Desktop, Laptop",CPU-benchmarks-v4
+1148,Intel Core i5-10300H @ 2.50GHz,core i5 10300h 2 50ghz,8692,4,"Desktop, Laptop",CPU-benchmarks-v4
+1149,Intel Core i7-7Y75 @ 1.30GHz,core i7 7y75 1 30ghz,2666,2,"Desktop, Laptop",CPU-benchmarks-v4
+1150,AMD R-272F APU,r 272f apu,1215,2,"Desktop, Laptop",CPU-benchmarks-v4
+1151,Intel Celeron J3355 @ 2.00GHz,celeron j3355 2 00ghz,1195,2,"Desktop, Laptop",CPU-benchmarks-v4
+1152,AMD E-350,e 350,414,2,"Desktop, Laptop",CPU-benchmarks-v4
+1153,AMD E-350 APU,e 350 apu,401,2,"Desktop, Laptop",CPU-benchmarks-v4

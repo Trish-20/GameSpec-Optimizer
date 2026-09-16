@@ -1,64 +1,122 @@
 <?php
 
-require_once __DIR__ . '/../benchmark-resolver.php';
+declare(strict_types=1);
 
-$search = trim((string) ($_GET['search'] ?? ''));
+require_once __DIR__ . '/../db.php';
 
-if ($search !== '') {
-    require_once __DIR__ . '/../rawg-steam-client.php';
-    header('Content-Type: application/json; charset=utf-8');
+header('Content-Type: application/json; charset=utf-8');
 
-    if (strlen($search) > 100) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Search term must be 100 characters or fewer.']);
-        exit;
+try {
+    $database = databaseConnection();
+    $search = trim((string) ($_GET['search'] ?? ''));
+    $genre = trim((string) ($_GET['genre'] ?? ''));
+    $page = max(1, (int) ($_GET['page'] ?? 1));
+    $limit = max(1, min(100, (int) ($_GET['limit'] ?? 50)));
+    $offset = ($page - 1) * $limit;
+
+    $conditions = [
+        'g.is_active = 1',
+        'g.steam_app_id IS NOT NULL',
+        'EXISTS (
+            SELECT 1
+            FROM game_requirements minimum_requirements
+            INNER JOIN game_benchmark_matches minimum_matches
+                ON minimum_matches.requirement_id = minimum_requirements.requirement_id
+            WHERE minimum_requirements.game_id = g.game_id
+              AND minimum_requirements.requirement_type = "minimum"
+              AND minimum_matches.hardware_type IN ("cpu", "gpu", "ram")
+              AND minimum_matches.benchmark_score IS NOT NULL
+            GROUP BY minimum_requirements.requirement_id
+            HAVING COUNT(DISTINCT minimum_matches.hardware_type) = 3
+        )',
+    ];
+    $parameters = [];
+
+    if ($search !== '') {
+        $conditions[] = 'g.title LIKE :search';
+        $parameters['search'] = '%' . $search . '%';
     }
 
-    try {
-        echo json_encode(getGameFromRawgAndSteam($search), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-    } catch (Throwable $error) {
-        http_response_code(502);
-        echo json_encode(['error' => $error->getMessage()]);
+    if ($genre !== '') {
+        $conditions[] = 'JSON_SEARCH(g.genres, "one", :genre) IS NOT NULL';
+        $parameters['genre'] = $genre;
     }
-    exit;
-}
 
-$csvFile = __DIR__ . '/../../DATA/game-requirements.csv';
-$games = [];
+    $sql = 'SELECT g.* FROM games g WHERE ' . implode(' AND ', $conditions) . ' ORDER BY g.title ASC LIMIT :limit OFFSET :offset';
+    $statement = $database->prepare($sql);
+    foreach ($parameters as $name => $value) {
+        $statement->bindValue(':' . $name, $value, PDO::PARAM_STR);
+    }
+    $statement->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $statement->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $statement->execute();
 
-if (($handle = fopen($csvFile, 'r')) !== FALSE) {
-    $header = fgetcsv($handle); // skip header
-    
-    while (($row = fgetcsv($handle)) !== FALSE) {
-        $cpuModel = trim((string) ($row[1] ?? ''));
-        $gpuModel = trim((string) ($row[2] ?? ''));
-        $ramCapacityGb = (int) ($row[3] ?? 0);
-        $ramSpeedMhz = (int) ($row[4] ?? 0);
-        $benchmarks = resolveGameBenchmarks($cpuModel, $gpuModel, $ramCapacityGb, $ramSpeedMhz);
+    $requirementsStatement = $database->prepare(
+        'SELECT r.*, m.hardware_type, m.required_text, m.matched_model, m.matched_capacity_gb,
+                m.matched_speed_mhz, m.benchmark_score, m.match_status, m.benchmark_source_version,
+                m.resolved_at
+         FROM game_requirements r
+         LEFT JOIN game_benchmark_matches m ON m.requirement_id = r.requirement_id
+         WHERE r.game_id = :game_id
+         ORDER BY FIELD(r.requirement_type, "minimum", "recommended"), m.hardware_type'
+    );
+
+    $games = [];
+    foreach ($statement->fetchAll() as $row) {
+        $requirements = [
+            'minimum' => ['os' => null, 'cpu' => null, 'gpu' => null, 'ram' => null, 'storage' => null, 'ram_capacity_gb' => null, 'ram_speed_mhz' => null],
+            'recommended' => ['os' => null, 'cpu' => null, 'gpu' => null, 'ram' => null, 'storage' => null, 'ram_capacity_gb' => null, 'ram_speed_mhz' => null],
+        ];
+        $benchmarks = ['minimum' => ['cpu' => null, 'gpu' => null, 'ram' => null], 'recommended' => ['cpu' => null, 'gpu' => null, 'ram' => null]];
+
+        $requirementsStatement->execute(['game_id' => $row['game_id']]);
+        foreach ($requirementsStatement->fetchAll() as $requirement) {
+            $type = $requirement['requirement_type'];
+            $requirements[$type] = [
+                'os' => $requirement['operating_system'],
+                'cpu' => $requirement['cpu_text'],
+                'gpu' => $requirement['gpu_text'],
+                'ram' => $requirement['ram_text'],
+                'storage' => $requirement['storage_text'],
+                'ram_capacity_gb' => $requirement['ram_capacity_gb'] !== null ? (int) $requirement['ram_capacity_gb'] : null,
+                'ram_speed_mhz' => $requirement['ram_speed_mhz'] !== null ? (int) $requirement['ram_speed_mhz'] : null,
+            ];
+
+            if ($requirement['hardware_type'] !== null) {
+                $hardwareType = $requirement['hardware_type'];
+                $benchmarks[$type][$hardwareType] = [
+                    'required_text' => $requirement['required_text'],
+                    'matched_model' => $requirement['matched_model'],
+                    'matched_capacity_gb' => $requirement['matched_capacity_gb'] !== null ? (int) $requirement['matched_capacity_gb'] : null,
+                    'matched_speed_mhz' => $requirement['matched_speed_mhz'] !== null ? (int) $requirement['matched_speed_mhz'] : null,
+                    'score' => $requirement['benchmark_score'] !== null ? (int) $requirement['benchmark_score'] : null,
+                    'match_status' => $requirement['match_status'],
+                    'source_version' => $requirement['benchmark_source_version'],
+                    'resolved_at' => $requirement['resolved_at'],
+                ];
+            }
+        }
 
         $games[] = [
-            'title' => str_replace('_', ' ', $row[0]), // processed for display
-            'title_raw' => $row[0], // raaaaaaaaaaaaaaaaaw
-            'cpu_model' => $cpuModel,
-            'cpu_benchmark' => $benchmarks['cpu_benchmark'],
-            'gpu_model' => $gpuModel,
-            'gpu_benchmark' => $benchmarks['gpu_benchmark'],
-            'ram_model' => $ramCapacityGb . ' GB DDR4-' . $ramSpeedMhz,
-            'ram_capacity_gb' => $ramCapacityGb,
-            'ram_speed_mhz' => $ramSpeedMhz,
-            'ram_benchmark' => $benchmarks['ram_benchmark'],
-            'benchmark_matches' => $benchmarks,
-            'hasBloom' => (int)($row[5] ?? 0),
-            'hasAntiAlias' => (int)($row[6] ?? 0),
-            'hasShadows' => (int)($row[7] ?? 0),
-            'hasVSync' => (int)($row[8] ?? 0),
-            'image' => isset($row[9]) ? $row[9] : '',
-            // Optional description (new column in DATA/game-requirements.csv)
-            'description' => isset($row[10]) ? (string) $row[10] : ''
+            'game_id' => (int) $row['game_id'],
+            'rawg_id' => (int) $row['rawg_id'],
+            'steam_app_id' => (int) $row['steam_app_id'],
+            'title' => $row['title'],
+            'title_raw' => $row['slug'] ?: $row['title'],
+            'slug' => $row['slug'],
+            'description' => $row['description'],
+            'image' => $row['cover_url'],
+            'release_date' => $row['release_date'],
+            'release_year' => $row['release_year'] !== null ? (int) $row['release_year'] : null,
+            'genres' => json_decode((string) $row['genres'], true) ?: [],
+            'platforms' => json_decode((string) $row['platforms'], true) ?: [],
+            'requirements' => $requirements,
+            'benchmarks' => $benchmarks,
         ];
     }
-    fclose($handle);
-}
 
-echo json_encode($games);
-?>
+    echo json_encode($games, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+} catch (Throwable $error) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Unable to retrieve games from the database.']);
+}

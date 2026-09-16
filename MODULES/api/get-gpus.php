@@ -1,43 +1,18 @@
 <?php
-header('Content-Type: application/json');
 
-$csvFile = __DIR__ . '/../../DATA/GPU-benchmarks-v7.csv';
-$gpus = [];
+declare(strict_types=1);
 
-if (($handle = fopen($csvFile, 'r')) !== FALSE) {
-    $header = fgetcsv($handle);
-    
-    while (($row = fgetcsv($handle)) !== FALSE) {
-        if (!empty($row[0]) && !empty($row[1])) {
-            
-            // Only include Desktop GPUs
-            $category = isset($row[8]) ? strtolower($row[8]) : '';
-            if ($category !== 'desktop') {
-                continue;
-            }
-            
-            // Exclude workstation GPUs
-            if (strpos($row[0], 'Quadro') !== false || 
-                strpos($row[0], 'Tesla') !== false ||
-                strpos($row[0], 'TITAN') !== false ||
-                strpos($row[0], 'RTX A') !== false) {
-                continue;
-            }
-            
-            $gpus[] = [
-                'model' => $row[0],
-                'score' => (int)$row[1],
-                'tdp' => isset($row[5]) ? (int)$row[5] : 0
-            ];
-        }
-    }
-    fclose($handle);
+require_once __DIR__ . '/../db.php';
+header('Content-Type: application/json; charset=utf-8');
+
+try {
+    $rows = databaseConnection()->query('SELECT model, score, tdp FROM gpu_benchmarks WHERE category = "Desktop" ORDER BY score DESC')->fetchAll();
+    echo json_encode(array_map(static fn (array $row): array => [
+        'model' => $row['model'],
+        'score' => (int) $row['score'],
+        'tdp' => $row['tdp'] !== null ? (int) $row['tdp'] : 0,
+    ], $rows));
+} catch (Throwable $error) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Unable to retrieve GPU benchmarks.']);
 }
-
-// Sort by score descending
-usort($gpus, function($a, $b) {
-    return $b['score'] - $a['score'];
-});
-
-echo json_encode($gpus);
-?>
