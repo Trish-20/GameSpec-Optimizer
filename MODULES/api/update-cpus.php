@@ -1,45 +1,56 @@
 <?php
 
+declare(strict_types=1);
+
+require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../benchmark-resolver.php';
+
+header('Content-Type: application/json; charset=utf-8');
+
 $input = json_decode(file_get_contents('php://input'), true);
 
-// validation
-if (!$input) {
-    die(json_encode(['success' => false, 'message' => 'Invalid JSON data']));
-}
-if (empty($input['model']) || !isset($input['score'])) {
-    die(json_encode(['success' => false, 'message' => 'Model and score are required']));
+if (!is_array($input)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Invalid JSON data.']);
+    exit;
 }
 
-// process
-$model = trim($input['model']);
-$score = intval($input['score']);
+$model = trim((string) ($input['model'] ?? ''));
+$score = (int) ($input['score'] ?? 0);
 
-$csvFile = __DIR__ . '/../../DATA/CPU-benchmarks.csv';
-// simple validation baka maligaw yung file
-if (!file_exists($csvFile)) {
-    die(json_encode(['success' => false, 'message' => 'CSV file not found']));
+if ($model === '' || $score <= 0) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'CPU model and a positive benchmark score are required.']);
+    exit;
 }
 
-// dupe checker
-if (($handle = fopen($csvFile, 'r')) !== false) {
-    fgetcsv($handle); // Skip header
-    while (($row = fgetcsv($handle)) !== false) {
-        if (strtolower($row[0]) === strtolower($model)) {
-            fclose($handle);
-            die(json_encode(['success' => false, 'message' => 'CPU model already exists']));
-        }
+try {
+    $database = databaseConnection();
+    $normalizedModel = normalizeBenchmarkName($model);
+
+    // Check for duplicate by normalized model name
+    $check = $database->prepare('SELECT cpu_id FROM cpu_benchmarks WHERE normalized_model = :normalized LIMIT 1');
+    $check->execute(['normalized' => $normalizedModel]);
+    if ($check->fetch()) {
+        http_response_code(409);
+        echo json_encode(['success' => false, 'message' => 'A CPU with that model name already exists.']);
+        exit;
     }
-    fclose($handle);
-}
 
-// app new data
-$newRow = [$model, $score, 0, 0];
+    $insert = $database->prepare(
+        'INSERT INTO cpu_benchmarks (model, normalized_model, score, category, source_version)
+         VALUES (:model, :normalized_model, :score, :category, :source_version)'
+    );
+    $insert->execute([
+        'model' => $model,
+        'normalized_model' => $normalizedModel,
+        'score' => $score,
+        'category' => 'Desktop',
+        'source_version' => 'admin',
+    ]);
 
-if (($handle = fopen($csvFile, 'a')) !== false) {
-    fputcsv($handle, $newRow);
-    fclose($handle);
-    die(json_encode(['success' => true, 'message' => 'CPU added successfully']));
-} else {
-    die(json_encode(['success' => false, 'message' => 'Could not write to CSV file']));
+    echo json_encode(['success' => true, 'message' => 'CPU added successfully.']);
+} catch (Throwable $error) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Unable to save CPU benchmark.']);
 }
-?>

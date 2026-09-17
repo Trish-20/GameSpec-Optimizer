@@ -724,29 +724,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Editing is handled as a friendly frontend-only update because the
-            // existing API only supports adding new games (it rejects duplicates).
-            if (editingGameIndex >= 0) {
-                const existing = adminGames[editingGameIndex];
-                if (existing) {
-                    adminGames[editingGameIndex] = {
-                        ...existing,
-                        title,
-                        cpu_model: cpuModel,
-                        gpu_model: gpuModel,
-                        ram_capacity_gb: ramGB,
-                        ram_speed_mhz: ramSpeedMhz,
-                        ram_model: `${ramGB} GB DDR4-${ramSpeedMhz}`,
-                        description: document.getElementById('gameDescription')?.value.trim() || existing.description || ''
-                    };
-                    displayGameList();
-                }
-                gameForm.reset();
-                clearGameCoverPreview();
-                cancelGameEdit();
-                showModal('Success', 'Game information has been updated successfully.');
-                return;
-            }
+            // Both add and edit use the same API endpoint which upserts
+            // the game_requirements row and queues benchmark resolution.
 
             try {
                 const payload = {
@@ -773,7 +752,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 clearGameCoverPreview();
                 cancelGameEdit();
                 await loadAdminGames();
-                showModal('Success', 'Game added successfully.');
+                showModal('Success', result.message || 'Game saved successfully.');
             } catch (error) {
                 showModal('Error', error.message || 'Game could not be saved.');
             }
@@ -783,7 +762,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // CPU Form
     const cpuForm = document.getElementById("cpuForm");
     if (cpuForm) {
-        cpuForm.addEventListener("submit", function(e) {
+        cpuForm.addEventListener("submit", async function(e) {
             e.preventDefault();
 
             const model = document.getElementById('cpuModel')?.value.trim();
@@ -794,26 +773,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            const result = addLocalHardwareItem('cpu', {
-                model,
-                score,
-                cores: 0
-            });
+            try {
+                const response = await fetch('../../../MODULES/api/update-cpus.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model, score })
+                });
+                const result = await response.json();
 
-            if (!result.success) {
-                showModal('Warning', result.message);
-                return;
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || 'CPU could not be saved.');
+                }
+
+                cpuForm.reset();
+                showModal('Success', result.message || 'CPU added successfully.');
+            } catch (error) {
+                showModal('Error', error.message || 'CPU could not be saved.');
             }
-
-            cpuForm.reset();
-            showModal('Success', 'CPU saved locally.');
         });
     }
 
     // GPU Form
     const gpuForm = document.getElementById("gpuForm");
     if (gpuForm) {
-        gpuForm.addEventListener("submit", function(e) {
+        gpuForm.addEventListener("submit", async function(e) {
             e.preventDefault();
 
             const model = document.getElementById('gpuModel')?.value.trim();
@@ -824,25 +807,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            const result = addLocalHardwareItem('gpu', {
-                model,
-                score
-            });
+            try {
+                const response = await fetch('../../../MODULES/api/update-gpus.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model, score })
+                });
+                const result = await response.json();
 
-            if (!result.success) {
-                showModal('Warning', result.message);
-                return;
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || 'GPU could not be saved.');
+                }
+
+                gpuForm.reset();
+                showModal('Success', result.message || 'GPU added successfully.');
+            } catch (error) {
+                showModal('Error', error.message || 'GPU could not be saved.');
             }
-
-            gpuForm.reset();
-            showModal('Success', 'GPU saved locally.');
         });
     }
 
     // RAM Form
     const ramForm = document.getElementById("ramForm");
     if (ramForm) {
-        ramForm.addEventListener("submit", function(e) {
+        ramForm.addEventListener("submit", async function(e) {
             e.preventDefault();
 
             const model = document.getElementById('ramModel')?.value.trim();
@@ -853,18 +841,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            const result = addLocalHardwareItem('ram', {
-                model,
-                score
-            });
+            try {
+                const response = await fetch('../../../MODULES/api/update-ram.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model, score })
+                });
+                const result = await response.json();
 
-            if (!result.success) {
-                showModal('Warning', result.message);
-                return;
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || 'RAM could not be saved.');
+                }
+
+                ramForm.reset();
+                showModal('Success', result.message || 'RAM added successfully.');
+            } catch (error) {
+                showModal('Error', error.message || 'RAM could not be saved.');
             }
-
-            ramForm.reset();
-            showModal('Success', 'RAM saved locally.');
         });
     }
 });
