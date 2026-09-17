@@ -2191,6 +2191,7 @@ function formatGraphicsSetting(name) {
 
 function buildGraphicsSuggestions(fpsDelta, currentQuality) {
     const suggestions = [];
+    Math.round(fpsDelta * 100) / 100;
 
     if (fpsDelta >= 15) {
         suggestions.push(`You have enough headroom to raise visuals by about ${fpsDelta} FPS.`);
@@ -2221,7 +2222,7 @@ function buildGraphicsSuggestions(fpsDelta, currentQuality) {
         suggestions.push(`You are only ${fpsDelta} FPS above the target, so keep settings conservative.`);
         suggestions.push(`Prefer small changes like ${formatGraphicsSetting('Texture Quality')} or ${formatGraphicsSetting('Anti-Aliasing')} only.`);
     } else {
-        const deficit = Math.round(Math.abs(fpsDelta) * 100 / 100);
+        const deficit = Math.round(Math.abs(fpsDelta) * 100 / 100); 
         suggestions.push(`You are about ${deficit} FPS below the target.`);
         suggestions.push(`Lower ${formatGraphicsSetting('Shadow Quality')} first, then disable ${formatGraphicsSetting('Bloom')} if needed.`);
         suggestions.push(`Reduce ${formatGraphicsSetting('Anti-Aliasing')} or switch to FXAA for a quick gain.`);

@@ -54,7 +54,7 @@
                 <label for="graphicsQualitySearch">Graphics Quality:</label>
                 <div class="search-dropdown" id="graphicsQualityDropdown">
                     <input type="text" class="search-input" id="graphicsQualitySearch" placeholder="Search graphics quality..." autocomplete="off">
-                    <input type="hidden" id="graphicsQuality" value="">
+                    <input type="hidden" id="graphicsQuality" value="medium">
                     <div class="dropdown-list" id="graphicsQualityDropdownList"></div>
                 </div>
                 <p class="input-help">Choose the visual quality you plan to use in the game. Higher quality looks better but usually lowers FPS.</p>
