@@ -1152,3 +1152,4 @@ cpu_id,model,normalized_model,score,cores,category,source_version
 1151,Intel Celeron J3355 @ 2.00GHz,celeron j3355 2 00ghz,1195,2,"Desktop, Laptop",CPU-benchmarks-v4
 1152,AMD E-350,e 350,414,2,"Desktop, Laptop",CPU-benchmarks-v4
 1153,AMD E-350 APU,e 350 apu,401,2,"Desktop, Laptop",CPU-benchmarks-v4
+1154,Intel i5-1135G7,i5 1135g7, 26810,6,"Desktop, Laptop",CPU-benchmarks-v4
