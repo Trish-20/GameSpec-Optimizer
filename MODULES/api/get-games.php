@@ -16,20 +16,8 @@ try {
 
     $conditions = [
         'g.is_active = 1',
-        'g.steam_app_id IS NOT NULL',
-        'EXISTS (
-            SELECT 1
-            FROM game_requirements minimum_requirements
-            INNER JOIN game_benchmark_matches minimum_matches
-                ON minimum_matches.requirement_id = minimum_requirements.requirement_id
-            WHERE minimum_requirements.game_id = g.game_id
-              AND minimum_requirements.requirement_type = "minimum"
-              AND minimum_matches.hardware_type IN ("cpu", "gpu", "ram")
-              AND minimum_matches.benchmark_score IS NOT NULL
-            GROUP BY minimum_requirements.requirement_id
-            HAVING COUNT(DISTINCT minimum_matches.hardware_type) = 3
-        )',
     ];
+    
     $parameters = [];
 
     if ($search !== '') {
@@ -38,7 +26,10 @@ try {
     }
 
     if ($genre !== '') {
-        $conditions[] = 'JSON_SEARCH(g.genres, "one", :genre) IS NOT NULL';
+        // JSON_SEARCH is case-sensitive, so lowercase the stored JSON document
+        // as well as the requested value. This lets the genre values written by
+        // admin Game Management match the Browse Games filter regardless of case.
+        $conditions[] = 'JSON_SEARCH(LOWER(g.genres), "one", LOWER(:genre)) IS NOT NULL';
         $parameters['genre'] = $genre;
     }
 

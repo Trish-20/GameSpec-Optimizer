@@ -119,7 +119,7 @@ body {
 
 .sidebar-open .content {
     margin-left: 247px;
-    width: calc(100% - 240px);
+    width: auto;
 }
 
 /* ---------- SIDEBAR NAVIGATION ELEMENTS ---------- */
@@ -194,7 +194,7 @@ body {
 
 /* ---------- PAGE CONTAINMENT CONTENT ---------- */
 .page-container {
-    width: 100%;
+    width: 95%;
     max-width: 1385px;
     margin: 0 auto; /* Balanced workspace containment alignment centering */
 }
@@ -589,6 +589,24 @@ body {
     margin: 14px 0 0;   /* even gap below the author line; divider spacing handled by actions */
     color: var(--color-text-muted);
     line-height: 1.75;
+}
+
+/* Why a user reported this feedback — shown so the admin can judge deletion. */
+.feedback-admin-item .feedback-admin-report-reason {
+    margin: 12px 0 0;
+    padding: 10px 12px;
+    border-left: 3px solid var(--color-danger, #f43f5e);
+    border-radius: 0 8px 8px 0;
+    background: rgba(244, 63, 94, 0.10);
+    color: var(--color-text-main);
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.feedback-admin-item .feedback-admin-report-reason strong {
+    color: var(--color-danger, #f43f5e);
+    margin-right: 4px;
 }
 
 .feedback-admin-item .feedback-admin-actions {
@@ -1536,6 +1554,120 @@ body {
     accent-color: var(--color-brand);
 }
 
+/* Empty search / no-match state: one quiet centred line, no box.
+   Scoped to the admin pages — the user-side Browse Games empty state is a
+   larger component with an icon and a reset button. */
+.no-results-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 22px 12px;
+    text-align: center;
+    color: var(--color-text-muted);
+}
+
+.no-results-state p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* ---------- EMPTY SEARCH / LIST STATES ---------- */
+
+.data-list-empty,
+.table-empty-cell {
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 18px 12px;
+    margin: 0;
+    width: 100%;
+}
+
+/* ---------- GAME FORM FILTER FIELDS ---------- */
+
+/* Small helper text under a form control (e.g. multi-select instructions). */
+.field-hint {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--color-text-muted);
+}
+
+/* Multi-select platform picker: give it a card-like look and keep the
+   native dark dropdown panel consistent with the rest of the form. */
+.form-field select[multiple] {
+    width: 100%;
+    min-height: 115px;
+    padding: 8px;
+    background: var(--bg-input, #24252d);
+    color: var(--color-text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.form-field select[multiple] option {
+    padding: 4px 6px;
+    border-radius: 6px;
+}
+
+/* The genre checkbox group spans the full row so the options do not get
+   squeezed into a narrow column next to the cover/description fields. */
+.game-genre-field {
+    grid-column: 1 / -1;
+}
+
+/* A fixed 4-column grid turns the 12 genres into three even rows instead of
+   the ragged 8 + 4 wrap the flexible layout produced. Grid (not flex) keeps
+   every column the same width, and `minmax(0, 1fr)` stops long labels such as
+   "Shooter / FPS" from forcing a column wider than its share.
+
+   Layout only — the checkboxes, labels and values are untouched. */
+.game-genre-field .toggle-group {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    /* Wider column gap than row gap: these are now one-line rows, so the
+       breathing room is needed between columns, not between rows. */
+    gap: 8px 18px;
+    margin: 6px 0 0 0;
+    padding: 10px 14px;
+    background: var(--bg-card-sub);
+    border-radius: 12px;
+}
+
+/* The base .toggle-item stacks the checkbox above its label
+   (flex-direction: column). Lay each genre out on a single line instead:
+   checkbox and text side by side, vertically centred with each other. */
+.game-genre-field .toggle-item {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    /* Override the base min-width so columns stay evenly sized. */
+    min-width: 0;
+    gap: 8px;
+}
+
+/* The base label centres its text, which is right for the stacked layout but
+   wrong once the label sits next to the checkbox. */
+.game-genre-field .toggle-item label {
+    text-align: left;
+    line-height: 1.25;
+}
+
+/* Stop the 16px checkbox from being squashed if a column gets narrow. */
+.game-genre-field .toggle-item input[type="checkbox"] {
+    flex: 0 0 auto;
+}
+
+/* Keep the helper text close under the card. */
+.game-genre-field .field-hint {
+    margin-top: 8px;
+}
+
 /* ---------- HIGH PERFORMANCE RESPONSIVE BREAKPOINTS ---------- */
 
 @media (max-width: 1400px) {
@@ -1572,6 +1704,11 @@ body {
 @media (max-width: 900px) {
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Genre grid steps down to 3 columns once the form is a single column. */
+    .game-genre-field .toggle-group {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .form-grid-2x2 {
@@ -1633,8 +1770,410 @@ body {
     .hardware-grid {
         grid-template-columns: 1fr;
     }
+
+    /* Two columns keeps "Shooter / FPS" readable on phones. */
+    .game-genre-field .toggle-group {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 .inventory-search-box {
     margin-top: 12px;
+}
+
+/* Keep admin content inside narrow viewports without removing controls. */
+.content,
+.page-container,
+.admin-card,
+.tables-grid,
+.hardware-grid,
+.training-grid,
+.form-grid-2x2 {
+    min-width: 0;
+}
+
+.table-container {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+@media (max-width: 680px) {
+    .content {
+        width: 100%;
+        margin-left: 0;
+        padding: 16px 12px;
+    }
+
+    .sidebar-open .content {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .page-container h2 {
+        font-size: 22px;
+        overflow-wrap: anywhere;
+    }
+
+    .admin-card {
+        padding: 16px;
+        overflow: hidden;
+    }
+
+    .report-buttons,
+    .action-buttons,
+    .form-action-row {
+        width: 100%;
+        max-width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .report-btn,
+    .action-buttons .report-btn,
+    .form-action-row button {
+        min-width: 0;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .status-item,
+    .feedback-admin-item,
+    .game-admin-item,
+    .hardware-item {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .admin-logout-btn {
+        right: 12px;
+        padding: 7px 9px;
+        font-size: 12px;
+    }
+}
+
+.admin-logout-form {
+    position: absolute;
+    right: 16px;
+    top: 13px;
+    margin: 0;
+}
+
+.admin-logout-btn {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-btn-sec);
+    color: var(--color-text-main);
+    cursor: pointer;
+    padding: 8px 12px;
+}
+
+.admin-login-page {
+    display: block;
+    padding: 0;
+    background: var(--bg-main);
+}
+
+.admin-login-layout {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(320px, 42%) minmax(0, 1fr);
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.admin-login-layout::before {
+    position: absolute;
+    inset: 0;
+    width: 78%;
+    background:
+        radial-gradient(
+            ellipse 58% 42% at 34% 50%,
+            rgba(181, 255, 61, 0.2) 0%,
+            rgba(181, 255, 61, 0.1) 34%,
+            rgba(181, 255, 61, 0.035) 64%,
+            transparent 100%
+        ),
+        radial-gradient(
+            ellipse 72% 80% at 0% 50%,
+            rgba(181, 255, 61, 0.08) 0%,
+            transparent 68%
+        );
+    content: "";
+    pointer-events: none;
+}
+
+.admin-login-brand {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    padding: 64px clamp(32px, 7vw, 110px);
+    box-sizing: border-box;
+    background: transparent;
+    color: var(--color-text-main);
+}
+
+.admin-login-brand-content {
+    max-width: 500px;
+    transform: translateY(-2px);
+}
+
+.admin-login-brand .admin-login-eyebrow {
+    margin-bottom: 14px;
+    color: var(--color-brand);
+    font-size: 12px;
+    letter-spacing: 1.3px;
+}
+
+.admin-login-brand h1 {
+    margin: 0;
+    color: var(--color-text-main);
+    font-size: clamp(38px, 4.5vw, 64px);
+    line-height: 0.98;
+    letter-spacing: -2.2px;
+    text-wrap: balance;
+}
+
+.admin-login-tagline {
+    max-width: 360px;
+    margin: 22px 0 0;
+    color: color-mix(in srgb, var(--color-text-main) 72%, var(--color-text-muted));
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.admin-login-form-panel {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    padding: 64px clamp(32px, 8vw, 140px);
+    box-sizing: border-box;
+    background: transparent;
+}
+
+.admin-login-form-content {
+    width: min(100%, 420px);
+    margin: 0 auto;
+}
+
+.admin-login-heading {
+    text-align: center;
+}
+
+.admin-login-eyebrow {
+    margin: 0 0 4px;
+    color: var(--color-text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.admin-login-form-content h2 {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 24px;
+}
+
+.admin-login-form-content form {
+    display: grid;
+    gap: 8px;
+}
+
+.admin-login-error-slot {
+    min-height: 48px;
+}
+
+.admin-login-form-content label {
+    margin-top: 5px;
+    color: var(--color-text-muted);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.admin-login-password-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.admin-login-password-label label {
+    margin: 5px 0 0;
+}
+
+.admin-login-password-label a {
+    color: var(--color-brand);
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.admin-login-password-label a:hover,
+.admin-login-password-label a:focus-visible {
+    color: var(--color-brand-hover);
+    text-decoration: underline;
+}
+
+.admin-login-input-wrap {
+    position: relative;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-login-input-wrap:focus-within {
+    border-color: var(--color-brand);
+    box-shadow:
+        0 0 0 3px rgba(181, 255, 61, 0.12),
+        0 0 16px rgba(181, 255, 61, 0.16);
+}
+
+.admin-login-input-wrap > i {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    color: var(--color-text-muted);
+    font-size: 13px;
+    pointer-events: none;
+    transform: translateY(-50%);
+}
+
+.admin-login-form-content input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px 12px 40px;
+    border: 1px solid color-mix(in srgb, var(--border-color) 75%, var(--color-text-muted));
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--bg-card-sub) 88%, #ffffff 12%);
+    color: var(--color-text-main);
+    font-size: 14px;
+}
+
+.admin-login-input-wrap input[type="password"] {
+    padding-right: 42px;
+}
+
+.admin-login-form-content input:focus {
+    outline: none;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+.admin-login-password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    display: grid;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    place-items: center;
+    transform: translateY(-50%);
+}
+
+.admin-login-password-toggle:hover,
+.admin-login-password-toggle:focus-visible {
+    color: var(--color-brand);
+}
+
+.admin-login-remember {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 5px;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.admin-login-remember input {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    accent-color: var(--color-brand);
+}
+
+.admin-login-form-content .btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    width: 100%;
+    margin-top: 14px;
+    padding: 12px 19px;
+    border: none;
+    border-radius: 12px;
+    background: var(--color-brand);
+    color: #000000;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.admin-login-form-content .btn-primary:hover {
+    background: var(--color-brand-hover);
+    transform: translateY(-1px);
+}
+
+.admin-login-error {
+    padding: 10px 12px;
+    margin: 0 0 14px;
+    border: 1px solid var(--color-danger);
+    border-radius: 8px;
+    color: #ffd7df;
+}
+
+.admin-login-recovery-message {
+    margin: 0 0 14px;
+    color: var(--color-text-muted);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.admin-login-recovery-message a,
+.admin-login-back-link {
+    color: var(--color-brand);
+    text-decoration: none;
+}
+
+.admin-login-recovery-message a:hover,
+.admin-login-back-link:hover {
+    color: var(--color-brand-hover);
+    text-decoration: underline;
+}
+
+.admin-login-back-link {
+    display: block;
+    margin-top: 14px;
+    text-align: center;
+    font-size: 13px;
+}
+
+@media (max-width: 600px) {
+    .admin-login-page {
+        padding: 0;
+    }
+
+    .admin-login-layout {
+        display: block;
+    }
+
+    .admin-login-brand {
+        min-height: 220px;
+        padding: 40px 24px;
+    }
+
+    .admin-login-brand h1 {
+        font-size: 36px;
+    }
+
+    .admin-login-form-panel {
+        padding: 40px 24px 48px;
+    }
 }

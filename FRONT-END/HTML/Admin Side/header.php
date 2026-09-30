@@ -4,6 +4,10 @@
 <div class="top-header">
     <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
     <span class="app-title">GameSpec Optimizer</span>
+    <form class="admin-logout-form" method="post" action="logout.php">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+        <button type="submit" class="admin-logout-btn">Sign out</button>
+    </form>
 </div>
 
 <!-- Sidebar Component -->
@@ -34,6 +38,22 @@
     </div>
 
 <script>
+    window.ADMIN_CSRF_TOKEN = <?= json_encode(csrfToken(), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
+    window.adminFetch = function(url, options = {}) {
+        const request = { ...options };
+        const method = String(request.method || 'GET').toUpperCase();
+        request.headers = new Headers(request.headers || {});
+        if (method !== 'GET' && method !== 'HEAD' && method !== 'OPTIONS') {
+            request.headers.set('X-CSRF-Token', window.ADMIN_CSRF_TOKEN);
+        }
+        return fetch(url, request).then(response => {
+            if (response.status === 401 || response.status === 403) {
+                window.location.href = 'login.php';
+            }
+            return response;
+        });
+    };
+
     let userClickCount = 0;
     let userClickTimer = null;
     

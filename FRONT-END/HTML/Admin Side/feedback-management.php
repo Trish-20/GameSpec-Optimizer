@@ -1,3 +1,6 @@
+<?php
+require_once __DIR__ . '/admin-guard.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,58 +45,71 @@
 <script>
 document.querySelector('[data-page="feedback"]')?.classList.add('active');
 
-const defaultFeedbackData = [
-    {
-        title: "Excellent prediction accuracy",
-        comment: "The FPS predictions feel much more accurate now and helped me choose a better GPU for my setup.",
-        rating: 5,
-        username: "Ava",
-        is_anonymous: false,
-        created_at: "2026-06-28",
-        helpful_count: 3,
-        reported: false
-    },
-    {
-        title: "Great recommendation flow",
-        comment: "I liked how the suggestions were easy to understand and matched the games I usually play.",
-        rating: 4,
-        username: "Noah",
-        is_anonymous: false,
-        created_at: "2026-06-24",
-        helpful_count: 1,
-        reported: true
-    },
-    {
-        title: "Helpful for budget builds",
-        comment: "This made it simple to compare hardware options before buying anything new for my rig.",
-        rating: 5,
-        username: "Anonymous",
-        is_anonymous: true,
-        created_at: "2026-06-20",
-        helpful_count: 2,
-        reported: false
-    }
-];
+// MySQL `site_feedback` is the source of truth for the admin view.
+// Relative URLs resolve against this page (FRONT-END/HTML/Admin Side/*.php),
+// so the API base must climb three levels to reach GameSpec-Optimizer/MODULES/api.
+const FEEDBACK_ADMIN_API_BASE = "../../../MODULES/api";
 
-function getFeedbackData() {
-    try {
-        const stored = localStorage.getItem("gamespecFeedback");
-        if (!stored) return [...defaultFeedbackData];
+let feedbackAdminData = [];
 
-        const parsed = JSON.parse(stored);
-        return Array.isArray(parsed) ? parsed : [...defaultFeedbackData];
-    } catch (error) {
-        console.warn("Unable to load feedback for admin view.", error);
-        return [...defaultFeedbackData];
-    }
+function normalizeAdminFeedback(item) {
+    if (!item || typeof item !== "object") return null;
+    const isAnonymous = item.is_anonymous === true || item.is_anonymous === 1 || item.is_anonymous === "1";
+    return {
+        feedback_id: Number(item.feedback_id ?? item.review_id ?? item.id ?? 0) || 0,
+        title: String(item.title ?? item.feedback_title ?? "Untitled feedback"),
+        comment: String(item.comment ?? "No comment provided."),
+        rating: Number(item.rating) || 0,
+        username: isAnonymous ? "Anonymous" : String(item.username ?? item.display_name ?? "Guest"),
+        is_anonymous: isAnonymous,
+        created_at: item.created_at || "",
+        helpful_count: Number(item.helpful_count || 0),
+        reported_count: Number(item.reported_count || 0),
+        reported: Boolean(item.reported) || Number(item.reported_count || 0) > 0,
+        is_approved: item.is_approved === undefined ? true : Boolean(item.is_approved),
+        report_reason: String(item.report_reason ?? ""),
+    };
 }
 
-function saveFeedbackData(feedbacks) {
-    try {
-        localStorage.setItem("gamespecFeedback", JSON.stringify(feedbacks));
-    } catch (error) {
-        console.warn("Unable to save feedback for admin view.", error);
+async function requestFeedbackAdmin(url, options) {
+    const response = await adminFetch(url, options);
+    const raw = await response.text().catch(() => "");
+    let result = null;
+
+    if (raw && /^\s*[\{\[]/.test(raw)) {
+        try { result = JSON.parse(raw); } catch (parseError) { result = null; }
     }
+
+    if (!response.ok || result === null) {
+        const status = `HTTP ${response.status}${response.statusText ? " " + response.statusText : ""}`;
+        const serverMessage = result && typeof result.message === "string" ? result.message.trim() : "";
+        throw new Error(serverMessage ? `${status}: ${serverMessage}` : status);
+    }
+
+    return result;
+}
+
+async function loadFeedbackAdminData() {
+    const listContainer = document.getElementById("feedbackAdminList");
+    if (listContainer) {
+        listContainer.innerHTML = '<p class="feedback-admin-loading">Loading feedback...</p>';
+    }
+
+    try {
+        const data = await requestFeedbackAdmin(`${FEEDBACK_ADMIN_API_BASE}/get-latest-feedback.php`);
+        if (!Array.isArray(data)) {
+            throw new Error("Unexpected response shape");
+        }
+        feedbackAdminData = data.map(normalizeAdminFeedback).filter(item => item !== null);
+    } catch (error) {
+        console.warn("Unable to load feedback for admin view.", error);
+        feedbackAdminData = [];
+        if (listContainer) {
+            listContainer.innerHTML = `<p class="feedback-admin-empty">Unable to load feedback from the database. (${escapeHtml(error.message)})</p>`;
+        }
+    }
+
+    renderFeedbackAdmin();
 }
 
 function escapeHtml(value) {
@@ -109,7 +125,7 @@ let feedbackAdminPage = 1;
 const feedbackAdminPageSize = 5;
 
 function renderFeedbackAdmin() {
-    const feedbacks = getFeedbackData();
+    const feedbacks = feedbackAdminData;
     const summaryContainer = document.getElementById("feedbackAdminSummary");
     const listContainer = document.getElementById("feedbackAdminList");
     const paginationContainer = document.getElementById("feedbackAdminPagination");
@@ -139,7 +155,7 @@ function renderFeedbackAdmin() {
 
     const searchValue = document.getElementById('feedbackSearch')?.value.toLowerCase() || '';
     const filteredFeedback = feedbacks.filter(item => {
-        const text = `${item.title || ''} ${item.comment || ''} ${item.username || ''}`.toLowerCase();
+        const text = `${item.title || ''} ${item.comment || ''} ${item.username || ''} ${item.report_reason || ''}`.toLowerCase();
         return text.includes(searchValue);
     });
 
@@ -155,13 +171,23 @@ function renderFeedbackAdmin() {
         return;
     }
 
-    listContainer.innerHTML = pagedFeedback.map((item, index) => {
+    listContainer.innerHTML = pagedFeedback.map((item) => {
         const title = escapeHtml(item.title || "Untitled feedback");
         const comment = escapeHtml(item.comment || "No comment provided.");
         const username = item.is_anonymous ? "Anonymous" : escapeHtml(item.username || "Guest");
         const createdAt = item.created_at ? new Date(item.created_at).toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" }) : "Recently added";
-        const stars = "★".repeat(Number(item.rating) || 0) + "☆".repeat(5 - (Number(item.rating) || 0));
-        const globalIndex = feedbacks.findIndex(entry => entry === item);
+        const rating = Math.max(0, Math.min(5, Number(item.rating) || 0));
+        const stars = "★".repeat(rating) + "☆".repeat(5 - rating);
+        // Delete acts on the real database row via feedback_id.
+        const feedbackId = Number(item.feedback_id) || 0;
+        const approvalBadge = item.is_approved
+            ? '<span class="feedback-admin-badge">Approved</span>'
+            : '<span class="feedback-admin-badge feedback-admin-badge-danger">Unapproved</span>';
+        // Why the user reported this feedback, so the admin can decide.
+        const reportReason = String(item.report_reason || "").trim();
+        const reportReasonBlock = reportReason
+            ? `<p class="feedback-admin-report-reason"><strong>Report reason:</strong> ${escapeHtml(reportReason)}</p>`
+            : "";
 
         return `
             <div class="feedback-admin-item">
@@ -173,13 +199,15 @@ function renderFeedbackAdmin() {
                     <div class="feedback-admin-item-badges">
                         <span class="feedback-admin-badge">${stars}</span>
                         ${item.reported ? '<span class="feedback-admin-badge feedback-admin-badge-danger">Reported</span>' : ''}
+                        ${approvalBadge}
                     </div>
                 </div>
                 <p class="feedback-admin-comment">${comment}</p>
+                ${reportReasonBlock}
                 <div class="feedback-admin-actions">
                     <span>Helpful: ${Number(item.helpful_count || 0)}</span>
-                    ${item.reported ? `<button type="button" class="feedback-admin-btn secondary" onclick="markFeedbackReviewed(${globalIndex})">Mark reviewed</button>` : ''}
-                    <button type="button" class="feedback-admin-btn danger" onclick="deleteFeedbackAdmin(${globalIndex})">Delete</button>
+                    <span>Reported: ${Number(item.reported_count || 0)}</span>
+                    ${feedbackId > 0 ? `<button type="button" class="feedback-admin-btn danger" onclick="deleteFeedbackAdmin(${feedbackId})">Delete</button>` : ''}
                 </div>
             </div>
         `;
@@ -199,7 +227,7 @@ function renderFeedbackAdmin() {
 }
 
 function changeFeedbackAdminPage(page) {
-    const feedbacks = getFeedbackData();
+    const feedbacks = feedbackAdminData;
     const searchValue = document.getElementById('feedbackSearch')?.value.toLowerCase() || '';
     const filteredFeedback = feedbacks.filter(item => {
         const text = `${item.title || ''} ${item.comment || ''} ${item.username || ''}`.toLowerCase();
@@ -217,26 +245,30 @@ function filterFeedbackAdmin() {
     renderFeedbackAdmin();
 }
 
-function deleteFeedbackAdmin(index) {
-    const feedbacks = getFeedbackData();
-    feedbacks.splice(index, 1);
-    saveFeedbackData(feedbacks);
-    renderFeedbackAdmin();
-}
+async function deleteFeedbackAdmin(feedbackId) {
+    const id = Number(feedbackId) || 0;
+    if (id <= 0) return;
+    if (!confirm("Delete this feedback permanently?")) return;
 
-function markFeedbackReviewed(index) {
-    const feedbacks = getFeedbackData();
-    if (feedbacks[index]) {
-        feedbacks[index].reported = false;
-        saveFeedbackData(feedbacks);
-        renderFeedbackAdmin();
+    try {
+        // MySQL is the source of truth: delete the row, then reload.
+        await requestFeedbackAdmin(`${FEEDBACK_ADMIN_API_BASE}/delete-feedback.php`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ feedback_id: id }),
+        });
+    } catch (error) {
+        console.warn("Unable to delete feedback.", error);
+        alert(error.message || "Feedback could not be deleted.");
+        return;
     }
+
+    await loadFeedbackAdminData();
 }
 
 window.deleteFeedbackAdmin = deleteFeedbackAdmin;
-window.markFeedbackReviewed = markFeedbackReviewed;
 window.changeFeedbackAdminPage = changeFeedbackAdminPage;
-window.addEventListener("DOMContentLoaded", renderFeedbackAdmin);
+window.addEventListener("DOMContentLoaded", loadFeedbackAdminData);
 </script>
 
 </body>

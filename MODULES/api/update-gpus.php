@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/admin-auth.php';
 require_once __DIR__ . '/../benchmark-resolver.php';
 
 header('Content-Type: application/json; charset=utf-8');
@@ -16,13 +17,33 @@ if (!is_array($input)) {
 }
 
 $model = trim((string) ($input['model'] ?? ''));
-$score = (int) ($input['score'] ?? 0);
+$rawScore = $input['score'] ?? null;
 
-if ($model === '' || $score <= 0) {
+if ($model === '') {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'GPU model and a positive benchmark score are required.']);
+    echo json_encode(['success' => false, 'message' => 'GPU model is required.']);
     exit;
 }
+
+if (!isPlausibleHardwareModel($model)) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => 'That does not look like a valid GPU model. Use a real model name such as "NVIDIA GeForce RTX 4080".',
+    ]);
+    exit;
+}
+
+if (!isValidBenchmarkScore($rawScore)) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Enter a valid benchmark score as a positive number.',
+    ]);
+    exit;
+}
+
+$score = (int) $rawScore;
 
 try {
     $database = databaseConnection();

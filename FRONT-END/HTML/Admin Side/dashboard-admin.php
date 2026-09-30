@@ -1,3 +1,6 @@
+<?php
+require_once __DIR__ . '/admin-guard.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -123,6 +126,9 @@
                         </thead>
                         <tbody></tbody>
                     </table>
+                    <div id="noGameMessage" class="no-results-state" style="display: none;" aria-live="polite">
+                        <p>No games match your search.</p>
+                    </div>
                 </div>
             </div>
             

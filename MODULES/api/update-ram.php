@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../benchmark-resolver.php';
+require_once __DIR__ . '/admin-auth.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -15,13 +17,33 @@ if (!is_array($input)) {
 }
 
 $model = trim((string) ($input['model'] ?? ''));
-$score = (int) ($input['score'] ?? 0);
+$rawScore = $input['score'] ?? null;
 
-if ($model === '' || $score <= 0) {
+if ($model === '') {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'RAM model and a positive benchmark score are required.']);
+    echo json_encode(['success' => false, 'message' => 'RAM model is required.']);
     exit;
 }
+
+if (!isPlausibleHardwareModel($model)) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => 'That does not look like a valid RAM model. Use a format such as "16GB DDR4-3200".',
+    ]);
+    exit;
+}
+
+if (!isValidBenchmarkScore($rawScore)) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Enter a valid benchmark score as a positive number.',
+    ]);
+    exit;
+}
+
+$score = (int) $rawScore;
 
 // Parse capacity (GB) and optional speed (MHz) from the model string.
 // Accepted formats: "16GB DDR4-3200", "32 GB DDR5-6000", "8GB", "16 GB 3200MHz", etc.

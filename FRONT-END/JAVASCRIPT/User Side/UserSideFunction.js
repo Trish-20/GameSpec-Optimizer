@@ -27,7 +27,16 @@ function normalizeGameRecord(game) {
 
 function getGameImageUrl(image) {
     if (!image) return '';
-    return /^https?:\/\//i.test(image) ? image : `../../RES/${image}`;
+    const value = String(image).trim();
+    if (/^data:image\//i.test(value)) return value;
+    if (/^https?:\/\//i.test(value)) return value;
+    // update-games.php stores a project-relative path such as
+    // uploads/game-covers/game_xxx.jpg.
+    // From FRONT-END/HTML/User Side/, that file is reachable at ../../../uploads/...
+    // A leading-slash value is treated the same way for backward compatibility.
+    if (value.charAt(0) === '/') return `../../..${value}`;
+    if (/^uploads\//i.test(value)) return `../../../${value}`;
+    return `../../RES/${value}`;
 }
 
 // Load games from CSV
@@ -85,7 +94,18 @@ async function loadRAMBenchmarks() {
 // 2. INITIALIZATION & SETUP ROUTINES
 // ============================================================================
 // --- FPS PREDICTION: Load all dropdowns ---
+let fpsPredictionInitialization = null;
+
 async function loadFPSPredictionDropdowns() {
+    if (fpsPredictionInitialization) {
+        return fpsPredictionInitialization;
+    }
+
+    fpsPredictionInitialization = initializeFPSPredictionDropdowns();
+    return fpsPredictionInitialization;
+}
+
+async function initializeFPSPredictionDropdowns() {
     // Load all data in parallel
     await Promise.all([
         loadGamesFromCSV(),
@@ -885,10 +905,13 @@ function initSearchDropdown(type, data, getLabel, getValue, onSelect) {
         });
     }
     
-            function selectItem(item) {
+    function selectItem(item) {
         isSelecting = true;
         searchInput.value = getLabel(item);
         if (hiddenInput) hiddenInput.value = getValue(item);
+        if (hiddenInput) {
+            hiddenInput.dataset.benchmarkId = item?.gpu_id ? String(item.gpu_id) : '';
+        }
         dropdown.classList.remove('active');
         searchInput.blur(); // Remove focus from input
         setTimeout(() => { isSelecting = false; }, 100);
@@ -959,6 +982,16 @@ function initSearchDropdown(type, data, getLabel, getValue, onSelect) {
             const match = source.find(d => String(getValue(d)) === String(value));
             searchInput.value = match ? getLabel(match) : '';
             if (hiddenInput) hiddenInput.value = match ? getValue(match) : '';
+            if (hiddenInput) {
+                hiddenInput.dataset.benchmarkId = match?.gpu_id ? String(match.gpu_id) : '';
+            }
+        },
+        setItem(item) {
+            searchInput.value = item ? getLabel(item) : '';
+            if (hiddenInput) hiddenInput.value = item ? getValue(item) : '';
+            if (hiddenInput) {
+                hiddenInput.dataset.benchmarkId = item?.gpu_id ? String(item.gpu_id) : '';
+            }
         },
         open() {
             populateList(searchInput.value);
@@ -1080,6 +1113,15 @@ function getBrowseRequirementInfo(game) {
 }
 
 function guessBrowseGenre(game) {
+    // Prefer the stored genre set (populated by admin Game Management) so a
+    // game the admin labelled "Strategy" is found by the Strategy filter.
+    const stored = Array.isArray(game?.genres) ? game.genres : [];
+    for (const value of stored) {
+        const mapped = mapStoredGenreToFilter(String(value || '').trim().toLowerCase());
+        if (mapped) return mapped;
+    }
+
+    // Fall back to keyword matching for games with no stored genres.
     const text = `${game?.title || ''} ${game?.description || ''}`.toLowerCase();
     if (text.match(/fps|shooter|competitive|battle royale|squad/)) return 'fps';
     if (text.match(/rpg|fantasy|choices|quest|branching|exploration/)) return 'rpg';
@@ -1090,6 +1132,50 @@ function guessBrowseGenre(game) {
     if (text.match(/adventure|story|journey/)) return 'adventure';
     if (text.match(/action|combat|stealth|open.world/)) return 'action';
     return '';
+}
+
+/**
+ * Return EVERY filter key a game should be discoverable under.
+ *
+ * A game can legitimately carry several genres (the admin Game Management
+ * form allows up to 12 checkboxes), but the browse filter needs to match the
+ * game under each of them — not just the first one. Games with no usable
+ * stored genre fall back to the original keyword guess.
+ */
+function getBrowseGenreFilterKeys(game) {
+    const stored = Array.isArray(game?.genres) ? game.genres : [];
+    const keys = [];
+    stored.forEach(value => {
+        const mapped = mapStoredGenreToFilter(String(value || '').trim().toLowerCase());
+        if (mapped && !keys.includes(mapped)) keys.push(mapped);
+    });
+    if (keys.length) return keys;
+
+    const guessed = guessBrowseGenre(game);
+    return guessed ? [guessed] : [];
+}
+
+// Maps the genre values stored in the database onto the filter keys used by
+// the Browse Games genre dropdown (action, rpg, fps, adventure, ...).
+function mapStoredGenreToFilter(genre) {
+    const mapping = {
+        action: 'action',
+        rpg: 'rpg',
+        'role-playing': 'rpg',
+        shooter: 'fps',
+        fps: 'fps',
+        adventure: 'adventure',
+        sports: 'sports',
+        racing: 'racing',
+        strategy: 'strategy',
+        sandbox: 'sandbox',
+        survival: 'sandbox',
+        simulation: 'sandbox',
+        sim: 'sandbox',
+        puzzle: 'adventure',
+        indie: 'action'
+    };
+    return mapping[genre] || '';
 }
 
 function getBrowseGenreTags(game) {
@@ -1238,7 +1324,12 @@ function loadGameGrid() {
         card.setAttribute('role', 'article');
         
         const rawKey = (game.title_raw || game.title || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
-        const releaseYear = knownReleaseYears[rawKey] || knownReleaseYears[game.title_raw] || 2020;
+        // Prefer the real release year from the database so games added by an
+        // admin land in the correct "Released" filter bucket. The legacy lookup
+        // table and the 2020 default are kept as fallbacks.
+        const storedYear = parseInt(game.release_year, 10)
+            || parseInt(String(game.release_date || '').slice(0, 4), 10);
+        const releaseYear = storedYear || knownReleaseYears[rawKey] || knownReleaseYears[game.title_raw] || 2020;
         card.dataset.year = releaseYear;
         card.dataset.gpuScore = parseInt(game.gpu_benchmark, 10) || 0;
         card.dataset.cpuScore = parseInt(game.cpu_benchmark, 10) || 0;
@@ -1247,7 +1338,7 @@ function loadGameGrid() {
         const requirement = getBrowseRequirementInfo(game);
         const genreTags = getBrowseGenreTags(game);
         card.dataset.requirement = requirement.value;
-        card.dataset.genre = guessBrowseGenre(game);
+        card.dataset.genre = getBrowseGenreFilterKeys(game).join(',');
 
         const imageUrl = getGameImageUrl(game.image);
         const description = (game.description || '').trim();
@@ -1391,9 +1482,13 @@ function filterGames() {
         // 1. Search Filter
         const matchesSearch = !searchTerm || title.includes(searchTerm);
 
-        // 2. Genre Filter (matches card's stored genre tag when available)
+        // 2. Genre Filter (matches any genre stored on the card)
         const filterKey = String(genreFilter).toLowerCase();
-        const cardGenre = String(card.dataset.genre || '').toLowerCase();
+        const cardGenres = String(card.dataset.genre || '')
+            .toLowerCase()
+            .split(',')
+            .map(value => value.trim())
+            .filter(Boolean);
         const categoryKeywords = {
             action: ['action', 'adventure', 'rpg', 'myth', 'combat', 'stealth', 'open-world'],
             rpg: ['rpg', 'adventure', 'choices', 'loot', 'fantasy', 'myth', 'exploration'],
@@ -1408,8 +1503,9 @@ function filterGames() {
         const keywords = categoryKeywords[filterKey] || [];
         let matchesGenre = true;
         if (filterKey) {
-            if (cardGenre) {
-                matchesGenre = cardGenre === filterKey;
+            if (cardGenres.length) {
+                // A game may carry several genres, so it must match any of them.
+                matchesGenre = cardGenres.includes(filterKey);
             } else {
                 matchesGenre = keywords.length === 0 || keywords.some(k => title.includes(k) || desc.includes(k));
             }
@@ -1479,59 +1575,77 @@ function filterGames() {
     }
 }
 
-const sampleFeedbackData = [
-    {
-        title: "Excellent prediction accuracy",
-        comment: "The FPS predictions feel much more accurate now and helped me choose a better GPU for my setup.",
-        rating: 5,
-        username: "Ava",
-        is_anonymous: false,
-        created_at: "2026-06-28",
-        helpful_count: 3,
-        reported: false
-    },
-    {
-        title: "Great recommendation flow",
-        comment: "I liked how the suggestions were easy to understand and matched the games I usually play.",
-        rating: 4,
-        username: "Noah",
-        is_anonymous: false,
-        created_at: "2026-06-24",
-        helpful_count: 1,
-        reported: false
-    },
-    {
-        title: "Helpful for budget builds",
-        comment: "This made it simple to compare hardware options before buying anything new for my rig.",
-        rating: 5,
-        username: "Anonymous",
-        is_anonymous: true,
-        created_at: "2026-06-20",
-        helpful_count: 2,
-        reported: false
-    }
-];
-
-let feedbackState = [...sampleFeedbackData];
+let feedbackState = [];
 let filteredFeedbackState = [];
 let currentFeedbackPage = 1;
 const FEEDBACK_PAGE_SIZE = 5;
+// Relative URLs resolve against the PAGE (FRONT-END/HTML/User Side/*.php),
+// not against this script's folder, so the API base must climb three levels
+// to reach GameSpec-Optimizer/MODULES/api. Matches the other fetches in this file.
+const FEEDBACK_API_BASE = "../../../MODULES/api";
 
-function loadStoredFeedback() {
-    try {
-        const stored = localStorage.getItem("gamespecFeedback");
-        if (!stored) return [];
-        const parsed = JSON.parse(stored);
-        return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
-        console.warn("Unable to read saved feedback.", error);
-        return [];
+// Performs a request and returns the parsed JSON body (or null) plus the raw
+// response, so failures can be reported with real status/server detail.
+async function requestFeedbackApi(url, options) {
+    const response = await fetch(url, options);
+    const raw = await response.text().catch(() => "");
+    let result = null;
+
+    // Only parse JSON. Apache error pages must not be dumped into the UI.
+    if (raw && /^\s*[\{\[]/.test(raw)) {
+        try {
+            result = JSON.parse(raw);
+        } catch (parseError) {
+            result = null;
+        }
     }
+
+    return { response, result };
 }
 
-const storedFeedback = loadStoredFeedback();
-if (storedFeedback.length) {
-    feedbackState = [...storedFeedback, ...feedbackState];
+// Surfaces the actual HTTP status and any server-provided message so API
+// problems (bad path, 404, validation, 500) are visible instead of a
+// generic failure string. Server messages only; no credentials involved.
+function describeFeedbackFailure(response, result, fallback) {
+    const status = `HTTP ${response.status}${response.statusText ? " " + response.statusText : ""}`;
+
+    let serverMessage = "";
+    if (result && typeof result.message === "string" && result.message.trim()) {
+        serverMessage = result.message.trim();
+    } else if (result && typeof result.error === "string" && result.error.trim()) {
+        serverMessage = result.error.trim();
+    }
+
+    return serverMessage
+        ? `${fallback} [${status}: ${serverMessage}]`
+        : `${fallback} [${status}]`;
+}
+
+function normalizeFeedbackRecord(item) {
+    if (!item || typeof item !== "object") return null;
+    const feedbackId = Number(item.feedback_id ?? item.review_id ?? item.id ?? 0) || 0;
+    const rating = Number(item.rating) || 0;
+    const isAnonymous = item.is_anonymous === true || item.is_anonymous === 1 || item.is_anonymous === "1";
+    const username = isAnonymous ? "Anonymous" : String(item.username ?? item.display_name ?? "Guest");
+    return {
+        feedback_id: feedbackId,
+        review_id: feedbackId,
+        title: String(item.title ?? item.feedback_title ?? item.review_title ?? "Untitled feedback"),
+        comment: String(item.comment ?? "No comment provided."),
+        rating,
+        username,
+        is_anonymous: isAnonymous,
+        created_at: item.created_at || "",
+        helpful_count: Number(item.helpful_count || 0),
+        reported_count: Number(item.reported_count || 0),
+        reported: Boolean(item.reported) || Number(item.reported_count || 0) > 0,
+        is_approved: item.is_approved === undefined ? true : Boolean(item.is_approved),
+    };
+}
+
+function getFeedbackIdentity(item) {
+    if (!item || typeof item !== "object") return 0;
+    return Number(item.feedback_id ?? item.review_id ?? item.id ?? 0) || 0;
 }
 
 function sortFeedbackState(items) {
@@ -1561,6 +1675,10 @@ function escapeHtml(value) {
 }
 
 function buildFeedbackCardHtml(item, index = 0, { showDelete = false } = {}) {
+    const feedbackId = getFeedbackIdentity(item);
+    // Card actions resolve the real database row through feedback_id when
+    // available, and fall back to the list index for legacy local entries.
+    const actionKey = feedbackId > 0 ? feedbackId : index;
     const title = escapeHtml(item.title || "Untitled feedback");
     const comment = escapeHtml(item.comment || "No comment provided.");
     const rating = Number(item.rating) || 0;
@@ -1589,13 +1707,13 @@ function buildFeedbackCardHtml(item, index = 0, { showDelete = false } = {}) {
             <div class="feedback-card-footer">
                 <span class="feedback-helpful-count">Helpful <strong>${helpfulCount}</strong></span>
                 <div class="feedback-actions">
-                    <button type="button" class="feedback-action-btn feedback-helpful-btn" onclick="markFeedbackHelpful(${index})">
+                    <button type="button" class="feedback-action-btn feedback-helpful-btn" onclick="markFeedbackHelpful(${actionKey})">
                         <i class="fas fa-thumbs-up"></i> Helpful
                     </button>
-                    <button type="button" class="feedback-action-btn feedback-report-btn" onclick="reportFeedbackItem(${index})" ${isReported ? "disabled" : ""}>
+                    <button type="button" class="feedback-action-btn feedback-report-btn" onclick="reportFeedbackItem(${actionKey})" ${isReported ? "disabled" : ""}>
                         <i class="fas fa-flag"></i> ${isReported ? "Reported" : "Report"}
                     </button>
-                    ${showDelete ? `<button type="button" class="feedback-action-btn feedback-delete-btn" onclick="deleteFeedbackItem(${index})"><i class="fas fa-trash-alt"></i> Delete</button>` : ""}
+                    ${showDelete ? `<button type="button" class="feedback-action-btn feedback-delete-btn" onclick="deleteFeedbackItem(${actionKey})"><i class="fas fa-trash-alt"></i> Delete</button>` : ""}
                 </div>
             </div>
         </div>
@@ -1672,21 +1790,54 @@ function renderFeedbackPage(container, feedbacks, { showDelete = false } = {}) {
     renderFeedbackPagination(totalItems);
 }
 
-function persistFeedbackState() {
-    try {
-        localStorage.setItem("gamespecFeedback", JSON.stringify(feedbackState));
-    } catch (error) {
-        console.warn("Unable to update saved feedback locally.", error);
-    }
+function findFeedbackIndex(key) {
+    const numericKey = Number(key);
+    if (!Number.isFinite(numericKey)) return -1;
+    // Prefer matching the MySQL feedback_id; fall back to the list index
+    // so older local entries still respond to their card buttons.
+    const byId = feedbackState.findIndex(item => getFeedbackIdentity(item) === numericKey && numericKey > 0);
+    if (byId >= 0) return byId;
+    if (Number.isInteger(numericKey) && numericKey >= 0 && numericKey < feedbackState.length) return numericKey;
+    return -1;
 }
 
-function deleteFeedbackItem(index) {
-    if (!Number.isInteger(index) || index < 0 || index >= feedbackState.length) return;
+async function postFeedbackAction(endpoint, feedbackId, reportReason) {
+    const body = { feedback_id: feedbackId };
+    // report-feedback.php requires a reason; other endpoints ignore it.
+    if (reportReason) body.report_reason = reportReason;
 
-    feedbackState.splice(index, 1);
-    persistFeedbackState();
+    const { response, result } = await requestFeedbackApi(`${FEEDBACK_API_BASE}/${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+    });
+
+    if (!response.ok || !result || result.success === false) {
+        throw new Error(describeFeedbackFailure(response, result, "Request failed."));
+    }
+    return result;
+}
+
+async function deleteFeedbackItem(key) {
+    const index = findFeedbackIndex(key);
+    if (index < 0) return;
+
+    const feedbackId = getFeedbackIdentity(feedbackState[index]);
+    if (feedbackId <= 0) return;
+
+    if (!confirm("Delete this community feedback permanently?")) return;
+
+    try {
+        // MySQL is the source of truth: remove the row, then reload.
+        await postFeedbackAction("delete-feedback.php", feedbackId);
+    } catch (error) {
+        console.warn("Unable to delete feedback.", error);
+        alert(error.message || "Feedback could not be deleted. Please try again.");
+        return;
+    }
+
+    await loadFeedbackData();
     filterFeedback();
-
     updateFeedbackSummary(feedbackState);
 
     if (typeof loadFeedbackPreview === "function") {
@@ -1694,11 +1845,20 @@ function deleteFeedbackItem(index) {
     }
 }
 
-function markFeedbackHelpful(index) {
-    if (!Number.isInteger(index) || index < 0 || index >= feedbackState.length) return;
+async function markFeedbackHelpful(key) {
+    const index = findFeedbackIndex(key);
+    if (index < 0) return;
 
-    feedbackState[index].helpful_count = Number(feedbackState[index].helpful_count || 0) + 1;
-    persistFeedbackState();
+    const feedbackId = getFeedbackIdentity(feedbackState[index]);
+    if (feedbackId <= 0) return;
+
+    try {
+        const result = await postFeedbackAction("helpful-feedback.php", feedbackId);
+        feedbackState[index].helpful_count = Number(result.helpful_count ?? feedbackState[index].helpful_count ?? 0) + 0;
+    } catch (error) {
+        console.warn("Unable to mark feedback as helpful.", error);
+        return;
+    }
     filterFeedback();
 
     if (typeof loadFeedbackPreview === "function") {
@@ -1706,11 +1866,141 @@ function markFeedbackHelpful(index) {
     }
 }
 
-function reportFeedbackItem(index) {
-    if (!Number.isInteger(index) || index < 0 || index >= feedbackState.length) return;
+// ---------------------------------------------------------------------------
+// REPORT REASON MODAL
+//
+// A report is only sent after the user picks (or types) a reason, so the admin
+// can judge whether the feedback should be removed.
+// ---------------------------------------------------------------------------
 
-    feedbackState[index].reported = true;
-    persistFeedbackState();
+const REPORT_REASONS = [
+    "It's spam or advertising",
+    "It contains rude or offensive language",
+    "The information is wrong or misleading",
+    "It is irrelevant to this app",
+    "It is duplicated feedback",
+    "Other"
+];
+
+let pendingReportFeedbackId = 0;
+
+function ensureReportReasonModal() {
+    let overlay = document.getElementById("reportReasonModalOverlay");
+    if (overlay) return overlay;
+
+    overlay = document.createElement("div");
+    overlay.className = "modal-overlay";
+    overlay.id = "reportReasonModalOverlay";
+    overlay.setAttribute("aria-hidden", "true");
+    overlay.innerHTML = `
+        <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="reportReasonTitle">
+            <div class="modal-header">
+                <h2 id="reportReasonTitle">Why are you reporting this feedback?</h2>
+                <button class="modal-close" type="button" onclick="closeReportReasonModal()" aria-label="Close report dialog">&times;</button>
+            </div>
+            <form class="modal-body report-reason-form" id="reportReasonForm" onsubmit="submitReportReason(event)">
+                <p class="report-reason-intro">Your reason helps the admin decide whether this feedback should be removed.</p>
+                <div class="report-reason-options" role="radiogroup" aria-label="Report reason">
+                    ${REPORT_REASONS.map((reason, index) => `
+                        <label class="report-reason-option">
+                            <input type="radio" name="reportReasonChoice" value="${escapeHtml(reason)}" ${index === 0 ? "required" : ""}>
+                            <span>${escapeHtml(reason)}</span>
+                        </label>
+                    `).join("")}
+                </div>
+                <label for="reportReasonOther">Or describe the problem in your own words:</label>
+                <textarea id="reportReasonOther" maxlength="255" placeholder="Tell us what was wrong with this feedback..."></textarea>
+                <p class="report-reason-error" id="reportReasonError" role="alert"></p>
+                <div class="modal-footer">
+                    <button class="modal-btn modal-btn-secondary" type="button" onclick="closeReportReasonModal()">Cancel</button>
+                    <button class="modal-btn modal-btn-primary" type="submit">Submit Report</button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+    return overlay;
+}
+
+function openReportReasonModal(feedbackId) {
+    pendingReportFeedbackId = Number(feedbackId) || 0;
+    if (pendingReportFeedbackId <= 0) return;
+
+    const overlay = ensureReportReasonModal();
+    const errorEl = document.getElementById("reportReasonError");
+    if (errorEl) errorEl.textContent = "";
+    const textarea = document.getElementById("reportReasonOther");
+    if (textarea) textarea.value = "";
+
+    overlay.classList.add("active");
+    overlay.setAttribute("aria-hidden", "false");
+    document.body.classList.add("modal-open");
+}
+
+function closeReportReasonModal() {
+    const overlay = document.getElementById("reportReasonModalOverlay");
+    if (overlay) {
+        overlay.classList.remove("active");
+        overlay.setAttribute("aria-hidden", "true");
+    }
+    document.body.classList.remove("modal-open");
+    pendingReportFeedbackId = 0;
+}
+
+function submitReportReason(event) {
+    event.preventDefault();
+
+    const feedbackId = pendingReportFeedbackId;
+    if (!feedbackId) {
+        closeReportReasonModal();
+        return;
+    }
+
+    const chosen = document.querySelector('input[name="reportReasonChoice"]:checked');
+    const custom = document.getElementById("reportReasonOther")?.value.trim() || "";
+    let reason = custom || (chosen ? chosen.value : "");
+
+    if (!reason) {
+        const errorEl = document.getElementById("reportReasonError");
+        if (errorEl) errorEl.textContent = "Please choose or enter a reason before submitting the report.";
+        return;
+    }
+
+    if (reason.length > 255) {
+        const errorEl = document.getElementById("reportReasonError");
+        if (errorEl) errorEl.textContent = "Please keep the reason under 255 characters.";
+        return;
+    }
+
+    closeReportReasonModal();
+    submitFeedbackReport(feedbackId, reason);
+}
+
+async function reportFeedbackItem(key) {
+    const index = findFeedbackIndex(key);
+    if (index < 0) return;
+
+    const feedbackId = getFeedbackIdentity(feedbackState[index]);
+    if (feedbackId <= 0) return;
+
+    // Ask for a reason first; nothing is sent until one is provided.
+    openReportReasonModal(feedbackId);
+}
+
+async function submitFeedbackReport(feedbackId, reason) {
+    const index = feedbackState.findIndex(item => getFeedbackIdentity(item) === Number(feedbackId));
+    if (index < 0) return;
+
+    try {
+        const result = await postFeedbackAction("report-feedback.php", feedbackId, reason);
+        feedbackState[index].reported = true;
+        feedbackState[index].reported_count = Number(result.reported_count ?? feedbackState[index].reported_count ?? 1);
+    } catch (error) {
+        console.warn("Unable to report feedback.", error);
+        showModal('Error', error.message || "Feedback could not be reported. Please try again.");
+        return;
+    }
     filterFeedback();
 
     if (typeof loadFeedbackPreview === "function") {
@@ -1736,41 +2026,56 @@ function closeFeedbackModal() {
     document.body.classList.remove("modal-open");
 }
 
-function handleFeedbackSubmit(event) {
+async function handleFeedbackSubmit(event) {
     event.preventDefault();
 
     const form = document.getElementById("feedbackForm");
     if (!form) return;
 
-    const formData = new FormData(form);
-    const newFeedback = {
-        title: String(formData.get("title") || "Untitled feedback").trim(),
-        comment: String(formData.get("comment") || "No comment provided.").trim(),
-        rating: Number(formData.get("rating") || 5),
-        username: String(formData.get("username") || "").trim(),
-        is_anonymous: !String(formData.get("username") || "").trim(),
-        created_at: new Date().toISOString(),
-        helpful_count: 0,
-        reported: false
-    };
+    const submitButton = form.querySelector('[type="submit"]');
+    if (submitButton) submitButton.disabled = true;
 
-    feedbackState.unshift(newFeedback);
+    const formData = new FormData(form);
+    const title = String(formData.get("title") || "").trim();
+    const comment = String(formData.get("comment") || "").trim();
+    const rating = Number(formData.get("rating") || 0);
+    const username = String(formData.get("username") || "").trim();
+
+    if (!title || !comment || !(rating >= 1 && rating <= 5)) {
+        if (submitButton) submitButton.disabled = false;
+        alert("Please add a title, comment, and a rating from 1 to 5 stars.");
+        return;
+    }
 
     try {
-        localStorage.setItem("gamespecFeedback", JSON.stringify(feedbackState));
+        const { response, result } = await requestFeedbackApi(`${FEEDBACK_API_BASE}/submit-feedback.php`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title, comment, rating, username }),
+        });
+
+        if (!response.ok || !result || result.success === false) {
+            throw new Error(describeFeedbackFailure(response, result, "Feedback could not be submitted."));
+        }
+
+        // MySQL is the source of truth: reload the list from the server.
+        await loadFeedbackData();
+        filterFeedback();
+        updateFeedbackSummary(feedbackState);
+
+        if (typeof loadFeedbackPreview === "function") {
+            loadFeedbackPreview();
+        }
+
+        form.reset();
+        closeFeedbackModal();
+        alert(result.message || "Thank you! Your feedback has been submitted.");
     } catch (error) {
-        console.warn("Unable to save feedback locally.", error);
+        console.warn("Unable to submit feedback.", error);
+        alert(error.message || "Feedback could not be submitted. Please try again.");
+    } finally {
+        if (submitButton) submitButton.disabled = false;
     }
-
-    filterFeedback();
-    updateFeedbackSummary(feedbackState);
-
-    if (typeof loadFeedbackPreview === "function") {
-        loadFeedbackPreview();
-    }
-
-    form.reset();
-    closeFeedbackModal();
 }
 
 function updateFeedbackSummary(feedbacks) {
@@ -1796,23 +2101,16 @@ function updateFeedbackSummary(feedbacks) {
 }
 
 async function loadFeedbackData() {
-    try {
-        const response = await fetch("../../MODULES/api/get-latest-feedback.php");
+    const { response, result } = await requestFeedbackApi(`${FEEDBACK_API_BASE}/get-latest-feedback.php`);
 
-        if (!response.ok) {
-            throw new Error("Feedback request failed");
-        }
-
-        const feedbacks = await response.json();
-
-        if (Array.isArray(feedbacks) && feedbacks.length) {
-            feedbackState = feedbacks;
-            return feedbackState;
-        }
-    } catch (error) {
-        console.warn("Using sample feedback data because the live feedback endpoint is unavailable.", error);
+    if (!response.ok || !Array.isArray(result)) {
+        throw new Error(describeFeedbackFailure(response, result, "Feedback request failed"));
     }
 
+    // MySQL is the source of truth. Never merge localStorage or samples here.
+    feedbackState = result
+        .map(normalizeFeedbackRecord)
+        .filter(item => item !== null && item.is_approved !== false);
     return feedbackState;
 }
 
@@ -1879,10 +2177,24 @@ async function loadFeedbackPage() {
         `;
     }
 
-    const feedbacks = await loadFeedbackData();
+    try {
+        const feedbacks = await loadFeedbackData();
 
-    updateFeedbackSummary(feedbacks);
-    filterFeedback();
+        updateFeedbackSummary(feedbacks);
+        filterFeedback();
+    } catch (error) {
+        console.warn("Unable to load community feedback.", error);
+        feedbackState = [];
+        updateFeedbackSummary(feedbackState);
+        if (listContainer) {
+            listContainer.innerHTML = `
+                <div class="results-placeholder">
+                    <div class="placeholder-icon"><i class="fas fa-comment-dots"></i></div>
+                    <p>Unable to load community feedback. Please try again.</p>
+                </div>
+            `;
+        }
+    }
 }
 
 function selectGame(title) {
@@ -1890,12 +2202,57 @@ function selectGame(title) {
     window.location.href = `fps-prediction.php?game=${encodeURIComponent(title)}`;
 }
 
+let isDetectingHardware = false;
+
+function showHardwareDetectionLoading() {
+    let overlay = document.getElementById('hardwareDetectionLoadingOverlay');
+
+    if (!overlay) {
+        const html = `
+            <div id="hardwareDetectionLoadingOverlay" class="prediction-loading-overlay">
+                <div class="prediction-loading-card">
+                    <div class="prediction-spinner"></div>
+                    <h3>Detecting Hardware</h3>
+                    <p>Please wait while your CPU, GPU, and RAM are detected.</p>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', html);
+        overlay = document.getElementById('hardwareDetectionLoadingOverlay');
+    }
+
+    overlay.classList.add('active');
+    document.body.classList.add('hardware-detection-in-progress');
+
+    const button = document.querySelector('.detect-hardware-btn');
+    if (button) {
+        button.disabled = true;
+        button.dataset.originalText = button.textContent;
+        button.textContent = 'Detecting...';
+    }
+}
+
+function hideHardwareDetectionLoading() {
+    const overlay = document.getElementById('hardwareDetectionLoadingOverlay');
+    if (overlay) {
+        overlay.classList.remove('active');
+    }
+
+    document.body.classList.remove('hardware-detection-in-progress');
+
+    const button = document.querySelector('.detect-hardware-btn');
+    if (button) {
+        button.disabled = false;
+        button.textContent = button.dataset.originalText || 'Detect Hardware';
+    }
+}
+
 function normalizeHardwareText(value) {
     return String(value || '')
         .toLowerCase()
-        .replace(/\b(11th|12th|13th|14th|15th)\s*gen\b/g, '')
-        .replace(/\bcore\s*tm\b/g, '')
-        .replace(/\br\s*\(r\)\b/g, 'r')
+        .replace(/\([^)]*\)/g, ' ')
+        .replace(/\b(?:11th|12th|13th|14th|15th)\s*gen\b/g, '')
+        .replace(/\b(?:processor|cpu|gpu|graphics|card|nvidia|amd|intel)\b/g, ' ')
         .replace(/[^a-z0-9]+/g, ' ')
         .trim();
 }
@@ -1905,10 +2262,19 @@ function findBestHardwareMatch(items, detectedModel) {
 
     const target = normalizeHardwareText(detectedModel);
     const targetTokens = target.split(/\s+/).filter(token => token.length > 1);
+    const targetIdentifiers = targetTokens.filter(token => /\d/.test(token) && token.length >= 3);
 
     const scoredMatches = items.map(item => {
         const model = normalizeHardwareText(item.model);
         const modelTokens = model.split(/\s+/).filter(token => token.length > 1);
+        const modelIdentifiers = modelTokens.filter(token => /\d/.test(token) && token.length >= 3);
+        const identifierHits = modelIdentifiers.filter(token => targetIdentifiers.includes(token)).length;
+
+        // A shared family token is not enough to identify a device. Require
+        // a matching model identifier whenever the detected name contains one.
+        if (targetIdentifiers.length && identifierHits === 0) {
+            return { item, score: -1 };
+        }
 
         const tokenHits = modelTokens.filter(token => targetTokens.includes(token)).length;
         const tokenCoverage = modelTokens.length ? tokenHits / modelTokens.length : 0;
@@ -1917,12 +2283,12 @@ function findBestHardwareMatch(items, detectedModel) {
 
         return {
             item,
-            score: exact ? 100 : (tokenCoverage * 70) + (targetCoverage * 30)
+            score: exact ? 100 : (identifierHits * 50) + (tokenCoverage * 35) + (targetCoverage * 15)
         };
     }).sort((a, b) => b.score - a.score);
 
     const best = scoredMatches[0];
-    return best && best.score >= 25 ? best.item : null;
+    return best && best.score >= 50 ? best.item : null;
 }
 
 function findClosestRamOption(ramGb) {
@@ -1939,9 +2305,13 @@ function findClosestRamOption(ramGb) {
 }
 
 async function detectHardware() {
+    if (isDetectingHardware) return;
+
+    isDetectingHardware = true;
+    showHardwareDetectionLoading();
+
     try {
-        if (!cpus.length) await loadCPUsFromCSV();
-        if (!gpus.length) await loadGPUsFromCSV();
+        await loadFPSPredictionDropdowns();
 
         const response = await fetch('../../../MODULES/api/get-hardware.php');
         const result = await response.json();
@@ -1956,13 +2326,27 @@ async function detectHardware() {
 
         const cpuSearch = document.getElementById('cpuSearch');
         const cpuSelect = document.getElementById('cpuSelect');
-        if (cpuSearch) cpuSearch.value = cpuMatch?.model || result.cpu_model || '';
-        if (cpuSelect) cpuSelect.value = cpuMatch ? cpuMatch.score : '';
+        if (cpuMatch && searchDropdownApis.cpu) {
+            searchDropdownApis.cpu.setItem(cpuMatch);
+        } else if (cpuMatch) {
+            if (cpuSearch) cpuSearch.value = cpuMatch.model;
+            if (cpuSelect) cpuSelect.value = String(cpuMatch.score);
+        } else {
+            if (cpuSearch) cpuSearch.value = '';
+            if (cpuSelect) cpuSelect.value = '';
+        }
 
         const gpuSearch = document.getElementById('gpuSearch');
         const gpuSelect = document.getElementById('gpuSelect');
-        if (gpuSearch) gpuSearch.value = gpuMatch?.model || result.gpu_model || '';
-        if (gpuSelect) gpuSelect.value = gpuMatch ? gpuMatch.score : '';
+        if (gpuMatch && searchDropdownApis.gpu) {
+            searchDropdownApis.gpu.setItem(gpuMatch);
+        } else if (gpuMatch) {
+            if (gpuSearch) gpuSearch.value = gpuMatch.model;
+            if (gpuSelect) gpuSelect.value = String(gpuMatch.score);
+        } else {
+            if (gpuSearch) gpuSearch.value = '';
+            if (gpuSelect) gpuSelect.value = '';
+        }
 
         if (ramClosest !== null) {
             // Keep the visible search box and the stored hidden value in sync
@@ -1973,6 +2357,11 @@ async function detectHardware() {
                 const ramSelect = document.getElementById('ramSelect');
                 if (ramSelect) ramSelect.value = String(ramClosest);
             }
+        } else {
+            const ramSearch = document.getElementById('ramSearch');
+            const ramSelect = document.getElementById('ramSelect');
+            if (ramSearch) ramSearch.value = '';
+            if (ramSelect) ramSelect.value = '';
         }
 
         const detectedParts = [];
@@ -1987,6 +2376,9 @@ async function detectHardware() {
     } catch (error) {
         console.error('Hardware detection failed:', error);
         showModal('Error', error.message || 'Unable to detect hardware automatically.');
+    } finally {
+        isDetectingHardware = false;
+        hideHardwareDetectionLoading();
     }
 }
 
@@ -2189,9 +2581,21 @@ function formatGraphicsSetting(name) {
     return `<span class="graphics-setting" title="${setting.description}" tabindex="0">${setting.name}</span>`;
 }
 
-function buildGraphicsSuggestions(fpsDelta, currentQuality) {
+function buildGraphicsSuggestions(fpsDelta, currentQuality, compatibilityIssues = []) {
     const suggestions = [];
     Math.round(fpsDelta * 100) / 100;
+
+    if (compatibilityIssues.length > 0) {
+        suggestions.push('Your hardware does not meet the game\'s minimum benchmark requirements.');
+        compatibilityIssues.forEach(issue => {
+            suggestions.push(
+                `${issue.type}: ${issue.name} is below the minimum requirement ` +
+                `(${issue.userScore.toLocaleString()} vs ${issue.required.toLocaleString()}).`
+            );
+        });
+        suggestions.push('Select lower graphics settings or use hardware that meets the minimum requirements.');
+        return suggestions;
+    }
 
     if (fpsDelta >= 15) {
         suggestions.push(`You have enough headroom to raise visuals by about ${fpsDelta} FPS.`);
@@ -2248,11 +2652,11 @@ function buildGraphicsSuggestions(fpsDelta, currentQuality) {
 let isPredictingFPS = false;
 
 function showPredictionLoading() {
-    let overlay = document.getElementById('predictionLoadingOverlay');
+    let overlay = document.getElementById('performanceAnalysisLoadingOverlay');
 
     if (!overlay) {
         const html = `
-            <div id="predictionLoadingOverlay" class="prediction-loading-overlay">
+            <div id="performanceAnalysisLoadingOverlay" class="prediction-loading-overlay">
                 <div class="prediction-loading-card">
                     <div class="prediction-spinner"></div>
                     <h3>Analyzing Performance</h3>
@@ -2261,11 +2665,11 @@ function showPredictionLoading() {
             </div>
         `;
         document.body.insertAdjacentHTML('beforeend', html);
-        overlay = document.getElementById('predictionLoadingOverlay');
+        overlay = document.getElementById('performanceAnalysisLoadingOverlay');
     }
 
     overlay.classList.add('active');
-    document.body.classList.add('analysis-in-progress');
+    document.body.classList.add('performance-analysis-in-progress');
 
     const analyzeButton = document.querySelector('button[onclick="predictFPS()"]');
     if (analyzeButton) {
@@ -2276,12 +2680,12 @@ function showPredictionLoading() {
 }
 
 function hidePredictionLoading() {
-    const overlay = document.getElementById('predictionLoadingOverlay');
+    const overlay = document.getElementById('performanceAnalysisLoadingOverlay');
     if (overlay) {
         overlay.classList.remove('active');
     }
 
-    document.body.classList.remove('analysis-in-progress');
+    document.body.classList.remove('performance-analysis-in-progress');
 
     const analyzeButton = document.querySelector('button[onclick="predictFPS()"]');
     if (analyzeButton) {
@@ -2316,6 +2720,24 @@ async function predictFPS() {
         return showModal('Warning', `No benchmark score is available for ${ramGB} GB RAM.`);
     }
 
+    // --- PREDICTION GUARD -------------------------------------------------
+    // Invalid hardware / benchmark values must never reach the prediction
+    // process. The server repeats these checks; this stops the request early
+    // and gives the user a clear message.
+    if (!Number.isFinite(cpuScoreNum) || cpuScoreNum <= 0) {
+        return showModal('Warning', 'The selected CPU has no valid benchmark score. Please choose a different CPU.');
+    }
+    if (!Number.isFinite(gpuScoreNum) || gpuScoreNum <= 0) {
+        return showModal('Warning', 'The selected GPU has no valid benchmark score. Please choose a different GPU.');
+    }
+    if (!Number.isFinite(ramGB) || ramGB <= 0) {
+        return showModal('Warning', 'The selected RAM capacity is not valid. Please choose a different RAM option.');
+    }
+    if (!Number.isFinite(ramScoreNum) || ramScoreNum <= 0) {
+        return showModal('Warning', 'The selected RAM has no valid benchmark score. Please choose a different RAM option.');
+    }
+    // ----------------------------------------------------------------------
+
     const cpuName = document.getElementById("cpuSearch").value || 'Selected CPU';
     const gpuName = document.getElementById("gpuSearch").value || 'Selected GPU';
 
@@ -2344,6 +2766,7 @@ async function predictFPS() {
         game_ram_min: parseInt(selectedGame.ram_benchmark, 10),
         cpu_score: cpuScoreNum,
         gpu_score: gpuScoreNum,
+        gpu_benchmark_id: Number(document.getElementById("gpuSelect").dataset.benchmarkId) || null,
         ram_score: ramScoreNum,
         res_width: 1920,
         res_height: 1080,
@@ -2508,15 +2931,18 @@ async function predictFPS() {
             </div>
         `;
 
-        const graphicsSuggestions = buildGraphicsSuggestions(fpsDelta, quality);
-        const suggestionTone = fpsDelta >= 0 ? 'success' : 'warning';
-        const suggestionHeading = fpsDelta >= 15
-            ? 'Your PC can handle higher graphics settings'
-            : fpsDelta >= 5
-                ? 'You can improve the graphics a little'
-                : fpsDelta > 0
-                    ? 'Your PC is close to the recommended performance'
-                    : 'How to improve game performance';
+        const graphicsSuggestions = buildGraphicsSuggestions(fpsDelta, quality, bottlenecks);
+        const hasCompatibilityIssues = bottlenecks.length > 0;
+        const suggestionTone = !hasCompatibilityIssues && fpsDelta >= 0 ? 'success' : 'warning';
+        const suggestionHeading = hasCompatibilityIssues
+            ? 'Hardware below minimum requirements'
+            : fpsDelta >= 15
+                ? 'Your PC can handle higher graphics settings'
+                : fpsDelta >= 5
+                    ? 'You can improve the graphics a little'
+                    : fpsDelta > 0
+                        ? 'Your PC is close to the recommended performance'
+                        : 'How to improve game performance';
 
         html += `
             <div class="result-section ${suggestionTone}">
@@ -2631,10 +3057,20 @@ async function loadFeedbackPreview() {
         </div>
     `;
 
-    const feedbacks = await loadFeedbackData();
-    // Compact preview: latest 3 only. Existing header "View All Reviews"
-    // link (feedback.php) covers the full list — no duplicate control added.
-    renderFeedbackCards(feedbacks, container, { limit: 3 });
+    try {
+        const feedbacks = await loadFeedbackData();
+        // Compact preview: latest 3 only. Existing header "View All Reviews"
+        // link (feedback.php) covers the full list — no duplicate control added.
+        renderFeedbackCards(feedbacks, container, { limit: 3 });
+    } catch (error) {
+        console.warn("Unable to load feedback preview.", error);
+        container.innerHTML = `
+            <div class="results-placeholder">
+                <div class="placeholder-icon"><i class="fas fa-comment-dots"></i></div>
+                <p>No feedback available yet.</p>
+            </div>
+        `;
+    }
 }
 
 function getPredictionHistoryKey() {

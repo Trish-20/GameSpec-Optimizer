@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . "/../db.php";
+require_once __DIR__ . "/admin-auth.php";
 header("Content-Type: text/csv; charset=utf-8");
 header("Content-Disposition: attachment; filename=\"game-requirements-report.csv\"");
 try {
@@ -16,4 +17,3 @@ try {
     http_response_code(500);
     echo "Error generating CSV";
 }
-

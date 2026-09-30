@@ -1,3 +1,6 @@
+<?php
+require_once __DIR__ . '/admin-guard.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,7 +28,7 @@
                     <datalist id="cpuModelOptions"></datalist>
                     
                     <label for="cpuScore">Benchmark Score:</label>
-                    <input type="number" id="cpuScore" placeholder="e.g., 35000" required>
+                    <input type="number" id="cpuScore" min="1" max="1000000" step="1" placeholder="e.g., 35000" required>
                     
                     <div class="form-action-row">
                         <button type="submit" class="btn-primary">Save CPU</button>
@@ -50,10 +53,10 @@
                     <datalist id="gpuModelOptions"></datalist>
                     
                     <label for="gpuScore">Benchmark Score:</label>
-                    <input type="number" id="gpuScore" placeholder="e.g., 28000" required>
+                    <input type="number" id="gpuScore" min="1" max="1000000" step="1" placeholder="e.g., 28000" required>
                     
                    <div class="form-action-row">
-                        <button type="submit" class="btn-primary">Save CPU</button>
+                        <button type="submit" class="btn-primary">Save GPU</button>
                     </div>
                 </form>
                 <hr>
@@ -75,10 +78,10 @@
                     <datalist id="ramModelOptions"></datalist>
                     
                     <label for="ramScore">Benchmark Score:</label>
-                    <input type="number" id="ramScore" placeholder="e.g., 8000" required>
+                    <input type="number" id="ramScore" min="1" max="1000000" step="1" placeholder="e.g., 8000" required>
                     
                     <div class="form-action-row">
-                        <button type="submit" class="btn-primary">Save CPU</button>
+                        <button type="submit" class="btn-primary">Save RAM</button>
                     </div>
                 </form>
                 <hr>

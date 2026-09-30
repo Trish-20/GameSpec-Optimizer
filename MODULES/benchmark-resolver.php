@@ -215,3 +215,85 @@ function resolveGameBenchmarks(string $cpuModel, string $gpuModel, int $ramCapac
         'ram_benchmark' => $ram['score'],
     ];
 }
+
+/* ============================================================================
+ * INPUT VALIDATION HELPERS
+ *
+ * These only decide whether a value is acceptable. They never alter a value
+ * that already passes, so the resolution and prediction behaviour above is
+ * unchanged for valid input.
+ * ========================================================================= */
+
+/**
+ * Reject values that are obviously not hardware identifiers, e.g.
+ * "123456akwjhrofhaeb", while still accepting every real model name in the
+ * benchmark catalogue.
+ *
+ * The rules were calibrated against the existing cpu_benchmarks /
+ * gpu_benchmarks rows, so ordinary part numbers ("i7-12700K", "RTX 4090",
+ * "16GB DDR4-3200", "P104-100") always pass and only long, single-blob
+ * keyboard-mash strings are refused.
+ */
+function isPlausibleHardwareModel(string $model): bool
+{
+    $model = trim((string) preg_replace('/\s+/', ' ', $model));
+    $length = strlen($model);
+
+    if ($length < 3 || $length > 120) {
+        return false;
+    }
+
+    // Real model names always contain letters.
+    if (!preg_match('/[A-Za-z]/', $model)) {
+        return false;
+    }
+
+    // Allow only the characters that appear in real model names.
+    if (!preg_match('#^[A-Za-z0-9 .()\-_+,/@]+$#', $model)) {
+        return false;
+    }
+
+    // Reject low character-diversity blobs such as "xx11xx22xx" or "zzz9999".
+    if ($length >= 6) {
+        $uniqueCharacters = count(array_unique(preg_split('//u', $model, -1, PREG_SPLIT_NO_EMPTY)));
+        if (($uniqueCharacters / $length) < 0.30) {
+            return false;
+        }
+    }
+
+    // Known hardware vocabulary always wins.
+    if (preg_match(HARDWARE_MODEL_VOCABULARY, $model)) {
+        return true;
+    }
+
+    // Otherwise accept short part numbers and multi-word descriptions, and
+    // refuse a single long unrecognised blob.
+    return $length <= 13 || strpos($model, ' ') !== false;
+}
+
+/**
+ * Vendor, family and memory vocabulary used by real model names. Matching any
+ * of these means the value is recognisably hardware even if it is long.
+ */
+const HARDWARE_MODEL_VOCABULARY = '/\b(intel|amd|ryzen|threadripper|epyc|athlon|phenom|sempron|celeron|pentium|atom|core|xeon|pro|fx|apu|nvidia|geforce|radeon|gtx|rtx|quadro|tesla|titan|iris|uhd|hd|graphics|arc|firepro|instinct|ddr[345]?|sdram|gb|mb|tb|mhz|ghz|xmp|expo|vengeance|trident|ripjaws|fury|ballistix|dominator|hyperx|kingston|corsair|crucial|gskill|samsung|hynix|teamgroup|lexar|sabrent|adata|barco|carrizo|via|abit|aspeed|matrox|mxgpu|opengl|vanta|mobile|embedded|express|chipset|controller|display|family|edition|directx|d3d|parhelia|qxl|ion|dual|plus|xtx|xti|super|max|ti|gt|gs|workstation|professional|server|oem|asic|integrated|vega|duo|wx|gl|gh|ssg|internal|extreme|accelerator|coffee|lake|media|poison|ivy|incredible|infoshock|modded|release|ceo|collectors|devastator|scrapper|trinity|park)\b/i';
+
+/**
+ * Validate a benchmark score: must be a finite positive number inside a sane
+ * range, and not a value produced by a typo.
+ */
+function isValidBenchmarkScore($score): bool
+{
+    if (!is_numeric($score)) {
+        return false;
+    }
+
+    $value = (float) $score;
+
+    // Reject NaN / INF and non-positive values.
+    if (!is_finite($value) || $value <= 0) {
+        return false;
+    }
+
+    // Real CPU/GPU/RAM benchmark scores stay well inside this window.
+    return $value >= 1 && $value <= 1000000;
+}

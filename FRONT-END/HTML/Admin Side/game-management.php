@@ -1,3 +1,6 @@
+<?php
+require_once __DIR__ . '/admin-guard.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,6 +52,57 @@
                         <input type="number" id="gameRAMSpeed" placeholder="e.g., 3200" required>
                     </div>
 
+                    <!-- Filter fields: these values are constrained to the
+                         same categories the user-side Browse Games filters
+                         use, so a game added here can always be found by
+                         users selecting a genre or release year. -->
+
+                    <!-- Genre checkboxes (the .toggle-group / .toggle-item
+                         styles already exist in AdminSideStyle.css). Values
+                         mirror the Browse Games genre filter exactly. -->
+                    <div class="form-field game-genre-field">
+                        <label id="gameGenresLabel">Genres (used by Browse filters):</label>
+                        <div class="toggle-group" id="gameGenreGroup" role="group" aria-labelledby="gameGenresLabel">
+                            <?php
+                            $browseGenres = [
+                                'Action' => 'Action',
+                                'RPG' => 'RPG',
+                                'Shooter' => 'Shooter / FPS',
+                                'Adventure' => 'Adventure',
+                                'Sports' => 'Sports',
+                                'Racing' => 'Racing',
+                                'Strategy' => 'Strategy',
+                                'Sandbox' => 'Sandbox',
+                                'Simulation' => 'Simulation',
+                                'Puzzle' => 'Puzzle',
+                                'Indie' => 'Indie',
+                                'Survival' => 'Survival',
+                            ];
+                            foreach ($browseGenres as $value => $label): ?>
+                                <div class="toggle-item">
+                                    <input type="checkbox" id="genre-<?= htmlspecialchars(strtolower($value), ENT_QUOTES, 'UTF-8') ?>" class="gameGenreCheckbox" value="<?= htmlspecialchars($value, ENT_QUOTES, 'UTF-8') ?>">
+                                    <label for="genre-<?= htmlspecialchars(strtolower($value), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?></label>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <small class="field-hint">Select at least one so users can filter this game by genre.</small>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="gameReleaseYear">Release Year:</label>
+                        <input type="number" id="gameReleaseYear" min="1970" max="<?= (int) date('Y') + 2 ?>" placeholder="e.g., 2024">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="gamePlatform">Platforms:</label>
+                        <select id="gamePlatform" multiple size="3" aria-describedby="gamePlatformHint">
+                            <option value="PC" selected>PC (Windows)</option>
+                            <option value="macOS">macOS</option>
+                            <option value="Linux">Linux</option>
+                        </select>
+                        <small id="gamePlatformHint" class="field-hint">Hold Ctrl / Cmd to select more than one. PC is required.</small>
+                    </div>
+
                     <!-- Cover upload/insertion on the RIGHT, top-aligned with
                          the Min RAM Speed field and spanning down beside the
                          description. The file input and preview share ONE
@@ -98,6 +152,9 @@
             </div>
             <hr>
             <div id="gameList" class="data-list"></div>
+            <div id="noGameMessage" class="no-results-state" style="display: none;" aria-live="polite">
+                <p>No games match your search.</p>
+            </div>
         </div>
     </div>
 

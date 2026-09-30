@@ -36,7 +36,8 @@ function importBenchmarkData(PDO $database): array
     );
     foreach (readBenchmarkCsv(__DIR__ . '/../DATA/GPU-benchmarks-v7.csv') as $row) {
         $model = trim($row[0] ?? '');
-        if ($model === '' || strtolower(trim($row[8] ?? '')) !== 'desktop' || preg_match('/\b(quadro|tesla|titan|rtx a)\b/i', $model)) {
+        $category = strtolower(trim($row[8] ?? ''));
+        if ($model === '' || !in_array($category, ['desktop', 'mobile', 'unknown'], true) || preg_match('/\b(quadro|tesla|titan|rtx a)\b/i', $model)) {
             continue;
         }
         $gpuStatement->execute([
