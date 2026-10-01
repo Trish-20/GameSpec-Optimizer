@@ -135,6 +135,34 @@ $inputs['anti_aliasing'] = $inputs['anti_aliasing'] ?? 'Off';
 $inputs['vsync'] = $inputs['vsync'] ?? 'Off';
 $inputs['performance_mode'] = $inputs['performance_mode'] ?? 'balanced';
 
+$mlServiceUrl = rtrim((string) (getenv('ML_SERVICE_URL') ?: ''), '/');
+if ($mlServiceUrl !== '') {
+    $headers = ['Content-Type: application/json'];
+    $mlServiceToken = (string) (getenv('ML_SERVICE_TOKEN') ?: '');
+    if ($mlServiceToken !== '') {
+        $headers[] = 'Authorization: Bearer ' . $mlServiceToken;
+    }
+
+    $context = stream_context_create([
+        'http' => [
+            'method' => 'POST',
+            'header' => implode("\r\n", $headers),
+            'content' => json_encode($inputs),
+            'timeout' => 60,
+            'ignore_errors' => true,
+        ],
+    ]);
+    $remoteResponse = @file_get_contents($mlServiceUrl . '/predict', false, $context);
+    $remoteResult = $remoteResponse !== false ? json_decode($remoteResponse, true) : null;
+    if (is_array($remoteResult)) {
+        echo json_encode($remoteResult);
+        exit;
+    }
+
+    error_log('ML service returned an invalid response.');
+    die(json_encode(['success' => false, 'message' => 'The performance check could not be completed. Please try again.']));
+}
+
 // Path to Python script
 $scriptPath = __DIR__ . '/ml-predict.py';
 
