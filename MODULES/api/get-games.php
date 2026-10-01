@@ -108,6 +108,7 @@ try {
 
     echo json_encode($games, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 } catch (Throwable $error) {
+    error_log('get-games failed: ' . $error->getMessage());
     http_response_code(500);
     echo json_encode(['error' => 'Unable to retrieve games from the database.']);
 }
