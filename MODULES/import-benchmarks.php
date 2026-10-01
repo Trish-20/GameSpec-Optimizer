@@ -8,6 +8,11 @@ require_once __DIR__ . '/benchmark-resolver.php';
 function importBenchmarkData(PDO $database): array
 {
     $counts = ['cpu' => 0, 'gpu' => 0, 'ram' => 0];
+    $database->beginTransaction();
+
+    if (PHP_SAPI === 'cli') {
+        fwrite(STDOUT, "Importing CPU benchmarks...\n");
+    }
 
     $cpuStatement = $database->prepare(
         'INSERT INTO cpu_benchmarks (model, normalized_model, score, cores, category, source_version)
@@ -34,6 +39,9 @@ function importBenchmarkData(PDO $database): array
          VALUES (:model, :normalized_model, :score, :g2d_score, :tdp, :category, :source_version)
          ON DUPLICATE KEY UPDATE normalized_model = VALUES(normalized_model), score = VALUES(score), g2d_score = VALUES(g2d_score), tdp = VALUES(tdp), category = VALUES(category), source_version = VALUES(source_version)'
     );
+    if (PHP_SAPI === 'cli') {
+        fwrite(STDOUT, "Importing GPU benchmarks...\n");
+    }
     foreach (readBenchmarkCsv(__DIR__ . '/../DATA/GPU-benchmarks-v7.csv') as $row) {
         $model = trim($row[0] ?? '');
         $category = strtolower(trim($row[8] ?? ''));
@@ -57,6 +65,9 @@ function importBenchmarkData(PDO $database): array
          VALUES (:capacity_gb, :speed_mhz, :score, :source_version)
          ON DUPLICATE KEY UPDATE score = VALUES(score), source_version = VALUES(source_version)'
     );
+    if (PHP_SAPI === 'cli') {
+        fwrite(STDOUT, "Importing RAM benchmarks...\n");
+    }
     foreach (readBenchmarkCsv(__DIR__ . '/../DATA/RAM-benchmarks.csv') as $row) {
         if (($row[0] ?? '') === '') {
             continue;
@@ -70,6 +81,7 @@ function importBenchmarkData(PDO $database): array
         $counts['ram']++;
     }
 
+    $database->commit();
     return $counts;
 }
 

@@ -9,29 +9,44 @@ function loadProjectEnv(): array
     $envFile = __DIR__ . '/../.env.local';
     $values = [];
 
-    if (!is_readable($envFile)) {
-        throw new RuntimeException('Environment file not found.');
+    // Local development (XAMPP): read the ignored .env.local file.
+    if (is_readable($envFile)) {
+        foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+            $line = trim($line);
+
+            if ($line === '' || str_starts_with($line, '#')) {
+                continue;
+            }
+
+            $separator = strpos($line, '=');
+            if ($separator === false) {
+                $separator = strpos($line, ':');
+            }
+
+            if ($separator === false) {
+                continue;
+            }
+
+            $name = trim(substr($line, 0, $separator));
+            $value = trim(substr($line, $separator + 1));
+            $values[$name] = trim($value, " \t\r\n\"'");
+        }
     }
 
-    foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
-        $line = trim($line);
-
-        if ($line === '' || str_starts_with($line, '#')) {
-            continue;
+    // Cloud hosts and CI supply secrets as real environment variables. These
+    // take precedence over the file.
+    foreach (['RAW_API_KEY', 'DB_CONNECTION_STRING', 'APP_ENV', 'PYTHON_BIN'] as $name) {
+        $value = getenv($name);
+        if ($value !== false && $value !== '') {
+            $values[$name] = $value;
         }
+    }
 
-        $separator = strpos($line, '=');
-        if ($separator === false) {
-            $separator = strpos($line, ':');
-        }
-
-        if ($separator === false) {
-            continue;
-        }
-
-        $name = trim(substr($line, 0, $separator));
-        $value = trim(substr($line, $separator + 1));
-        $values[$name] = trim($value, " \t\r\n\"'");
+    if ($values === []) {
+        throw new RuntimeException(
+            'No configuration found. Set the RAW_API_KEY environment variable, '
+            . 'or provide a .env.local file.'
+        );
     }
 
     return $values;

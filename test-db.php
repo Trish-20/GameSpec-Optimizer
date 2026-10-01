@@ -32,5 +32,7 @@ try {
 } catch (Throwable $e) {
 
     echo "DATABASE CONNECTION: FAILED\n";
-    echo "ERROR: " . $e->getMessage();
+    echo "ERROR: " . $e->getMessage() . "\n";
+    echo "FILE: " . $e->getFile() . "\n";
+    echo "LINE: " . $e->getLine() . "\n";
 }

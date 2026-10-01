@@ -135,13 +135,40 @@ $inputs['anti_aliasing'] = $inputs['anti_aliasing'] ?? 'Off';
 $inputs['vsync'] = $inputs['vsync'] ?? 'Off';
 $inputs['performance_mode'] = $inputs['performance_mode'] ?? 'balanced';
 
-// Path to Python script 
+// Path to Python script
 $scriptPath = __DIR__ . '/ml-predict.py';
 
-// Uses exact Python interpreter path used by this python environment.
-// Use the project virtual environment interpreter
-$pythonCmd = __DIR__ . '/../.venv/Scripts/python.exe';
-$command = $pythonCmd . ' ' . escapeshellarg($scriptPath);
+/*
+ * Locate the Python interpreter.
+ *
+ * The project virtualenv is called "Scripts/python.exe" on Windows but
+ * "bin/python" on Linux/macOS, so try both. A PYTHON_BIN environment
+ * variable (set on the cloud host) wins, and we finally fall back to the
+ * interpreter on PATH.
+ *
+ * Only how the interpreter is FOUND changes - the script it runs and
+ * everything it computes are untouched.
+ */
+$pythonCandidates = array_filter([
+    getenv('PYTHON_BIN') ?: null,
+    __DIR__ . '/../.venv/bin/python',
+    __DIR__ . '/../.venv/Scripts/python.exe',
+]);
+
+$pythonCmd = null;
+foreach ($pythonCandidates as $candidate) {
+    if (is_file($candidate)) {
+        $pythonCmd = $candidate;
+        break;
+    }
+}
+
+if ($pythonCmd === null) {
+    // No project venv: fall back to the interpreter on PATH.
+    $pythonCmd = (PHP_OS_FAMILY === 'Windows') ? 'python' : 'python3';
+}
+
+$command = escapeshellcmd($pythonCmd) . ' ' . escapeshellarg($scriptPath);
 
 $descriptors = [
     0 => ['pipe', 'r'],
