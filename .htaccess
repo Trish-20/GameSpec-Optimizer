@@ -1,0 +1,53 @@
+# ==========================================================
+# GameSpec Optimizer - HTTP caching
+# ==========================================================
+#
+# WHY THIS FILE EXISTS
+#
+# Previously the server sent no Cache-Control header at all. With
+# no explicit expiry, browsers fall back to "heuristic caching"
+# and may reuse a stored copy for a while. That caused a real bug:
+# the page HTML was served from cache, so it kept pointing at the
+# OLD stylesheet URL, which was itself cached - meaning new CSS and
+# JS changes never reached the browser at all.
+#
+# The rule below is deliberately narrow:
+#
+#   * PHP / HTML  -> always revalidate. The document is cheap to
+#                    re-fetch and must always reference current
+#                    asset URLs. Asset URLs are themselves
+#                    versioned with filemtime() in the markup, so
+#                    revalidating the page is always safe.
+#
+#   * Images and other static files are intentionally left alone
+#     (no header set). Those URLs are NOT versioned - game covers
+#     in uploads/ and artwork in RES/ are referenced by a fixed
+#     path - so marking them immutable would hide real updates.
+# ==========================================================
+
+<IfModule mod_headers.c>
+    # The document itself must always be revalidated: it is what
+    # points at the current, versioned asset URLs.
+    <FilesMatch "\.(php|html|htm)$">
+        Header set Cache-Control "no-cache, must-revalidate"
+    </FilesMatch>
+
+    # CSS/JS are requested with a filemtime() version string, so a
+    # short cache is safe and still saves most repeat requests.
+    <FilesMatch "\.(css|js)$">
+        Header set Cache-Control "public, max-age=3600"
+    </FilesMatch>
+
+    # Images are NOT versioned (covers in uploads/, artwork in RES/),
+    # so they must not be marked immutable or real updates would be
+    # hidden. One day keeps them fresh without re-fetching constantly.
+    <FilesMatch "\.(png|jpe?g|webp|gif|avif|svg|jfif|ico)$">
+        Header set Cache-Control "public, max-age=86400"
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_mime.c>
+    AddType application/javascript .js
+    AddType image/avif .avif
+    AddType image/jpeg .jfif
+</IfModule>
