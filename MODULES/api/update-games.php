@@ -228,6 +228,7 @@ try {
                 ? json_decode($cloudinaryResponse, true)
                 : null;
             if ($cloudinaryError !== '' || $cloudinaryStatus < 200 || $cloudinaryStatus >= 300 || !is_array($cloudinaryResult) || empty($cloudinaryResult['secure_url'])) {
+                error_log('Cloudinary upload failed: HTTP ' . $cloudinaryStatus . '; cURL: ' . $cloudinaryError . '; response: ' . (is_string($cloudinaryResponse) ? $cloudinaryResponse : 'none'));
                 throw new RuntimeException('Unable to upload game cover to Cloudinary.');
             }
 
