@@ -227,8 +227,13 @@
 }
 
 /* Landscape phone: very little vertical room, so drop the
-   decorative header block entirely. */
-@media (max-width: 900px) and (max-height: 500px) {
+   decorative header block entirely.
+
+   `pointer: coarse` is deliberate. Without it this also matches a
+   desktop browser window shrunk under 900x500, which would strip the
+   branding from the desktop login. Scoping to touch keeps the desktop
+   two-panel layout intact no matter how small the window gets. */
+@media (max-width: 900px) and (max-height: 500px) and (pointer: coarse) {
     .admin-login-brand {
         display: none;
     }
