@@ -194,6 +194,46 @@ try {
             exit;
         }
 
+        $cloudinaryName = trim((string) (getenv('CLOUDINARY_CLOUD_NAME') ?: ''));
+        $cloudinaryKey = trim((string) (getenv('CLOUDINARY_API_KEY') ?: ''));
+        $cloudinarySecret = trim((string) (getenv('CLOUDINARY_API_SECRET') ?: ''));
+
+        if ($cloudinaryName !== '' && $cloudinaryKey !== '' && $cloudinarySecret !== '') {
+            $timestamp = time();
+            $folder = 'gamespec-covers';
+            $signatureBase = 'folder=' . $folder . '&timestamp=' . $timestamp . $cloudinarySecret;
+            $signature = sha1($signatureBase);
+            $cloudinaryUrl = 'https://api.cloudinary.com/v1_1/' . rawurlencode($cloudinaryName) . '/image/upload';
+            $cloudinaryPayload = [
+                'file' => 'data:image/' . strtolower($matches[1]) . ';base64,' . base64_encode($imageBinary),
+                'api_key' => $cloudinaryKey,
+                'timestamp' => $timestamp,
+                'folder' => $folder,
+                'signature' => $signature,
+            ];
+
+            $curl = curl_init($cloudinaryUrl);
+            curl_setopt_array($curl, [
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => $cloudinaryPayload,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT => 30,
+            ]);
+            $cloudinaryResponse = curl_exec($curl);
+            $cloudinaryStatus = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+            $cloudinaryError = curl_error($curl);
+            curl_close($curl);
+
+            $cloudinaryResult = is_string($cloudinaryResponse)
+                ? json_decode($cloudinaryResponse, true)
+                : null;
+            if ($cloudinaryError !== '' || $cloudinaryStatus < 200 || $cloudinaryStatus >= 300 || !is_array($cloudinaryResult) || empty($cloudinaryResult['secure_url'])) {
+                throw new RuntimeException('Unable to upload game cover to Cloudinary.');
+            }
+
+            $coverUrl = (string) $cloudinaryResult['secure_url'];
+        } else {
+
         /*
          * Normalize extension (use jpg rather than jpeg for filenames).
          */
@@ -251,6 +291,7 @@ try {
          * the VARCHAR(1000) limit for games.cover_url.
          */
         $coverUrl = 'uploads/game-covers/' . $filename;
+        }
     }
 
     /*
