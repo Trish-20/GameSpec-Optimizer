@@ -277,7 +277,56 @@
 }
 
 /* ==========================================================
-   10) ACCESSIBILITY / MOTION
+   10) HEADER TITLE vs HELP BUTTON  (overlap fix)
+   The header has only ONE in-flow child: both the toggle button
+   (position:fixed) and the help button (position:absolute) are
+   taken out of flow, so .app-title is the only flex item.
+
+   At <=600px the existing rule right-aligns that title with only
+   14px of padding, but the help button sits at right:22px and is
+   36px wide - it occupies right:58px down to right:22px. The
+   title therefore slides underneath the button and the "z" of
+   "GameSpec Optimizer" gets covered.
+
+   Reserving 68px (58px button + 10px breathing room) keeps them
+   apart. The ellipsis is a safety net for very narrow screens.
+   ========================================================== */
+@media (max-width: 600px) {
+    .top-header {
+        padding-right: 68px;
+    }
+
+    .top-header .app-title {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+/* ==========================================================
+   11) SORT FILTER ROW
+   On a phone the inline "Sort:" label ends up squeezed against a
+   full-width dropdown, which reads as misaligned. Stacking the
+   label above the field matches how the other filter inputs are
+   presented and gives the dropdown the full row width.
+   ========================================================== */
+@media (max-width: 600px) {
+    .sort-filter {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+    }
+
+    .sort-label {
+        font-size: 12px;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+    }
+}
+
+/* ==========================================================
+   12) ACCESSIBILITY / MOTION
    Respect the OS "reduce motion" setting on phones.
    ========================================================== */
 @media (prefers-reduced-motion: reduce) {
