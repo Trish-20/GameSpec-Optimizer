@@ -29,6 +29,9 @@
     <div class="hidden-admin-btn" onclick="handleAdminClick()"></div>
 </div>
 
+<!-- Tap-to-close backdrop for the sidebar. Only becomes visible below
+     900px, where the sidebar overlays the page instead of pushing it. -->
+<div class="sidebar-scrim" onclick="toggleSidebar()" aria-hidden="true"></div>
 
 <script>
     let adminClickCount = 0;

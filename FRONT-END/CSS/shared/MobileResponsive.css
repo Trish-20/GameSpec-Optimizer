@@ -1,0 +1,319 @@
+/* ==========================================================
+   GameSpec Optimizer - MOBILE RESPONSIVE LAYER
+   ------------------------------------------------------------
+   Loaded AFTER UserSideStyle.css / AdminSideStyle.css so it can
+   safely override them on small screens.
+
+   EVERY rule in this file lives inside a max-width media query.
+   Nothing here can affect a desktop-width viewport, so the
+   existing desktop layout and its use of screen space stay
+   exactly as they are.
+
+   Breakpoints used (deliberately matching the ones already in
+   the project so the layers merge cleanly):
+       900px  - sidebar becomes an overlay (matches existing rule)
+       768px  - tablet
+       600px  - large phone (matches existing rule)
+       480px  - small phone
+   ========================================================== */
+
+/* ==========================================================
+   1) SIDEBAR SCRIM
+   The sidebar overlays the page below 900px, so it needs a
+   backdrop the user can tap to dismiss it. Hidden on desktop.
+   ========================================================== */
+.sidebar-scrim {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    body.sidebar-open .sidebar-scrim {
+        display: block;
+        position: fixed;
+        /* Start below the fixed 60px top header. */
+        top: 60px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: rgba(0, 0, 0, 0.6);
+        /* Under the sidebar (z-index 10) but over the content. */
+        z-index: 9;
+        opacity: 0;
+        animation: gsScrimIn 0.25s ease forwards;
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+@keyframes gsScrimIn {
+    to {
+        opacity: 1;
+    }
+}
+
+/* While the drawer is open on a phone, the page behind it must not
+   scroll under the user's finger. Toggled as a class by the page
+   script so it never fights with the help modal's inline style. */
+@media (max-width: 900px) {
+    body.sidebar-locked {
+        overflow: hidden;
+    }
+}
+
+/* ==========================================================
+   2) DYNAMIC VIEWPORT UNITS
+   100vh includes the strip behind the iOS/Android URL bar, which
+   pushes fixed panels off-screen and makes them scroll oddly.
+   100dvh tracks the real visible area.
+   ========================================================== */
+@media (max-width: 900px) {
+    body {
+        min-height: 100dvh;
+    }
+
+    .sidebar {
+        height: calc(100dvh - 60px);
+        /* Stop the iOS rubber-band from revealing the page behind. */
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .content {
+        min-height: calc(100dvh - 60px);
+    }
+}
+
+/* ==========================================================
+   3) HORIZONTAL OVERFLOW GUARD
+   .content is a flex column, so a single wide child (a table, a
+   long unbroken title) can otherwise stretch the whole page and
+   make the document scroll sideways.
+   ========================================================== */
+@media (max-width: 900px) {
+    html,
+    body {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .content,
+    .content > *,
+    .page-container,
+    .page-container > * {
+        min-width: 0;
+
+/* ==========================================================
+   5) TOUCH TARGETS
+   44px is the accepted minimum for a comfortable tap on a phone.
+   Only text links inside prose are left alone, so paragraphs
+   still read normally.
+   ========================================================== */
+@media (max-width: 600px), (pointer: coarse) {
+    .sidebar .nav-btn,
+    .sidebar-toggle,
+    .help-btn,
+    .game-modal-close,
+    .modal-close,
+    .prediction-history-item button,
+    .pagination button,
+    .game-card button,
+    .game-actions button,
+    .clear-filters-btn,
+    .more-filters-btn {
+        min-height: 44px;
+    }
+
+    /* Never let a control overflow its column on a narrow phone. */
+    .sidebar .nav-btn,
+    .help-btn,
+    .sidebar-toggle {
+        box-sizing: border-box;
+    }
+}
+
+/* ==========================================================
+   6) TABLES
+   Already scroll horizontally, but the scroll was invisible.
+   The fade hints that more columns exist off-screen.
+   ========================================================== */
+@media (max-width: 900px) {
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+
+    /* Sticky first column so a wide row stays readable while
+       scrolling sideways. */
+    .table-container table th:first-child,
+    .table-container table td:first-child {
+        position: -webkit-sticky;
+        position: sticky;
+        left: 0;
+        background: var(--bg-card);
+    }
+}
+
+/* ==========================================================
+   7) MODALS
+   Go edge-to-edge on a phone so nothing is cropped, and keep
+   the close button reachable above the iOS home indicator.
+   ========================================================== */
+@media (max-width: 600px) {
+    .game-modal-dialog,
+    .game-modal-dialog--vertical,
+    .history-modal-dialog {
+        width: 100%;
+        max-width: 100%;
+        max-height: 92dvh;
+        border-radius: 14px;
+    }
+
+    .modal-body,
+    .help-content {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    /* The tutorial screenshots are the point of the help modal -
+       let them use the full phone width instead of being capped
+       at 80% on very narrow screens. */
+    .help-image {
+        max-width: 100%;
+    }
+
+    .help-image img {
+        max-height: 60dvh;
+    }
+
+    /* Full-width stacked action buttons are easier to hit. */
+    .game-modal-actions--stacked,
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .game-modal-actions--stacked > *,
+    .modal-actions > * {
+        width: 100%;
+    }
+}
+
+/* ==========================================================
+   8) ADMIN LOGIN / RECOVERY PAGES
+   The brand block is 220px of pure decoration; on a short
+   landscape phone that pushes the actual login form off-screen.
+   ========================================================== */
+@media (max-width: 600px) {
+    .admin-login-brand {
+        min-height: 0;
+        padding: 28px 20px 8px;
+    }
+
+    .admin-login-brand h1 {
+        font-size: 28px;
+    }
+
+    .admin-login-tagline {
+        margin-top: 10px;
+        font-size: 13px;
+    }
+
+    .admin-login-form-panel {
+        padding: 20px 20px 32px;
+    }
+
+    .admin-login-layout::before {
+        display: none;
+    }
+}
+
+/* Landscape phone: very little vertical room, so drop the
+   decorative header block entirely. */
+@media (max-width: 900px) and (max-height: 500px) {
+    .admin-login-brand {
+        display: none;
+    }
+
+    .admin-login-form-panel {
+        padding: 16px 20px;
+        min-height: 100dvh;
+        align-items: flex-start;
+    }
+}
+
+/* ==========================================================
+   9) SMALL PHONES (<= 480px)
+   The last squeeze: 320-390px wide devices.
+   ========================================================== */
+@media (max-width: 480px) {
+    .content {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    /* Keep at least one full-width column rather than squeezing
+       a 2-up grid into unreadable slivers. */
+    #gameGrid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .top-header .app-title {
+        font-size: 17px;
+    }
+
+    .page-container h2,
+    .admin-login-form-content h2 {
+        font-size: 20px;
+    }
+
+    .help-center-body {
+        padding: 12px 8px;
+    }
+}
+
+/* ==========================================================
+   10) ACCESSIBILITY / MOTION
+   Respect the OS "reduce motion" setting on phones.
+   ========================================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Keep the scrim out of the way of screen readers. */
+@media (max-width: 900px) {
+    .sidebar-scrim {
+        border: 0;
+        padding: 0;
+    }
+}
+
+        max-width: 100%;
+    }
+}
+
+/* ==========================================================
+   4) FORM CONTROLS
+   iOS Safari zooms the page when a focused field is under 16px,
+   which leaves the user zoomed-in and stuck. 16px prevents it.
+   ========================================================== */
+@media (max-width: 600px) {
+    input,
+    select,
+    textarea,
+    button {
+        font-size: 16px;
+    }
+
+    /* Checkboxes and radios must stay small enough to sit inline. */
+    input[type="checkbox"],
+    input[type="radio"] {
+        font-size: initial;
+    }
+}

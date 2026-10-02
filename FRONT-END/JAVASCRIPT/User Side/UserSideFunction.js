@@ -842,9 +842,54 @@ function closePageHelp() {
 
 
 // --- SIDEBAR CONTROL ---
+// Below 900px the sidebar overlays the page instead of pushing it
+// sideways, so it needs different handling: a tap-outside backdrop
+// and a background scroll lock. Wider screens keep the original
+// push behaviour untouched.
+var SIDEBAR_OVERLAY_BREAKPOINT = 900;
+
+function isSidebarOverlayMode() {
+    return window.innerWidth <= SIDEBAR_OVERLAY_BREAKPOINT;
+}
+
 function toggleSidebar() {
     document.body.classList.toggle('sidebar-open');
+    syncSidebarScrollLock();
 }
+
+function closeSidebar() {
+    document.body.classList.remove('sidebar-open');
+    syncSidebarScrollLock();
+}
+
+// Applied as a class, never as an inline style: the help modal also
+// manages body.style.overflow, and the two must not overwrite
+// each other.
+function syncSidebarScrollLock() {
+    var shouldLock = isSidebarOverlayMode()
+        && document.body.classList.contains('sidebar-open');
+    document.body.classList.toggle('sidebar-locked', shouldLock);
+}
+
+document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && document.body.classList.contains('sidebar-open')) {
+        closeSidebar();
+    }
+});
+
+// Tapping a nav link while the drawer is open should reveal the page
+// the user just navigated to.
+document.addEventListener('click', function (event) {
+    if (!isSidebarOverlayMode() || !event.target.closest) {
+        return;
+    }
+    if (event.target.closest('.sidebar .nav-btn')) {
+        closeSidebar();
+    }
+});
+
+// Rotating or resizing past the breakpoint must not strand the lock.
+window.addEventListener('resize', syncSidebarScrollLock);
 
 // --- SEARCHABLE DROPDOWN FUNCTIONALITY ---
 // Every dropdown on the User Side (FPS Prediction, Browse Games filters,

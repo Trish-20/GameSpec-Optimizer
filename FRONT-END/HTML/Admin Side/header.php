@@ -37,6 +37,10 @@
         <div class="hidden-user-btn" onclick="handleUserClick()"></div>
     </div>
 
+<!-- Tap-to-close backdrop for the sidebar. Only becomes visible below
+     900px, where the sidebar overlays the page instead of pushing it. -->
+<div class="sidebar-scrim" onclick="toggleSidebar()" aria-hidden="true"></div>
+
 <script>
     window.ADMIN_CSRF_TOKEN = <?= json_encode(csrfToken(), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
     window.adminFetch = function(url, options = {}) {

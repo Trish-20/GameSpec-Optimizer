@@ -69,6 +69,9 @@ $csrf = csrfToken();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - GameSpec Optimizer</title>
     <link rel="stylesheet" href="../../CSS/Admin Side/AdminSideStyle.css">
+    <!-- Mobile layout layer: every rule sits inside a max-width media
+         query, so desktop rendering is left completely untouched. -->
+    <link rel="stylesheet" href="../../CSS/shared/MobileResponsive.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="admin-login-page">

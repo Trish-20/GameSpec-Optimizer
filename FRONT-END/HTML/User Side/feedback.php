@@ -6,6 +6,9 @@
     <title>Community Feedback - GameSpec Optimizer</title>
 
     <link rel="stylesheet" href="../../CSS/User Side/UserSideStyle.css">
+    <!-- Mobile layout layer: every rule sits inside a max-width media
+         query, so desktop rendering is left completely untouched. -->
+    <link rel="stylesheet" href="../../CSS/shared/MobileResponsive.css">
 
     <!-- Font Awesome -->
     <link rel="stylesheet"

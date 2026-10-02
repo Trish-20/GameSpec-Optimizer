@@ -9,6 +9,9 @@ require_once __DIR__ . '/admin-guard.php';
     <title>Feedback Management - Admin Panel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../CSS/Admin Side/AdminSideStyle.css">
+    <!-- Mobile layout layer: every rule sits inside a max-width media
+         query, so desktop rendering is left completely untouched. -->
+    <link rel="stylesheet" href="../../CSS/shared/MobileResponsive.css">
 </head>
 <body class="sidebar-open">
 

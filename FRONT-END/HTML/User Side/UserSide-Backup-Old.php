@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gaming Hardware Utility Panel</title>
-    <link rel="stylesheet" href="../../CSS/User Side/UserSideStyle.css"> 
+    <link rel="stylesheet" href="../../CSS/User Side/UserSideStyle.css">
+    <!-- Mobile layout layer: every rule sits inside a max-width media
+         query, so desktop rendering is left completely untouched. -->
+    <link rel="stylesheet" href="../../CSS/shared/MobileResponsive.css">
 </head>
 <body class="sidebar-open">
 
