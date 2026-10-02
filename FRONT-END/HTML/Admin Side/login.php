@@ -71,7 +71,7 @@ $csrf = csrfToken();
     <link rel="stylesheet" href="../../CSS/Admin Side/AdminSideStyle.css">
     <!-- Mobile layout layer: every rule sits inside a max-width media
          query, so desktop rendering is left completely untouched. -->
-    <link rel="stylesheet" href="../../CSS/shared/MobileResponsive.css">
+    <link rel="stylesheet" href="../../CSS/shared/MobileResponsive.css?v=<?= @filemtime(__DIR__ . '/../../CSS/shared/MobileResponsive.css') ?: '1' ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="admin-login-page">

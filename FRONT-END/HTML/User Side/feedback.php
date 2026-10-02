@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../../CSS/User Side/UserSideStyle.css">
     <!-- Mobile layout layer: every rule sits inside a max-width media
          query, so desktop rendering is left completely untouched. -->
-    <link rel="stylesheet" href="../../CSS/shared/MobileResponsive.css">
+    <link rel="stylesheet" href="../../CSS/shared/MobileResponsive.css?v=<?= @filemtime(__DIR__ . '/../../CSS/shared/MobileResponsive.css') ?: '1' ?>">
 
     <!-- Font Awesome -->
     <link rel="stylesheet"
@@ -147,7 +147,7 @@
     </div>
 </div>
 
-<script src="../../JAVASCRIPT/User Side/UserSideFunction.js"></script>
+<script src="../../JAVASCRIPT/User Side/UserSideFunction.js?v=<?= @filemtime(__DIR__ . '/../../JAVASCRIPT/User Side/UserSideFunction.js') ?: '1' ?>"></script>
 
 <script>
 

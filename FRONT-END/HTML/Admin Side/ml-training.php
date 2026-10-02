@@ -10,7 +10,7 @@ require_once __DIR__ . '/admin-guard.php';
     <link rel="stylesheet" href="../../CSS/Admin Side/AdminSideStyle.css">
     <!-- Mobile layout layer: every rule sits inside a max-width media
          query, so desktop rendering is left completely untouched. -->
-    <link rel="stylesheet" href="../../CSS/shared/MobileResponsive.css">
+    <link rel="stylesheet" href="../../CSS/shared/MobileResponsive.css?v=<?= @filemtime(__DIR__ . '/../../CSS/shared/MobileResponsive.css') ?: '1' ?>">
 </head>
 <body class="sidebar-open">
 
@@ -75,7 +75,7 @@ require_once __DIR__ . '/admin-guard.php';
     <?php include 'footer.php'; ?>
 </div>
 
-<script src="../../JAVASCRIPT/Admin Side/AdminSideFunction.js"></script>
+<script src="../../JAVASCRIPT/Admin Side/AdminSideFunction.js?v=<?= @filemtime(__DIR__ . '/../../JAVASCRIPT/Admin Side/AdminSideFunction.js') ?: '1' ?>"></script>
 <script>
     document.querySelector('[data-page="ml"]')?.classList.add('active');
 </script>
