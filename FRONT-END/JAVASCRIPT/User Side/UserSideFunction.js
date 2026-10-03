@@ -389,7 +389,7 @@ const helpCenterSections = [
         icon: 'fa-search',
         title: 'Hardware Detection',
         content:
-            '<p>GameSpec Optimizer can detect your Windows CPU, GPU, and installed RAM automatically. On the FPS Prediction page, click the <strong>Detect Hardware</strong> button and your components are filled in for you.</p>' +
+            '<p>GameSpec Optimizer can fill in your hardware from what your browser reports. On the FPS Prediction page, click the <strong>Detect Hardware</strong> button and your CPU, GPU and RAM are suggested. Browsers only share an approximate picture, so always check the suggestions against your own machine before analyzing.</p>' +
             '<div class="help-image">' +
                 '<img src="../../RES/Tutorials/hardware-detection/detect_hardware.png" ' +
                     'alt="FPS Prediction page after selecting Can I Run This">' +
@@ -2349,6 +2349,187 @@ function findClosestRamOption(ramGb) {
     }, null);
 }
 
+// ============================================================================
+// BROWSER-SIDE HARDWARE DETECTION
+// ============================================================================
+// The Detect Hardware button used to call MODULES/api/get-hardware.php, which
+// shelled out to a Python helper ON THE WEB SERVER. That is only correct when
+// the server is the user's own machine (local XAMPP). Once deployed it reports
+// the server's CPU/GPU/RAM rather than the visitor's, and it fails outright on
+// Linux because the helper depends on WMIC and kernel32.
+//
+// Detection now runs in the browser, so it describes the machine the
+// prediction is actually about. The trade-off is precision: browsers
+// deliberately coarsen what they expose, so every value produced here is an
+// ESTIMATE and is reported as one. Nothing is invented, and a missing signal
+// never blocks the page - the searchable dropdowns remain the accurate route.
+//
+// MODULES/api/get-hardware.php is intentionally left in place and untouched.
+//
+// Reused as-is: findBestHardwareMatch(), findClosestRamOption(),
+// searchDropdownApis.{cpu,gpu,ram} and the existing prediction workflow.
+
+// Renderer strings are vendor specific, and on Windows they arrive wrapped in
+// ANGLE boilerplate, for example:
+//   ANGLE (NVIDIA, NVIDIA GeForce RTX 3070 Direct3D11 vs_5_0 ps_5_0, D3D11)
+// where only the text inside the parentheses names the card. Split the string
+// into ranked candidates and let findBestHardwareMatch() judge them, rather
+// than hard-coding one vendor's layout.
+function extractGpuRendererCandidates(rendererString) {
+    const raw = String(rendererString || '').trim();
+    if (!raw) return [];
+
+    const noise = /\b(angle|direct3d(?:1[01])?|d3d(?:1[01])?|opengl|opengles|vs_\d+_\d+|ps_\d+_\d+|microsoft|basic render|software|swiftshader|llvmpipe|mesa)\b/gi;
+
+    const candidates = [];
+    const push = value => {
+        const cleaned = String(value || '').replace(noise, ' ').replace(/\s+/g, ' ').trim();
+        if (cleaned.length >= 4 && !candidates.includes(cleaned)) {
+            candidates.push(cleaned);
+        }
+    };
+
+    // 1. Text inside each (...) - where Windows/ANGLE keeps the real model name.
+    (raw.match(/\(([^)]*)\)/g) || []).forEach(group => push(group.slice(1, -1)));
+
+    // 2. Comma separated segments of the full string.
+    raw.split(',').forEach(push);
+
+    // 3. The whole string, as a last resort.
+    push(raw);
+
+    return candidates;
+}
+
+function findGpuMatchFromRenderer(rendererString) {
+    const candidates = extractGpuRendererCandidates(rendererString);
+
+    for (const candidate of candidates) {
+        const match = findBestHardwareMatch(gpus, candidate);
+        if (match) return match;
+    }
+
+    return null;
+}
+
+// Reads the GPU name straight from the graphics driver. Returns null when the
+// browser refuses to share it - privacy settings, hardened profiles, or a
+// blocked WEBGL_debug_renderer_info. Detection is best effort, so that is not
+// fatal and must never surface as a hard failure.
+function detectGpuRendererString() {
+    try {
+        const canvas = document.createElement('canvas');
+        if (!canvas || typeof canvas.getContext !== 'function') return null;
+
+        const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+        if (!gl) return null;
+
+        let renderer = '';
+
+        try {
+            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+            if (debugInfo) {
+                renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || '';
+            }
+        } catch (error) {
+            renderer = '';
+        }
+
+        if (!renderer) {
+            try {
+                renderer = gl.getParameter(gl.RENDERER) || '';
+            } catch (error) {
+                renderer = '';
+            }
+        }
+
+        // Hand the context back instead of holding one of the browser's few
+        // WebGL slots for the rest of the session.
+        try {
+            const release = gl.getExtension('WEBGL_lose_context');
+            if (release && typeof release.loseContext === 'function') release.loseContext();
+        } catch (error) {
+            // Releasing is best effort only.
+        }
+
+        renderer = String(renderer || '').trim();
+        return renderer || null;
+    } catch (error) {
+        return null;
+    }
+}
+
+// Browsers never expose the CPU model, only how many logical cores the machine
+// has. cpu_benchmarks carries a `cores` column, so the closest defensible
+// answer is the best-scoring CPU with that exact core count. No partial
+// credit: if nothing matches, the user is asked to pick.
+function findCpuByCoreCount(coreCount) {
+    if (!Array.isArray(cpus) || !cpus.length) return null;
+    if (!Number.isFinite(coreCount) || coreCount <= 0) return null;
+
+    const exact = cpus.filter(cpu => Number(cpu.cores) === coreCount);
+    return exact.length ? exact[0] : null;
+}
+
+// navigator.hardwareConcurrency: logical cores, or null if unavailable.
+function detectLogicalCoreCount() {
+    try {
+        const cores = Number(navigator.hardwareConcurrency);
+        if (!Number.isFinite(cores) || cores <= 0) return null;
+        return cores;
+    } catch (error) {
+        return null;
+    }
+}
+
+// navigator.deviceMemory is Chromium only, bucketed, and capped at 8 GB, so a
+// 32 GB machine legitimately reports 8. Returns null when unsupported.
+function detectDeviceMemoryGb() {
+    try {
+        const gb = Number(navigator.deviceMemory);
+        if (!Number.isFinite(gb) || gb <= 0) return null;
+        return gb;
+    } catch (error) {
+        return null;
+    }
+}
+
+// Populate helpers. Same behaviour as the previous inline blocks: prefer the
+// searchable dropdown API, which keeps the visible label and the stored hidden
+// score in sync, and fall back to writing the inputs directly.
+function applyCpuSelection(match) {
+    if (searchDropdownApis.cpu) {
+        searchDropdownApis.cpu.setItem(match || null);
+        return;
+    }
+    const search = document.getElementById('cpuSearch');
+    const select = document.getElementById('cpuSelect');
+    if (search) search.value = match ? match.model : '';
+    if (select) select.value = match ? String(match.score) : '';
+}
+
+function applyGpuSelection(match) {
+    if (searchDropdownApis.gpu) {
+        searchDropdownApis.gpu.setItem(match || null);
+        return;
+    }
+    const search = document.getElementById('gpuSearch');
+    const select = document.getElementById('gpuSelect');
+    if (search) search.value = match ? match.model : '';
+    if (select) select.value = match ? String(match.score) : '';
+}
+
+function applyRamSelection(capacityGb) {
+    if (searchDropdownApis.ram) {
+        searchDropdownApis.ram.setValue(capacityGb === null ? '' : String(capacityGb));
+        return;
+    }
+    const search = document.getElementById('ramSearch');
+    const select = document.getElementById('ramSelect');
+    if (search && capacityGb === null) search.value = '';
+    if (select) select.value = capacityGb === null ? '' : String(capacityGb);
+}
+
 async function detectHardware() {
     if (isDetectingHardware) return;
 
@@ -2358,69 +2539,89 @@ async function detectHardware() {
     try {
         await loadFPSPredictionDropdowns();
 
-        const response = await fetch('../../../MODULES/api/get-hardware.php');
-        const result = await response.json();
-
-        if (!response.ok || result.success === false) {
-            throw new Error(result.error || result.message || 'Hardware detection failed');
+        // A failed load leaves the tables empty. Say that plainly instead of
+        // implying the machine has no hardware.
+        if (!cpus.length || !gpus.length) {
+            showModal(
+                'Hardware Detection Limited',
+                'The CPU and GPU benchmark tables did not load, so there was nothing to match against.\n\n'
+                + 'This usually means the database is unreachable. Everything else on the page still works, and you can pick your CPU, GPU and RAM by hand in the search boxes above.'
+            );
+            return;
         }
 
-        const cpuMatch = findBestHardwareMatch(cpus, result.cpu_model);
-        const gpuMatch = findBestHardwareMatch(gpus, result.gpu_model);
-        const ramClosest = findClosestRamOption(Number(result.ram_gb));
+        const readDirectly = [];
+        const estimates = [];
+        const unresolved = [];
 
-        const cpuSearch = document.getElementById('cpuSearch');
-        const cpuSelect = document.getElementById('cpuSelect');
-        if (cpuMatch && searchDropdownApis.cpu) {
-            searchDropdownApis.cpu.setItem(cpuMatch);
-        } else if (cpuMatch) {
-            if (cpuSearch) cpuSearch.value = cpuMatch.model;
-            if (cpuSelect) cpuSelect.value = String(cpuMatch.score);
+        // --- GPU: the one component browsers report accurately.
+        const rendererString = detectGpuRendererString();
+        const gpuMatch = rendererString ? findGpuMatchFromRenderer(rendererString) : null;
+
+        applyGpuSelection(gpuMatch);
+
+        if (gpuMatch) {
+            readDirectly.push(`GPU: ${gpuMatch.model} - matched from your graphics driver`);
+        } else if (rendererString) {
+            unresolved.push(`Your graphics card reports as "${rendererString}", which is not in the benchmark table. Pick your GPU in the box above.`);
         } else {
-            if (cpuSearch) cpuSearch.value = '';
-            if (cpuSelect) cpuSelect.value = '';
+            unresolved.push('Your browser would not share a graphics card name. That is normal when WEBGL_debug_renderer_info is blocked. Pick your GPU in the box above.');
         }
 
-        const gpuSearch = document.getElementById('gpuSearch');
-        const gpuSelect = document.getElementById('gpuSelect');
-        if (gpuMatch && searchDropdownApis.gpu) {
-            searchDropdownApis.gpu.setItem(gpuMatch);
-        } else if (gpuMatch) {
-            if (gpuSearch) gpuSearch.value = gpuMatch.model;
-            if (gpuSelect) gpuSelect.value = String(gpuMatch.score);
+        // --- CPU: core count only, so always an estimate.
+        const coreCount = detectLogicalCoreCount();
+        const cpuMatch = findCpuByCoreCount(coreCount);
+
+        applyCpuSelection(cpuMatch);
+
+        if (cpuMatch) {
+            estimates.push(`CPU: ${cpuMatch.model} - the closest match for ${coreCount} logical cores, not a confirmed model`);
+        } else if (coreCount) {
+            unresolved.push(`Your machine reports ${coreCount} logical cores, and no CPU in the table has that many. Pick your CPU in the box above.`);
         } else {
-            if (gpuSearch) gpuSearch.value = '';
-            if (gpuSelect) gpuSelect.value = '';
+            unresolved.push('Your browser does not report how many cores this machine has. Pick your CPU in the box above.');
         }
+
+        // --- RAM: Chromium only and capped at 8 GB, so always an estimate.
+        const deviceMemoryGb = detectDeviceMemoryGb();
+        const ramClosest = deviceMemoryGb === null ? null : findClosestRamOption(deviceMemoryGb);
+
+        applyRamSelection(ramClosest);
 
         if (ramClosest !== null) {
-            // Keep the visible search box and the stored hidden value in sync
-            // (both are produced by the same dropdown API).
-            if (searchDropdownApis.ram) {
-                searchDropdownApis.ram.setValue(String(ramClosest));
-            } else {
-                const ramSelect = document.getElementById('ramSelect');
-                if (ramSelect) ramSelect.value = String(ramClosest);
-            }
+            estimates.push(`RAM: ${ramClosest} GB - browsers cap this reading at 8 GB, so a larger machine can report less`);
         } else {
-            const ramSearch = document.getElementById('ramSearch');
-            const ramSelect = document.getElementById('ramSelect');
-            if (ramSearch) ramSearch.value = '';
-            if (ramSelect) ramSelect.value = '';
+            unresolved.push('Your browser does not report how much memory this machine has. Pick your RAM in the box above.');
         }
 
-        const detectedParts = [];
-        if (result.cpu_model) detectedParts.push(`CPU: ${result.cpu_model}`);
-        if (result.gpu_model) detectedParts.push(`GPU: ${result.gpu_model}`);
-        if (result.ram_gb) detectedParts.push(`RAM: ${result.ram_gb} GB`);
+        const paragraphs = [];
+
+        if (readDirectly.length) {
+            paragraphs.push('Read straight from your machine:\n' + readDirectly.join('\n'));
+        }
+        if (estimates.length) {
+            paragraphs.push('Best guess - worth checking:\n' + estimates.join('\n'));
+        }
+        if (unresolved.length) {
+            paragraphs.push('I could not work these out:\n' + unresolved.join('\n'));
+        }
+
+        paragraphs.push('Anything left empty just needs one click in the search boxes above, then press Analyze Performance.');
 
         showModal(
-            'Hardware Detected',
-            detectedParts.length ? detectedParts.join('\n') : 'Hardware detected successfully.'
+            readDirectly.length ? 'Hardware Detected' : 'Hardware Detection Limited',
+            paragraphs.join('\n\n')
         );
     } catch (error) {
+        // Best effort by design: a failure here must never read as a fatal
+        // "Failed to detect hardware" while manual selection still works.
         console.error('Hardware detection failed:', error);
-        showModal('Error', error.message || 'Unable to detect hardware automatically.');
+        showModal(
+            'Hardware Detection Limited',
+            'Something went wrong while reading your browser hardware, so nothing was filled in.\n\n'
+            + 'This is not fatal. The CPU, GPU and RAM search boxes above work exactly as before, so pick your parts and press Analyze Performance.\n\n'
+            + 'Details: ' + ((error && error.message) || 'unknown error')
+        );
     } finally {
         isDetectingHardware = false;
         hideHardwareDetectionLoading();
@@ -2839,7 +3040,9 @@ async function predictFPS() {
 
         if (!result.success) {
             console.error('Prediction failed:', result);
-            return showModal('Error', result.error || 'ML prediction failed.');
+            // hardware-specs-input.php reports failures in `message`; prefer it
+            // over the generic `error` so the real reason reaches the user.
+            return showModal('Error', result.message || result.error || 'ML prediction failed.');
         }
 
         const estimatedFPS = Number(result.predicted_fps) || 0;
