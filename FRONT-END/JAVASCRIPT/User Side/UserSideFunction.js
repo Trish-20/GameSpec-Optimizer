@@ -2349,6 +2349,23 @@ function findClosestRamOption(ramGb) {
     }, null);
 }
 
+// cpu_benchmarks has no thread-count column, so `threads` is always null and
+// interpolating it produced labels like "16C/nullT". Only show a thread count
+// when a real one exists, and fall back to the plain model name if neither
+// count is usable.
+function formatCpuCoreLabel(cpu) {
+    if (!cpu) return '';
+
+    const cores = Number(cpu.cores);
+    const threads = Number(cpu.threads);
+    const parts = [];
+
+    if (Number.isFinite(cores) && cores > 0) parts.push(`${cores}C`);
+    if (Number.isFinite(threads) && threads > 0) parts.push(`${threads}T`);
+
+    return parts.length ? `${cpu.model} (${parts.join('/')})` : String(cpu.model);
+}
+
 // ============================================================================
 // BROWSER-SIDE HARDWARE DETECTION
 // ============================================================================
@@ -2371,7 +2388,7 @@ function findClosestRamOption(ramGb) {
 
 // Renderer strings are vendor specific, and on Windows they arrive wrapped in
 // ANGLE boilerplate, for example:
-//   ANGLE (NVIDIA, NVIDIA GeForce RTX 3070 Direct3D11 vs_5_0 ps_5_0, D3D11)
+//   ANGLE (<vendor>, <real gpu model> Direct3D11 vs_5_0 ps_5_0, D3D11-...)
 // where only the text inside the parentheses names the card. Split the string
 // into ranked candidates and let findBestHardwareMatch() judge them, rather
 // than hard-coding one vendor's layout.
@@ -2539,89 +2556,41 @@ async function detectHardware() {
     try {
         await loadFPSPredictionDropdowns();
 
-        // A failed load leaves the tables empty. Say that plainly instead of
-        // implying the machine has no hardware.
-        if (!cpus.length || !gpus.length) {
-            showModal(
-                'Hardware Detection Limited',
-                'The CPU and GPU benchmark tables did not load, so there was nothing to match against.\n\n'
-                + 'This usually means the database is unreachable. Everything else on the page still works, and you can pick your CPU, GPU and RAM by hand in the search boxes above.'
-            );
-            return;
-        }
-
-        const readDirectly = [];
-        const estimates = [];
-        const unresolved = [];
-
-        // --- GPU: the one component browsers report accurately.
+        // GPU: read from the graphics driver, then matched against the
+        // benchmark table by the same finder the original flow used.
         const rendererString = detectGpuRendererString();
         const gpuMatch = rendererString ? findGpuMatchFromRenderer(rendererString) : null;
 
-        applyGpuSelection(gpuMatch);
-
-        if (gpuMatch) {
-            readDirectly.push(`GPU: ${gpuMatch.model} - matched from your graphics driver`);
-        } else if (rendererString) {
-            unresolved.push(`Your graphics card reports as "${rendererString}", which is not in the benchmark table. Pick your GPU in the box above.`);
-        } else {
-            unresolved.push('Your browser would not share a graphics card name. That is normal when WEBGL_debug_renderer_info is blocked. Pick your GPU in the box above.');
-        }
-
-        // --- CPU: core count only, so always an estimate.
+        // CPU: browsers only expose a core count, so this records what was
+        // actually read and names the table entry it matched, rather than
+        // presenting a guessed model as though it had been detected.
         const coreCount = detectLogicalCoreCount();
         const cpuMatch = findCpuByCoreCount(coreCount);
 
-        applyCpuSelection(cpuMatch);
-
-        if (cpuMatch) {
-            estimates.push(`CPU: ${cpuMatch.model} - the closest match for ${coreCount} logical cores, not a confirmed model`);
-        } else if (coreCount) {
-            unresolved.push(`Your machine reports ${coreCount} logical cores, and no CPU in the table has that many. Pick your CPU in the box above.`);
-        } else {
-            unresolved.push('Your browser does not report how many cores this machine has. Pick your CPU in the box above.');
-        }
-
-        // --- RAM: Chromium only and capped at 8 GB, so always an estimate.
+        // RAM: navigator.deviceMemory is approximate, Chromium-only, and
+        // capped at 8 GB. findClosestRamOption() snaps it to a known tier.
         const deviceMemoryGb = detectDeviceMemoryGb();
         const ramClosest = deviceMemoryGb === null ? null : findClosestRamOption(deviceMemoryGb);
 
+        applyCpuSelection(cpuMatch);
+        applyGpuSelection(gpuMatch);
         applyRamSelection(ramClosest);
 
-        if (ramClosest !== null) {
-            estimates.push(`RAM: ${ramClosest} GB - browsers cap this reading at 8 GB, so a larger machine can report less`);
-        } else {
-            unresolved.push('Your browser does not report how much memory this machine has. Pick your RAM in the box above.');
+        // Original modal content: one "Label: value" line per detected part.
+        const detectedParts = [];
+        if (cpuMatch) {
+            detectedParts.push(`CPU: ${coreCount} logical cores (closest match: ${cpuMatch.model})`);
         }
-
-        const paragraphs = [];
-
-        if (readDirectly.length) {
-            paragraphs.push('Read straight from your machine:\n' + readDirectly.join('\n'));
-        }
-        if (estimates.length) {
-            paragraphs.push('Best guess - worth checking:\n' + estimates.join('\n'));
-        }
-        if (unresolved.length) {
-            paragraphs.push('I could not work these out:\n' + unresolved.join('\n'));
-        }
-
-        paragraphs.push('Anything left empty just needs one click in the search boxes above, then press Analyze Performance.');
+        if (gpuMatch) detectedParts.push(`GPU: ${gpuMatch.model}`);
+        if (ramClosest !== null) detectedParts.push(`RAM: ${ramClosest} GB`);
 
         showModal(
-            readDirectly.length ? 'Hardware Detected' : 'Hardware Detection Limited',
-            paragraphs.join('\n\n')
+            'Hardware Detected',
+            detectedParts.length ? detectedParts.join('\n') : 'Hardware detected successfully.'
         );
     } catch (error) {
-        // Best effort by design: a failure here must never read as a fatal
-        // "Failed to detect hardware" while manual selection still works.
         console.error('Hardware detection failed:', error);
-        showModal(
-            'Hardware Detection Limited',
-            'Something went wrong while reading your browser hardware, so nothing was filled in.\n\n'
-            + 'This is not fatal. The CPU, GPU and RAM search boxes above work exactly as before, so pick your parts and press Analyze Performance.\n\n'
-            + 'Details: ' + ((error && error.message) || 'unknown error')
-        );
+        showModal('Error', error.message || 'Unable to detect hardware automatically.');
     } finally {
         isDetectingHardware = false;
         hideHardwareDetectionLoading();
@@ -2690,7 +2659,7 @@ function loadHardwareOptions() {
     if (hardwareType === 'cpu') {
         if (hardwareSearch) hardwareSearch.placeholder = 'Search CPUs...';
         hardwareOptions = cpus.map(cpu => ({
-            label: `${cpu.model} (${cpu.cores}C/${cpu.threads}T)`,
+            label: formatCpuCoreLabel(cpu),
             model: cpu.model,
             score: cpu.score
         }));
@@ -3005,6 +2974,31 @@ async function predictFPS() {
         high: 'TAA'
     };
 
+    // A game's minimum requirement only has a score once the benchmark resolver
+    // has matched it. When it never resolved, cpu_benchmark is null, parseInt()
+    // turns that into NaN, and JSON.stringify() sends it as null - which the PHP
+    // gate rejects as "Missing or invalid field: game_cpu_min". Stop here and
+    // explain the real reason instead of sending a value we do not have. No
+    // default is invented: the number must come from the database.
+    const unresolvedRequirements = [
+        ['CPU', selectedGame.cpu_benchmark],
+        ['GPU', selectedGame.gpu_benchmark],
+        ['RAM', selectedGame.ram_benchmark]
+    ].filter(([, value]) => {
+        const score = parseInt(value, 10);
+        return !Number.isFinite(score) || score <= 0;
+    });
+
+    if (unresolvedRequirements.length) {
+        return showModal(
+            'Benchmark data missing',
+            `We do not have a benchmark score for the minimum ${unresolvedRequirements.map(([label]) => label).join(' and ')} requirement of "${selectedGame.title}".\n\n`
+            + 'Those scores come from matching the game\'s requirement text against the benchmark tables, and this game has not been matched yet, so there is nothing to compare your hardware against.\n\n'
+            + 'Please choose a different game, or resolve this one with:\n'
+            + 'php MODULES/resolve-game-benchmarks.php'
+        );
+    }
+
     const payload = {
         game_title: selectedGame.title_raw || selectedGame.title || game,
         game_cpu_min: parseInt(selectedGame.cpu_benchmark, 10),
@@ -3218,7 +3212,7 @@ async function predictFPS() {
                                 <div class="upgrade-options">
                                     ${betterCPUs.map(c => `
                                         <div class="upgrade-option">
-                                            <span>${c.model} (${c.cores}C/${c.threads}T)</span>
+                                            <span>${formatCpuCoreLabel(c)}</span>
                                             <span class="score">Score: ${c.score}</span>
                                         </div>
                                     `).join('')}

@@ -1314,7 +1314,10 @@
         display: block;
         color: var(--color-text-muted);
         font-size: 15px;
-        margin-top: 15px;
+        /* Was 15px. Every label sits above its dropdown, so this top margin
+           accumulated into a large vertical gap between each field. Reduced
+           to keep the panel compact without touching anything else. */
+        margin-top: 8px;
         margin-bottom: 6px;
     }
 
