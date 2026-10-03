@@ -100,6 +100,9 @@
     .page-container,
     .page-container > * {
         min-width: 0;
+        max-width: 100%;
+    }
+}
 
 /* ==========================================================
    5) TOUCH TARGETS
@@ -277,30 +280,143 @@
 }
 
 /* ==========================================================
-   10) HEADER TITLE vs HELP BUTTON  (overlap fix)
-   The header has only ONE in-flow child: both the toggle button
-   (position:fixed) and the help button (position:absolute) are
-   taken out of flow, so .app-title is the only flex item.
+   10) HEADER LAYOUT IN PORTRAIT  (hamburger / title / help)
 
-   At <=600px the existing rule right-aligns that title with only
-   14px of padding, but the help button sits at right:22px and is
-   36px wide - it occupies right:58px down to right:22px. The
-   title therefore slides underneath the button and the "z" of
-   "GameSpec Optimizer" gets covered.
+   The header has THREE children (header.php lines 5-9), but two of
+   them are taken out of the flow:
 
-   Reserving 68px (58px button + 10px breathing room) keeps them
-   apart. The ellipsis is a safety net for very narrow screens.
+     .sidebar-toggle -> position: fixed   (UserSideStyle.css:136)
+     .help-btn       -> position: absolute, right:22px, 36px wide
+                                        (UserSideStyle.css:214-215)
+
+   A fixed/absolute element is not a flex item, so on desktop the
+   bar is really a ONE-item flex row with a left button and a right
+   button painted over it. .app-title is the only thing in flow.
+
+   At <=600px the project rule (UserSideStyle.css:3540-3544) flips
+   the bar to `justify-content: flex-end` with just `padding-right:
+   14px`. The title - the only flex item - is therefore pushed flush
+   to the right edge and lands inside the help button's band, which
+   spans right:58px down to right:22px. That is the overlap.
+
+   Reserving padding cannot fix it, because a fixed/absolute button
+   never participates in flex. The fix is to put BOTH buttons back
+   into the flow on phones, turning the bar into a genuine three-item
+   row that space-between lays out as:
+
+     [ hamburger ]  [ title grows and centres ]  [ help ]
+
+   The title gets `flex: 1 1 auto; min-width: 0` so it shrinks below
+   its content width and ellipsises rather than pushing the help
+   button off-screen. Desktop is untouched - everything here is
+   inside max-width:600px.
    ========================================================== */
 @media (max-width: 600px) {
     .top-header {
-        padding-right: 68px;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 12px;
+        box-sizing: border-box;
+        gap: 8px;
+    }
+
+    /* Back into the flex row. */
+    .top-header .sidebar-toggle {
+        position: static;
+        left: auto;
+        flex: 0 0 auto;
+    }
+
+    .top-header .help-btn {
+        position: static;
+        right: auto;
+        top: auto;
+        transform: none;
+        flex: 0 0 auto;
+        /* 44px tap target; stays a circle thanks to border-radius:50%. */
+        min-width: 44px;
+        min-height: 44px;
     }
 
     .top-header .app-title {
-        max-width: 100%;
+        flex: 1 1 auto;
+        min-width: 0;
+        text-align: center;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+    }
+}
+
+/* ==========================================================
+   17) 320-360px HEADER TITLE
+   One gentle step down so the full wordmark still fits between the
+   two buttons. Deliberately minimal: the layout above no longer
+   depends on the font size to prevent overlap, so this is only
+   there to avoid an ellipsis on the smallest phones.
+   ========================================================== */
+@media (max-width: 360px) {
+    .top-header .app-title {
+        font-size: 16px;
+        letter-spacing: 0.2px;
+    }
+}
+
+/* ==========================================================
+   18) REMAINING POPUP + OVERFLOW SURFACES
+   Everything else was already handled:
+
+   * `.prediction-loading-card` uses width:min(92vw,360px) - fluid.
+   * `.page-help-modal .help-center-dialog` is ALREADY a flex
+     column with overflow:hidden and max-height 96vh below 860px,
+     so it scrolls correctly and needs no change.
+   * `.history-modal-*` has its own max-width:768px rules.
+   * `.game-card .game-image img` is width:100% + object-fit:cover.
+
+   Three genuine gaps remained:
+
+   1. `.game-hover-tooltip` is position:fixed with a hard
+      max-width:380px and no viewport clamp, so on a 320-400px
+      phone it hangs off the side of the screen.
+   2. `.game-modal-overlay` keeps 24px of padding at every width,
+      which eats 48px of a 320px screen for nothing.
+   3. There is no global guard, so any image or element that ends
+      up wider than its column (a wide cover, a long unbroken
+      string) can push the document sideways. `overflow-x:hidden`
+      in section 3 hides the symptom rather than fixing it, so the
+      guard below stops the overflow at source.
+   ========================================================== */
+@media (max-width: 600px) {
+    .game-hover-tooltip {
+        max-width: calc(100vw - 24px);
+        box-sizing: border-box;
+    }
+
+    .game-modal-overlay {
+        padding: 12px;
+    }
+
+    /* Replaced elements can never exceed their column. */
+    .content img,
+    .content video,
+    .content svg,
+    .content iframe,
+    .modal-body img,
+    .modal-body video,
+    .game-modal-body img {
+        max-width: 100%;
+        height: auto;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 360px) {
+    .game-hover-tooltip {
+        max-width: calc(100vw - 16px);
+    }
+
+    .game-modal-overlay {
+        padding: 8px;
     }
 }
 
@@ -348,10 +464,6 @@
     }
 }
 
-        max-width: 100%;
-    }
-}
-
 /* ==========================================================
    4) FORM CONTROLS
    iOS Safari zooms the page when a focused field is under 16px,
@@ -369,5 +481,239 @@
     input[type="checkbox"],
     input[type="radio"] {
         font-size: initial;
+    }
+}
+
+/* ==========================================================
+   13) SHARED MODAL IN PORTRAIT
+   `.modal-dialog` is the one showModal() builds, so it backs the
+   feedback form, the hardware-detected modal, confirmations and
+   every other dialog. Section 7 only covered the game/history
+   variants, which left this one at its desktop sizing and
+   cropping its own form on a phone.
+
+   Pinned to the viewport with a real gutter so it can never be
+   wider than the screen, and split into fixed header / scrolling
+   body / fixed footer so the close button and the action button
+   stay reachable however long the content grows.
+   ========================================================== */
+@media (max-width: 600px) {
+    .modal-overlay {
+        padding: 12px;
+        box-sizing: border-box;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .modal-dialog {
+        width: calc(100vw - 24px);
+        max-width: calc(100vw - 24px);
+        box-sizing: border-box;
+        margin: auto;
+        /* Below the fixed 60px header, clear of the iOS home bar. */
+        max-height: calc(100dvh - 84px);
+        display: flex;
+        flex-direction: column;
+        /* The body scrolls now, so the dialog itself must not. */
+        overflow: hidden;
+    }
+
+    .modal-header,
+    .modal-footer {
+        flex: 0 0 auto;
+    }
+
+    .modal-body {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Title must never run underneath the close button. */
+    .modal-header h2 {
+        min-width: 0;
+        padding-right: 8px;
+        overflow-wrap: anywhere;
+    }
+
+    .modal-close {
+        flex: 0 0 auto;
+        /* 44px tap target without changing the visual size. */
+        width: 44px;
+        height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* ==========================================================
+   14) FORM LABELS AND CONTROLS IN PORTRAIT
+   Labels are the first thing to collapse on a narrow screen: they
+   get squeezed onto one line and clipped. These keep them as
+   normal readable text that wraps, and give every field the full
+   width of its column so nothing overflows the card.
+   ========================================================== */
+@media (max-width: 600px) {
+    .fps-input-panel label,
+    .modal-body label,
+    .feedback-form label,
+    .form-group label {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        white-space: normal;
+        overflow-wrap: break-word;
+        line-height: 1.4;
+    }
+
+    .fps-input-panel input,
+    .fps-input-panel select,
+    .fps-input-panel textarea,
+    .search-dropdown .search-input,
+    .modal-body input,
+    .modal-body select,
+    .modal-body textarea,
+    .feedback-form input,
+    .feedback-form select,
+    .feedback-form textarea {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* The suggestion list is absolutely positioned; constrain it so a
+       long option cannot create sideways scrolling. */
+    .search-dropdown,
+    .dropdown-list {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .dropdown-list {
+        overflow-x: hidden;
+    }
+
+    /* Actions become full-width, thumb-sized. */
+    .modal-btn,
+    .fps-action-row button,
+    .feedback-form button,
+    .modal-body button {
+        min-height: 44px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .fps-action-row {
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .fps-action-row button {
+        flex: 1 1 100%;
+    }
+}
+
+/* ==========================================================
+   15) RESULT CARDS AND BENCHMARK ROWS IN PORTRAIT
+   These panels place a long model name next to a score. Without
+   this the name pushes the row wider than the card and the score
+   gets cut off at the edge.
+   ========================================================== */
+@media (max-width: 600px) {
+    .fps-layout,
+    .fps-results-panel,
+    .bench-score-card,
+    .fps-legend,
+    .upgrade-option,
+    .bottleneck-list,
+    .bottleneck-list li,
+    .prediction-history-item {
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Long CPU / GPU / game names wrap instead of overflowing. */
+    .upgrade-option,
+    .upgrade-option > span,
+    .bottleneck-list li,
+    .bar-model-name,
+    .bench-score-card,
+    .fps-legend span,
+    .prediction-history-item {
+        overflow-wrap: anywhere;
+        word-break: normal;
+        white-space: normal;
+        min-width: 0;
+    }
+
+    /* Let the score drop to its own line so a long name cannot squeeze it. */
+    .upgrade-option {
+        flex-wrap: wrap;
+    }
+
+    .upgrade-option .score {
+        white-space: nowrap;
+    }
+
+    .bar-model-name {
+        display: block;
+        width: 100%;
+    }
+
+    /* Long game names wrap inside the card instead of stretching it.
+       `.game-card .game-name` becomes a flex box at <=768px
+       (UserSideStyle.css:3237), so without min-width:0 an unbroken
+       title can push the card wider than the phone viewport. */
+    .game-card .game-name,
+    .game-card-new .game-name {
+        min-width: 0;
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        word-break: normal;
+        white-space: normal;
+    }
+
+    /* Count and tip sit side by side on desktop. On a phone the tip is a
+       long sentence, so keeping them in one row squeezes it into a tall
+       block against the count. Stack them instead. */
+    .browse-result-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .result-count {
+        margin-left: 0;
+    }
+}
+
+/* ==========================================================
+   16) VERY NARROW PHONES (320-360px)
+   The gutter tightens so the dialog keeps a usable inner width at
+   the smallest sizes still in circulation.
+   ========================================================== */
+@media (max-width: 360px) {
+    .modal-overlay {
+        padding: 8px;
+    }
+
+    .modal-dialog {
+        width: calc(100vw - 16px);
+        max-width: calc(100vw - 16px);
+        max-height: calc(100dvh - 76px);
+    }
+
+    .modal-header,
+    .modal-footer {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .modal-body {
+        padding-left: 12px;
+        padding-right: 12px;
     }
 }
