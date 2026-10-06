@@ -4,7 +4,7 @@ USE `gamespec_optimizer`;
 CREATE TABLE IF NOT EXISTS users ( -- NOT YET APPLIED
     user_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NULL,
     password_hash VARCHAR(255) NOT NULL,
     display_name VARCHAR(100) NULL,
     role ENUM('user', 'admin') NOT NULL DEFAULT 'user',

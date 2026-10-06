@@ -38,6 +38,8 @@ function loadEnvironment(): array
         'DB_SSL_CA',
         'RAW_API_KEY',
         'APP_ENV',
+        'APP_BASE_URL',
+        'RENDER_EXTERNAL_URL',
         'PYTHON_BIN',
         'BREVO_API_KEY',
         'BREVO_SENDER_EMAIL',

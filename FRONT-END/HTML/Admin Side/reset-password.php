@@ -11,41 +11,93 @@ $token = (string) ($_GET['token'] ?? $_POST['token'] ?? '');
 $csrf = csrfToken();
 $error = '';
 $success = false;
+$reset = null;
 
-if (!ctype_xdigit($selector) || !ctype_xdigit($token)) {
+if (strlen($selector) !== 32 || strlen($token) !== 64 || !ctype_xdigit($selector) || !ctype_xdigit($token)) {
     $error = 'This reset link is invalid or expired.';
-} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+} else {
+    try {
+        $database = databaseConnection();
+        $statement = $database->prepare(
+            'SELECT r.reset_id, r.user_id, r.token_hash
+             FROM admin_password_resets r
+             INNER JOIN users u ON u.user_id = r.user_id
+             WHERE r.selector = :selector
+               AND r.expires_at > NOW()
+               AND r.used_at IS NULL
+               AND u.role = "admin"
+               AND u.status = "active"
+             LIMIT 1'
+        );
+        $statement->execute(['selector' => $selector]);
+        $candidate = $statement->fetch();
+        if ($candidate && hash_equals((string) $candidate['token_hash'], hash('sha256', $token))) {
+            $reset = $candidate;
+        } else {
+            $error = 'This reset link is invalid or expired.';
+        }
+    } catch (Throwable $exception) {
+        error_log('Password reset link validation failed.');
+        $error = 'This reset link is invalid or expired.';
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error === '' && $reset !== null) {
     $password = (string) ($_POST['password'] ?? '');
     $confirmation = (string) ($_POST['password_confirmation'] ?? '');
 
     if (!hasValidCsrfToken() || strlen($password) < 12 || !hash_equals($password, $confirmation)) {
         $error = 'Use a matching password with at least 12 characters.';
     } else {
-        $database = databaseConnection();
-        $statement = $database->prepare(
-            'SELECT reset_id, user_id, token_hash
-             FROM admin_password_resets
-             WHERE selector = :selector AND expires_at > NOW() AND used_at IS NULL
-             LIMIT 1'
-        );
-        $statement->execute(['selector' => $selector]);
-        $reset = $statement->fetch();
+        try {
+            $database->beginTransaction();
+            // Lock and recheck the record so concurrent submissions cannot
+            // successfully consume the same reset token twice.
+            $statement = $database->prepare(
+                'SELECT r.reset_id, r.user_id, r.token_hash
+                 FROM admin_password_resets r
+                 INNER JOIN users u ON u.user_id = r.user_id
+                 WHERE r.selector = :selector
+                   AND r.expires_at > NOW()
+                   AND r.used_at IS NULL
+                   AND u.role = "admin"
+                   AND u.status = "active"
+                 LIMIT 1 FOR UPDATE'
+            );
+            $statement->execute(['selector' => $selector]);
+            $lockedReset = $statement->fetch();
 
-        if (!$reset || !hash_equals((string) $reset['token_hash'], hash('sha256', $token))) {
-            $error = 'This reset link is invalid or expired.';
-        } else {
-            $update = $database->prepare(
-                'UPDATE users SET password_hash = :password_hash WHERE user_id = :user_id AND role = "admin"'
-            );
-            $update->execute([
-                'password_hash' => password_hash($password, PASSWORD_DEFAULT),
-                'user_id' => (int) $reset['user_id'],
-            ]);
-            $consume = $database->prepare(
-                'UPDATE admin_password_resets SET used_at = NOW() WHERE reset_id = :reset_id'
-            );
-            $consume->execute(['reset_id' => (int) $reset['reset_id']]);
-            $success = true;
+            if (!$lockedReset || !hash_equals((string) $lockedReset['token_hash'], hash('sha256', $token))) {
+                $database->rollBack();
+                $error = 'This reset link is invalid or expired.';
+            } else {
+                $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+                if ($passwordHash === false) {
+                    throw new RuntimeException('Password hashing failed.');
+                }
+                $update = $database->prepare(
+                    'UPDATE users SET password_hash = :password_hash WHERE user_id = :user_id AND role = "admin"'
+                );
+                $update->execute([
+                    'password_hash' => $passwordHash,
+                    'user_id' => (int) $lockedReset['user_id'],
+                ]);
+                if ($update->rowCount() !== 1) {
+                    throw new RuntimeException('Password update did not affect one account.');
+                }
+                $consume = $database->prepare(
+                    'UPDATE admin_password_resets SET used_at = NOW() WHERE user_id = :user_id AND used_at IS NULL'
+                );
+                $consume->execute(['user_id' => (int) $lockedReset['user_id']]);
+                $database->commit();
+                $success = true;
+            }
+        } catch (Throwable $exception) {
+            if (isset($database) && $database->inTransaction()) {
+                $database->rollBack();
+            }
+            error_log('Password reset could not update the account.');
+            $error = 'Unable to update the password right now.';
         }
     }
 }
@@ -55,6 +107,7 @@ if (!ctype_xdigit($selector) || !ctype_xdigit($token)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
     <title>Reset Password - GameSpec Optimizer</title>
     <link rel="stylesheet" href="../../CSS/Admin Side/AdminSideStyle.css">
     <!-- Mobile layout layer: every rule sits inside a max-width media
@@ -80,7 +133,7 @@ if (!ctype_xdigit($selector) || !ctype_xdigit($token)) {
                     <?php if ($error !== ''): ?><div class="admin-login-error" role="alert"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
                     <?php if ($success): ?><p class="admin-login-recovery-message">Your password was updated. <a href="login.php">Sign in</a>.</p><?php endif; ?>
                 </div>
-                <?php if (!$success && $error === ''): ?>
+                <?php if (!$success && $error === '' && $reset !== null): ?>
                     <form method="post">
                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
                         <input type="hidden" name="selector" value="<?= htmlspecialchars($selector, ENT_QUOTES, 'UTF-8') ?>">

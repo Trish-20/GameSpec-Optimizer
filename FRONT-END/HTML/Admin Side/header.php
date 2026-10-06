@@ -33,6 +33,14 @@
     <a href="feedback-management.php" class="nav-btn" data-page="feedback">
         <i class="fas fa-comments nav-icon"></i> Feedback Management
     </a>
+
+    <a href="account-settings.php" class="nav-btn" data-page="account">
+        <i class="fas fa-user-cog nav-icon"></i> Account Settings
+    </a>
+
+    <a href="admin-accounts.php" class="nav-btn" data-page="admin-accounts">
+        <i class="fas fa-user-shield nav-icon"></i> Admin Accounts
+    </a>
         <!-- Hidden user side access -->
         <div class="hidden-user-btn" onclick="handleUserClick()"></div>
     </div>
