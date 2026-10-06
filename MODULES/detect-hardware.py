@@ -27,7 +27,7 @@ def get_windows_gpu(get_integrated=False):
             return integrated[0] if integrated else devices[0]
         else:
             # Usually the dedicated card (NVIDIA/Radeon RX), or falls back to first device
-            dedicated = [d for d in devices if "nvidia" in d.lower() or "geforce" in d.lower() or "rtx" in d.lower() or "rad    eon rx" in d.lower()]
+            dedicated = [d for d in devices if "nvidia" in d.lower() or "geforce" in d.lower() or "rtx" in d.lower() or "radeon rx" in d.lower()]
             return dedicated[0] if dedicated else devices[-1]
             
     except Exception:

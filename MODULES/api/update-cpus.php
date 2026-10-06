@@ -43,34 +43,29 @@ if (!isValidBenchmarkScore($rawScore)) {
     exit;
 }
 
-$score = (int) $rawScore;
-
 try {
     $database = databaseConnection();
     $normalizedModel = normalizeBenchmarkName($model);
 
-    // Check for duplicate by normalized model name
-    $check = $database->prepare('SELECT cpu_id FROM cpu_benchmarks WHERE normalized_model = :normalized LIMIT 1');
-    $check->execute(['normalized' => $normalizedModel]);
-    if ($check->fetch()) {
-        http_response_code(409);
-        echo json_encode(['success' => false, 'message' => 'A CPU with that model name already exists.']);
+    // Only accept a CPU model and score pair that already exists in the
+    // benchmark catalogue. Existing entries are treated as idempotent saves.
+    $catalogueCheck = $database->prepare(
+        'SELECT score FROM cpu_benchmarks WHERE normalized_model = :normalized LIMIT 1'
+    );
+    $catalogueCheck->execute(['normalized' => $normalizedModel]);
+    $catalogueCpu = $catalogueCheck->fetch();
+    if (!$catalogueCpu) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'CPU model was not found in the benchmark catalogue.']);
+        exit;
+    }
+    if ((float) $rawScore !== (float) $catalogueCpu['score']) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'CPU benchmark score does not match the catalogue record.']);
         exit;
     }
 
-    $insert = $database->prepare(
-        'INSERT INTO cpu_benchmarks (model, normalized_model, score, category, source_version)
-         VALUES (:model, :normalized_model, :score, :category, :source_version)'
-    );
-    $insert->execute([
-        'model' => $model,
-        'normalized_model' => $normalizedModel,
-        'score' => $score,
-        'category' => 'Desktop',
-        'source_version' => 'admin',
-    ]);
-
-    echo json_encode(['success' => true, 'message' => 'CPU added successfully.']);
+    echo json_encode(['success' => true, 'message' => 'CPU model and score match the benchmark catalogue. No changes were needed.']);
 } catch (Throwable $error) {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Unable to save CPU benchmark.']);

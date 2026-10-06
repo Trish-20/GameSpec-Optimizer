@@ -43,8 +43,6 @@ if (!isValidBenchmarkScore($rawScore)) {
     exit;
 }
 
-$score = (int) $rawScore;
-
 // Parse capacity (GB) and optional speed (MHz) from the model string.
 // Accepted formats: "16GB DDR4-3200", "32 GB DDR5-6000", "8GB", "16 GB 3200MHz", etc.
 $capacityGb = 0;
@@ -72,28 +70,30 @@ if ($capacityGb <= 0) {
 try {
     $database = databaseConnection();
 
-    // Check for duplicate by capacity + speed combination (the unique key)
-    $check = $database->prepare('SELECT ram_id FROM ram_benchmarks WHERE capacity_gb = :capacity AND speed_mhz = :speed LIMIT 1');
-    $check->execute(['capacity' => $capacityGb, 'speed' => $speedMhz]);
-    if ($check->fetch()) {
-        http_response_code(409);
-        $label = $capacityGb . 'GB' . ($speedMhz > 0 ? ' @ ' . $speedMhz . 'MHz' : '');
-        echo json_encode(['success' => false, 'message' => "A RAM benchmark for {$label} already exists."]);
+    // The management form may only submit a capacity/speed/score combination
+    // already present in the benchmark catalogue. Matching entries are a no-op.
+    $check = $database->prepare('SELECT ram_id, speed_mhz, score FROM ram_benchmarks WHERE capacity_gb = :capacity');
+    $check->execute(['capacity' => $capacityGb]);
+    $catalogueRams = $check->fetchAll();
+    if ($speedMhz > 0) {
+        $catalogueRams = array_values(array_filter(
+            $catalogueRams,
+            static fn (array $row): bool => (int) $row['speed_mhz'] === $speedMhz
+        ));
+    }
+    if (!$catalogueRams) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'RAM capacity and speed were not found in the benchmark catalogue.']);
+        exit;
+    }
+    $matchingScore = array_filter($catalogueRams, static fn (array $row): bool => (float) $rawScore === (float) $row['score']);
+    if (!$matchingScore) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'RAM benchmark score does not match the catalogue record.']);
         exit;
     }
 
-    $insert = $database->prepare(
-        'INSERT INTO ram_benchmarks (capacity_gb, speed_mhz, score, source_version)
-         VALUES (:capacity_gb, :speed_mhz, :score, :source_version)'
-    );
-    $insert->execute([
-        'capacity_gb' => $capacityGb,
-        'speed_mhz' => $speedMhz,
-        'score' => $score,
-        'source_version' => 'admin',
-    ]);
-
-    echo json_encode(['success' => true, 'message' => 'RAM benchmark added successfully.']);
+    echo json_encode(['success' => true, 'message' => 'RAM capacity, speed, and score match the benchmark catalogue. No changes were needed.']);
 } catch (Throwable $error) {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Unable to save RAM benchmark.']);

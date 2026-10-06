@@ -1137,6 +1137,17 @@ body {
     margin-bottom: 15px;
 }
 
+.hardware-validation-error {
+    margin: 8px 0 12px;
+    color: var(--color-danger);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.hardware-validation-error[hidden] {
+    display: none;
+}
+
 /* ---------- DYNAMIC METADATA DATA LISTS ---------- */
 .data-list {
     max-height: 300px;

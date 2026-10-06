@@ -261,6 +261,17 @@
             .replace(/\s+/g, ' ');
     }
 
+    function normalizeCatalogueModelName(value) {
+        return String(value || '')
+            .toLowerCase()
+            .replace(/\((?:r|tm)\)/g, ' ')
+            .replace(/[™®]/g, ' ')
+            .replace(/\b(?:nvidia|amd|intel|geforce|radeon|cpu)\b/g, ' ')
+            .replace(/[^a-z0-9]+/g, ' ')
+            .trim()
+            .replace(/\s+/g, ' ');
+    }
+
     /* ---------------------------------------------------------------------------
      * CLIENT-SIDE HARDWARE VALIDATION
      *
@@ -317,6 +328,85 @@
             return 'Enter a valid benchmark score as a positive number.';
         }
         return '';
+    }
+
+    function validateHardwareCatalogueEntry(type, modelValue, scoreValue) {
+        const baseError = validateHardwareInput(type, modelValue, scoreValue);
+        if (baseError) return baseError;
+
+        const model = String(modelValue || '').trim();
+        const score = Number(scoreValue);
+
+        if (type === 'cpu') {
+            const normalized = normalizeCatalogueModelName(model);
+            const catalogueEntries = adminCPUs.filter(item =>
+                normalizeCatalogueModelName(item.model) === normalized
+            );
+            if (catalogueEntries.length === 0) {
+                return 'CPU model was not found in the benchmark catalogue. Choose a listed CPU model.';
+            }
+            const matchingScore = catalogueEntries.some(item => Number(item.score) === score);
+            if (!matchingScore) {
+                const catalogueScores = [...new Set(catalogueEntries.map(item => Number(item.score)))];
+                return `CPU benchmark score must match a catalogue score for this model (${catalogueScores.join(', ')}).`;
+            }
+            return '';
+        }
+
+        if (type === 'gpu') {
+            const normalized = normalizeCatalogueModelName(model);
+            const catalogueEntries = adminGPUs.filter(item =>
+                normalizeCatalogueModelName(item.model) === normalized
+            );
+            if (catalogueEntries.length === 0) {
+                return 'GPU model was not found in the benchmark catalogue. Choose a listed GPU model.';
+            }
+            const matchingScore = catalogueEntries.some(item => Number(item.score) === score);
+            if (!matchingScore) {
+                const catalogueScores = [...new Set(catalogueEntries.map(item => Number(item.score)))];
+                return `GPU benchmark score must match a catalogue score for this model (${catalogueScores.join(', ')}).`;
+            }
+            return '';
+        }
+
+        if (type === 'ram') {
+            const capacityMatch = model.match(/(\d+)\s*GB/i);
+            if (!capacityMatch) {
+                return 'Include a RAM capacity in GB, such as the capacity shown in the catalogue.';
+            }
+
+            let speedMhz = 0;
+            const ddrSpeedMatch = model.match(/DDR\d?[\s\-]*(\d{3,5})/i);
+            const mhzSpeedMatch = model.match(/(\d{3,5})\s*MHz/i);
+            if (ddrSpeedMatch) speedMhz = Number(ddrSpeedMatch[1]);
+            else if (mhzSpeedMatch) speedMhz = Number(mhzSpeedMatch[1]);
+
+            const capacityGb = Number(capacityMatch[1]);
+            const catalogueEntries = adminRAMs.filter(item =>
+                Number(item.capacity) === capacityGb &&
+                (speedMhz === 0 || Number(item.speed) === speedMhz)
+            );
+            if (!catalogueEntries.length) {
+                return 'RAM capacity and speed were not found in the benchmark catalogue.';
+            }
+            const matchingScore = catalogueEntries.some(item => Number(item.score) === score);
+            if (!matchingScore) {
+                const catalogueScores = [...new Set(catalogueEntries.map(item => Number(item.score)))];
+                return `RAM benchmark score must match a catalogue score for this capacity (${catalogueScores.join(', ')}).`;
+            }
+            return '';
+        }
+
+        return '';
+    }
+
+    function setHardwareFormValidationError(type, message = '') {
+        const errorElement = document.getElementById(`${type}ValidationError`);
+        if (!errorElement) return;
+
+        errorElement.textContent = message;
+        errorElement.hidden = !message;
+        errorElement.setAttribute('aria-live', 'polite');
     }
 
     function getAdminHardwareStore() {
@@ -721,7 +811,7 @@
 
             populateDatalist(
                 'ramModelOptions',
-                getHardwareModelNames(adminRAMs)
+                adminRAMs.map(item => `${item.capacity}GB${Number(item.speed) > 0 ? ` ${item.speed}MHz` : ''}`)
             );
 
         } catch (error) {
@@ -1160,7 +1250,7 @@
                 const score = Number(scoreRaw);
 
                 // Validate input
-                const cpuError = validateHardwareInput('cpu', model, scoreRaw);
+                const cpuError = validateHardwareCatalogueEntry('cpu', model, scoreRaw);
                 if (cpuError) {
                     showModal('Warning', cpuError);
                     return;
@@ -1219,17 +1309,21 @@
         // GPU Form
         const gpuForm = document.getElementById("gpuForm");
         if (gpuForm) {
+            gpuForm.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', () => setHardwareFormValidationError('gpu'));
+            });
             gpuForm.addEventListener("submit", async function(e) {
                 e.preventDefault();
+                setHardwareFormValidationError('gpu');
 
                 const model = document.getElementById('gpuModel')?.value.trim();
                 const scoreRaw = document.getElementById('gpuScore')?.value;
                 const score = Number(scoreRaw);
 
-                // Validate input
-                const gpuError = validateHardwareInput('gpu', model, scoreRaw);
+                // Require an exact model and score from the loaded benchmark catalogue.
+                const gpuError = validateHardwareCatalogueEntry('gpu', model, scoreRaw);
                 if (gpuError) {
-                    showModal('Warning', gpuError);
+                    setHardwareFormValidationError('gpu', gpuError);
                     return;
                 }
 
@@ -1272,11 +1366,7 @@
 
                 } catch (error) {
                     console.error('Error saving GPU:', error);
-
-                    showModal(
-                        'Error',
-                        error.message || 'GPU could not be saved.'
-                    );
+                    setHardwareFormValidationError('gpu', error.message || 'GPU could not be saved.');
                 }
             });
         }
@@ -1285,26 +1375,21 @@
         const ramForm = document.getElementById("ramForm");
 
         if (ramForm) {
+            ramForm.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', () => setHardwareFormValidationError('ram'));
+            });
             ramForm.addEventListener("submit", async function(e) {
                 e.preventDefault();
+                setHardwareFormValidationError('ram');
 
                 const model = document.getElementById('ramModel')?.value.trim();
                 const scoreRaw = document.getElementById('ramScore')?.value;
                 const score = Number(scoreRaw);
 
-                // Validate input
-                const ramError = validateHardwareInput('ram', model, scoreRaw);
+                // Require an exact capacity/speed and score from the loaded catalogue.
+                const ramError = validateHardwareCatalogueEntry('ram', model, scoreRaw);
                 if (ramError) {
-                    showModal('Warning', ramError);
-                    return;
-                }
-
-                // RAM capacity must be parseable from the model string.
-                if (!/(\d+)\s*GB/i.test(model)) {
-                    showModal(
-                        'Warning',
-                        'Include the capacity in the RAM model, for example "16GB DDR4-3200".'
-                    );
+                    setHardwareFormValidationError('ram', ramError);
                     return;
                 }
 
@@ -1347,11 +1432,7 @@
 
                 } catch (error) {
                     console.error('Error saving RAM:', error);
-
-                    showModal(
-                        'Error',
-                        error.message || 'RAM could not be saved.'
-                    );
+                    setHardwareFormValidationError('ram', error.message || 'RAM could not be saved.');
                 }
             });
         }

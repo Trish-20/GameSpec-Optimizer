@@ -43,34 +43,28 @@ if (!isValidBenchmarkScore($rawScore)) {
     exit;
 }
 
-$score = (int) $rawScore;
-
 try {
     $database = databaseConnection();
     $normalizedModel = normalizeBenchmarkName($model);
 
-    // Check for duplicate by normalized model name
-    $check = $database->prepare('SELECT gpu_id FROM gpu_benchmarks WHERE normalized_model = :normalized LIMIT 1');
+    // The management form may only submit a model/score pair already present
+    // in the benchmark catalogue. It is a no-op when the pair is already valid.
+    $check = $database->prepare('SELECT gpu_id, score FROM gpu_benchmarks WHERE normalized_model = :normalized');
     $check->execute(['normalized' => $normalizedModel]);
-    if ($check->fetch()) {
-        http_response_code(409);
-        echo json_encode(['success' => false, 'message' => 'A GPU with that model name already exists.']);
+    $catalogueGpus = $check->fetchAll();
+    if (!$catalogueGpus) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'GPU model was not found in the benchmark catalogue.']);
+        exit;
+    }
+    $matchingScore = array_filter($catalogueGpus, static fn (array $row): bool => (float) $rawScore === (float) $row['score']);
+    if (!$matchingScore) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'GPU benchmark score does not match the catalogue record.']);
         exit;
     }
 
-    $insert = $database->prepare(
-        'INSERT INTO gpu_benchmarks (model, normalized_model, score, category, source_version)
-         VALUES (:model, :normalized_model, :score, :category, :source_version)'
-    );
-    $insert->execute([
-        'model' => $model,
-        'normalized_model' => $normalizedModel,
-        'score' => $score,
-        'category' => 'Desktop',
-        'source_version' => 'admin',
-    ]);
-
-    echo json_encode(['success' => true, 'message' => 'GPU added successfully.']);
+    echo json_encode(['success' => true, 'message' => 'GPU model and score match the benchmark catalogue. No changes were needed.']);
 } catch (Throwable $error) {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Unable to save GPU benchmark.']);

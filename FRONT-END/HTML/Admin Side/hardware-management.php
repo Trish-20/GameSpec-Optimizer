@@ -57,6 +57,8 @@ require_once __DIR__ . '/admin-guard.php';
                     
                     <label for="gpuScore">Benchmark Score:</label>
                     <input type="number" id="gpuScore" min="1" max="1000000" step="1" placeholder="e.g., 28000" required>
+
+                    <p id="gpuValidationError" class="hardware-validation-error" role="alert" aria-live="polite" hidden></p>
                     
                    <div class="form-action-row">
                         <button type="submit" class="btn-primary">Save GPU</button>
@@ -82,6 +84,8 @@ require_once __DIR__ . '/admin-guard.php';
                     
                     <label for="ramScore">Benchmark Score:</label>
                     <input type="number" id="ramScore" min="1" max="1000000" step="1" placeholder="e.g., 8000" required>
+
+                    <p id="ramValidationError" class="hardware-validation-error" role="alert" aria-live="polite" hidden></p>
                     
                     <div class="form-action-row">
                         <button type="submit" class="btn-primary">Save RAM</button>
