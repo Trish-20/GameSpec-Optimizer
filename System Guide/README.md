@@ -271,10 +271,10 @@ The facts that will save you the most time, each traced to source.
 **No.** `MODULES/ml-training.py` lines 55–58 drop `game_title` from the dataset, and the 16 features in `feature_columns.joblib` are purely numeric. The model holds no per-game knowledge. A new game is usable as soon as it has benchmark scores.
 
 **2. Does adding a game automatically resolve benchmarks?**
-**No.** `MODULES/api/update-games.php` lines 450–469 insert a row into `sync_jobs` and return *"Game added successfully. Benchmark resolution queued."* Nothing drains that queue automatically.
+**Yes.** `MODULES/api/update-games.php` inserts the `sync_jobs` row, claims it (`queued → running`) and calls `resolveGameBenchmarksNow()` in the same request. The response tells you the real outcome via `prediction_ready` and `benchmark_resolution.unresolved`.
 
 **3. Is benchmark resolution automatic or manual?**
-**Manual.** `MODULES/resolve-game-benchmarks.php` lines 197–200 only run when `PHP_SAPI === 'cli'`. You must run it from a terminal. This is the #1 cause of "my new game doesn't show up".
+**Automatic on save.** The CLI entry point of `MODULES/resolve-game-benchmarks.php` still exists, but only as a fallback for jobs left `queued` by a crashed request or the install-time backfill. The #1 cause of "my new game doesn't show up for users" is now a *failed* match: the game is saved with `is_active = 0`, so check `benchmark_resolution.unresolved` in the save response and look for the `HIDDEN FROM USERS (benchmark unresolved)` marker in the admin list.
 
 **4. What is the gate that makes a game visible to users?**
 `resolve-game-benchmarks.php` lines 128–142 recompute `games.is_active`. A game becomes visible **only if CPU, GPU and RAM all resolve to a non-NULL `benchmark_score`** for its `minimum` requirement (`HAVING COUNT(DISTINCT m.hardware_type) = 3`). `get-games.php` line 18 filters on `g.is_active = 1`.

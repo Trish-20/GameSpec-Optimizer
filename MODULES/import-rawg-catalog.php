@@ -13,9 +13,15 @@ function importRawgCatalog(PDO $database, int $page = 1, int $pageSize = 40, ?in
         throw new RuntimeException('RAWG API key is not configured.');
     }
 
+    // Newly imported games carry no requirements yet, so the visibility gate
+    // cannot pass for them. is_active is written as 0 explicitly: the schema
+    // DEFAULT would otherwise publish every import to get-games.php before it
+    // has any benchmark data. enrich-games.php promotes the game once its
+    // requirements resolve. The ON DUPLICATE KEY branch deliberately leaves
+    // is_active untouched so re-imports never flip the gate either way.
     $upsert = $database->prepare(
-        'INSERT INTO games (rawg_id, title, slug, description, cover_url, release_date, release_year, genres, platforms, rawg_synced_at)
-         VALUES (:rawg_id, :title, :slug, :description, :cover_url, :release_date, :release_year, :genres, :platforms, NOW())
+        'INSERT INTO games (rawg_id, title, slug, description, cover_url, release_date, release_year, genres, platforms, is_active, rawg_synced_at)
+         VALUES (:rawg_id, :title, :slug, :description, :cover_url, :release_date, :release_year, :genres, :platforms, 0, NOW())
          ON DUPLICATE KEY UPDATE title = VALUES(title), slug = VALUES(slug), description = VALUES(description), cover_url = VALUES(cover_url), release_date = VALUES(release_date), release_year = VALUES(release_year), genres = VALUES(genres), platforms = VALUES(platforms), rawg_synced_at = NOW()'
     );
     $queue = $database->prepare(

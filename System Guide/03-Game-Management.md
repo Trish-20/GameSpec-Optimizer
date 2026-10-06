@@ -141,18 +141,18 @@ Examples: `Grand Theft Auto V` → `grand-theft-auto-v`. `GrandTheftAutoV` → `
 
 **The slug is written once at insert time and is never updated on edit** (see §3).
 
-### Step 10 — INSERT games (lines 357-387)
+### Step 10 — INSERT games
 
 ```php
 INSERT INTO games (title, slug, description, cover_url, is_active, created_at, updated_at)
-VALUES (:title, :slug, :description, :cover_url, 1, NOW(), NOW())
+VALUES (:title, :slug, :description, :cover_url, 0, NOW(), NOW())
 ```
 
 - **`rawg_id` is not in the column list.**
 - **`steam_app_id` is not in the column list.**
-- `is_active` is set to `1` here — but the resolver overwrites it later (§5).
+- `is_active` is written as `0`. The game is published only after synchronous benchmark resolution (§5) flips it to `1` via the visibility gate — inserting it as active would expose it to `get-games.php` before any benchmark score exists.
 - `$currentGameId = (int) $database->lastInsertId();`
-- Success message: *"Game added successfully. Benchmark resolution queued."*
+- Response message depends on the real outcome: *"Game added successfully and is ready for FPS prediction."*, or *"…but benchmark resolution is incomplete (CPU could not be matched)…"*, with `prediction_ready` and `benchmark_resolution.unresolved[]` in the JSON.
 
 > ⚠️ **CONTRADICTION C1.** `mysql-schema.sql:64` declares `rawg_id BIGINT UNSIGNED NOT NULL` with no default, so this INSERT should fail under strict mode. The code comment at line 355 asserts the values "remain NULL". **Live behaviour: NOT VERIFIED FROM SOURCE.** Check `SHOW CREATE TABLE games` first — see `16-Troubleshooting.md`.
 
@@ -214,10 +214,10 @@ Edit starts at `editGame(index)` (`AdminSideFunction.js:386`), which fills the f
 | **Steam ID** | **Not touched** — preserved |
 | **Release / genres / platforms** | **Not touched** — not editable from this form |
 | **Requirements** | Same UPSERT as Step 11 (lines 399–442), matching `(game_id, 'minimum')` — overwrites CPU/GPU/RAM text and numbers, sets `source='admin'` |
-| **Benchmark matches** | **Not deleted.** Existing `game_benchmark_matches` rows stay as-is (stale) until a resolver run overwrites them. |
-| **New job** | Another `sync_jobs` row is queued (lines 450–469). **No dedup guard** — editing 5 times queues 5 jobs. |
+| **Benchmark matches** | **Not deleted first.** The synchronous resolution run triggered by this save overwrites them for `(game_id, 'minimum')` in the same request. |
+| **New job** | A fresh `sync_jobs` row is inserted `queued` and claimed `queued → running` in the same request; the resolver then completes it (`complete`) or marks it `failed` with `last_error`. |
 
-Edit success message: *"Game updated successfully. Benchmark resolution queued."*
+Edit message reflects the real outcome — *"Game updated successfully and is ready for FPS prediction."* or *"…but benchmark resolution is incomplete…"* — plus `prediction_ready` and `benchmark_resolution` in the JSON.
 
 ### Not-found path
 `SELECT game_id, cover_url FROM games WHERE game_id = :game_id` (lines 201–212) → no row → **404** *"The game you are trying to edit does not exist."*
@@ -279,22 +279,24 @@ The reasoning is spelled out in the comment at `delete-games.php:82-88`.
 **No.** See `07-ML-Training.md` — the model has no per-game parameters.
 
 ### Does a new game become usable for prediction immediately?
-**Not reliably.** Two conditions must hold:
-1. It must be visible — `is_active = 1` (it starts that way, but a resolver run can flip it to 0).
+**It is as soon as the save returns — if and only if its benchmarks resolved.** The save resolves benchmarks synchronously and reports the outcome:
+1. It must be visible — `is_active = 1`. The game is inserted as `0` and only the visibility gate (all three scores non-NULL) sets it to `1`.
 2. Its `minimum` requirement must have numeric `benchmark_score` for CPU, GPU **and** RAM, otherwise `game_cpu_min` arrives as `null`, `parseInt(null)` → `NaN`, and `hardware-specs-input.php` rejects it with *"Missing or invalid field: game_cpu_min"*.
 
+If resolution failed, the response says so (`prediction_ready: false`, `benchmark_resolution.unresolved: ["GPU", …]`) and the game stays `is_active = 0` — hidden from users but still listed for the admin (see `05-Benchmark-Resolution.md`, *Admin visibility*).
+
 ### What happens before benchmark resolution?
-- `games` row exists, `is_active = 1`
+- `games` row exists, `is_active = 0`
 - One `game_requirements` row (`minimum`, `source='admin'`)
-- **Zero** `game_benchmark_matches` rows
-- One `sync_jobs` row, `status='queued'`
-- Game **is** visible in the browser, but `cpu_benchmark`/`gpu_benchmark`/`ram_benchmark` are `null` in the JSON
+- Zero (or stale) `game_benchmark_matches` rows
+- One `sync_jobs` row, `status='queued'` → claimed `running` immediately in the same request
+- Game **not** visible to users yet; it appears in the admin list flagged `HIDDEN FROM USERS (benchmark unresolved)`
 
 ### What happens after benchmark resolution?
 - 3 `game_benchmark_matches` rows written (or `unresolved` with NULL scores)
 - `games.is_active` recomputed
 - `sync_jobs.status` → `'complete'`, or `'failed'` with `last_error`
-- Only if all 3 scores are non-NULL does the game stay/become predictively usable
+- Only if all 3 scores are non-NULL is the game `is_active = 1` — ready for prediction. Otherwise it stays `is_active = 0`, and the admin fixes the unmatched requirement text and re-saves.
 
 ---
 

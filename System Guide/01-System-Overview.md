@@ -10,7 +10,7 @@ Broken down per feature, there are three distinct paths, and they behave very di
 |----------------------------|-------------------------------------------------------------------|-------------|
 | Browse / view games        | JS → `get-games.php` → MySQL                                      | Yes, fully  |
 | Add / edit / delete a game | JS → `update-games.php` → MySQL (`sync_jobs`)                     | Yes, fully  |
-| Benchmark resolution       | `sync_jobs` → **`resolve-game-benchmarks.php` (CLI)** → MySQL     | No — manual |
+| Benchmark resolution       | On save: `update-games.php` claims `sync_jobs` and resolves that one game synchronously; **`resolve-game-benchmarks.php` (CLI)** drains anything left | Yes on save (CLI as fallback) |
 | FPS prediction             | JS → `hardware-specs-input.php` → **`ml-predict.py`** → `.joblib` | Yes, fully  |
 | ML training                | **`ml-training.py` (CLI)** → `.joblib`                            | No — manual |
 | Feedback                   | JS → `submit-feedback.php` → MySQL                                | Yes, fully  |
@@ -94,13 +94,16 @@ game-management.php
             ├─ image decode + save to uploads/game-covers/  (60-189)
             ├─ duplicate title check → 409        (271-294)
             ├─ slug generation + uniqueness       (307-349)
-            ├─ INSERT INTO games                  (357-385)
+            ├─ INSERT INTO games (is_active = 0)     (357-385)
             ├─ UPSERT game_requirements           (399-442)
-            └─ INSERT INTO sync_jobs  ← QUEUE ONLY (450-469)
+            ├─ INSERT INTO sync_jobs + claim it   (queued → running)
+            ├─ resolveGameBenchmarksNow(game)     ← runs HERE, synchronously
+            │        ├─ writes game_benchmark_matches
+            │        └─ recomputes games.is_active (the visibility gate)
+            └─ response: prediction_ready + benchmark_resolution.unresolved[]
                       │
-                      │   ⚠ STOP. Nothing here runs the resolver.
                       ▼
-        resolve-game-benchmarks.php   ← YOU must run this from a CLI
+        resolve-game-benchmarks.php   ← CLI fallback that drains leftover jobs
 ```
 
 ### 3.3 Predicting FPS (fully automatic)
@@ -144,9 +147,9 @@ WHERE g.game_id = :game_id
 
 **Translation:** a game is `is_active = 1` only when its `minimum` requirement has **all three** of CPU, GPU and RAM resolved to a real numeric score.
 
-Because `get-games.php` line 18 filters `g.is_active = 1`, a game with even **one** failed match is **invisible to users on every page**, even though the row still exists in `games`.
+Because `get-games.php` filters `g.is_active = 1`, a game with even **one** failed match is **invisible to users on every page**, even though the row still exists in `games`.
 
-Important consequence: the **admin** game list also loads via `get-games.php` (`AdminSideFunction.js` line 254), so **both** panels hide an inactive game after the resolver flips it to 0.
+The **admin** game list also loads via `get-games.php`, but with `include_inactive=1` (`AdminSideFunction.js` → `loadAdminGames()`). `get-games.php` only honours that flag for an authenticated admin session, so the admin still sees every game (labelled `HIDDEN FROM USERS (benchmark unresolved)`) and can correct the requirement spelling and re-save it, while users keep receiving `is_active = 1` games only.
 
 ---
 

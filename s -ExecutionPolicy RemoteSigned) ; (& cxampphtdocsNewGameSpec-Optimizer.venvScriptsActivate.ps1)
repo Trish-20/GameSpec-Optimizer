@@ -1,0 +1,14 @@
+warning: in the working copy of 'MODULES/api/update-games.php', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'MODULES/resolve-game-benchmarks.php', LF will be replaced by CRLF the next time Git touches it
+ .../JAVASCRIPT/Admin Side/AdminSideFunction.js     |  60 [32m++[m[31m-[m
+ MODULES/api/get-games.php                          |  30 [32m+[m[31m-[m
+ MODULES/api/update-games.php                       | 122 [32m+++++[m[31m-[m
+ MODULES/benchmark-resolver.php                     |   8 [32m+[m[31m-[m
+ MODULES/resolve-game-benchmarks.php                | 410 [32m+++++++++++++++++[m[31m----[m
+ System Guide/01-System-Overview.md                 |  17 [32m+[m[31m-[m
+ System Guide/03-Game-Management.md                 |  30 [32m+[m[31m-[m
+ System Guide/04-Hardware-Benchmark-System.md       |  33 [32m+[m[31m-[m
+ System Guide/05-Benchmark-Resolution.md            |  75 [32m++[m[31m--[m
+ System Guide/16-Troubleshooting.md                 |   2 [32m+[m[31m-[m
+ System Guide/README.md                             |   4 [32m+[m[31m-[m
+ 11 files changed, 627 insertions(+), 164 deletions(-)

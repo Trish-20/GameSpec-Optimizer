@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/rawg-steam-client.php';
+// resolveGameBenchmarksNow() lives in the resolver module. Requiring it here
+// is side-effect free: the resolver drains its queue only when it is itself
+// invoked as the CLI entry point. enrich-games.php therefore resolves each
+// game synchronously right after saving its requirements, instead of leaving
+// a benchmark_resolution job queued for a worker that does not exist.
+require_once __DIR__ . '/resolve-game-benchmarks.php';
 
 function enrichGames(PDO $database, int $limit = 10): array
 {
@@ -71,7 +77,11 @@ function enrichGames(PDO $database, int $limit = 10): array
                     'is_active' => 0,
                     'steam_synced_at' => null,
                 ]);
-                $finish->execute(['status' => 'complete', 'last_error' => null, 'job_id' => $item['job_id']]);
+                // No Steam requirements exist, so there is nothing to resolve
+                // and the visibility gate cannot pass. Record why on the job
+                // instead of completing it silently: an admin reading the
+                // queue can see this game needs manual requirements.
+                $finish->execute(['status' => 'complete', 'last_error' => 'No Steam requirements found; game stays inactive until admin-entered requirements resolve.', 'job_id' => $item['job_id']]);
                 $complete++;
                 continue;
             }
@@ -107,6 +117,36 @@ function enrichGames(PDO $database, int $limit = 10): array
                 'steam_synced_at' => $steamAppId !== null ? date('Y-m-d H:i:s') : null,
             ]);
             $queueBenchmark->execute(['game_id' => $item['game_id']]);
+            $benchmarkJobId = (int) $database->lastInsertId();
+
+            // Claim the job with the same conditional UPDATE the CLI batch and
+            // update-games.php use, then resolve THIS game synchronously. No
+            // background worker consumes benchmark_resolution jobs, so leaving
+            // it queued would hide the game behind is_active = 0 forever.
+            // Only this game's requirements are resolved, never the queue.
+            $claimBenchmark = $database->prepare('UPDATE sync_jobs SET status = "running", attempts = attempts + 1 WHERE job_id = :job_id AND status = "queued"');
+            $claimBenchmark->execute(['job_id' => $benchmarkJobId]);
+            if ($claimBenchmark->rowCount() === 1) {
+                try {
+                    $resolution = resolveGameBenchmarksNow($database, (int) $item['game_id']);
+                    // "complete" means resolution ran, not that everything
+                    // matched. An unresolved component is a legitimate outcome;
+                    // the game simply stays inactive (recomputeGameEligibility
+                    // already set is_active) and the missing part is recorded.
+                    $finishBenchmark = $database->prepare('UPDATE sync_jobs SET status = "complete", last_error = :last_error WHERE job_id = :job_id');
+                    $finishBenchmark->execute([
+                        'last_error' => $resolution['unresolved'] === []
+                            ? null
+                            : 'Unresolved minimum requirement(s): ' . implode(', ', $resolution['unresolved']) . '. The game stays inactive until these resolve.',
+                        'job_id' => $benchmarkJobId,
+                    ]);
+                } catch (Throwable $benchmarkError) {
+                    $database->prepare('UPDATE sync_jobs SET status = "failed", last_error = :last_error WHERE job_id = :job_id')->execute([
+                        'last_error' => 'Benchmark resolution error: ' . $benchmarkError->getMessage(),
+                        'job_id' => $benchmarkJobId,
+                    ]);
+                }
+            }
             $finish->execute(['status' => 'complete', 'last_error' => null, 'job_id' => $item['job_id']]);
             $complete++;
         } catch (PDOException $e) {

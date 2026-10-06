@@ -194,24 +194,25 @@ WHERE normalized_model = :normalized LIMIT 1
 ```
 Found → return `['match_status' => 'exact', 'source_version' => …]` immediately.
 
-### 5.5 Fuzzy scan (lines 43–61)
+### 5.5 Fuzzy scan
 
 ```php
 $rows = $database->query("SELECT model, normalized_model, score, source_version FROM {$table}")->fetchAll();
+$requiredCoverage = count($requiredTokens) > 0 ? $hits / count($requiredTokens) : 0;
 $candidateCoverage = count($candidateTokens) > 0 ? $hits / count($candidateTokens) : 0;
-if ($candidateCoverage >= 0.99) { $candidates[] = … }
+if ($requiredCoverage >= 0.99 || $candidateCoverage >= 0.99) { $candidates[] = … }
 ```
 
-**The containment direction is the opposite of what you might expect.** `candidateCoverage` divides by the **candidate's** token count, so the requirement text must *contain the candidate's name* almost entirely.
+**Two containment directions, accepted as a union.** `candidateCoverage` divides by the **candidate's** token count (the requirement text must contain the model's name); `requiredCoverage` divides by the **requirement's** token count (the catalogue row must contain everything the text asked for). A row is kept when **either** side reaches 0.99.
 
-| Requirement text | DB `normalized_model` | Candidate tokens | Hits | Coverage | Pass ≥0.99? |
+| Requirement text | DB `normalized_model` | Hits | `candidateCoverage` | `requiredCoverage` | Pass? |
 |---|---|---|---|---|---|
-| `Intel Core i5-8400` | `core i5 8400` | core, i5, 8400 | 3 | **1.00** | ✅ |
-| `Intel Core i5-8400 with cooler` | `core i5 8400` | core, i5, 8400 | 3 | **1.00** | ✅ |
-| `i5-8400` → `i5 8400` | `core i5 8400` | core, i5, 8400 | 2 | 0.67 | ❌ |
+| `Intel Core i5-8400` | `core i5 8400` | 3 | 1.00 | 1.00 | ✅ (both) |
+| `Intel Core i5-8400 with cooler` | `core i5 8400` | 3 | **1.00** | 0.60 | ✅ (candidate side) |
+| `i5-8400` (2 required tokens) | `core i5 8400` | 2 | 0.67 | **1.00** | ✅ (required side) |
 | `Example CPU` | — | — | — | — | ❌ (gate rejected first) |
 
-**Practical rule:** requirement text must include the **full** normalised model name, including words like `core`. A shortened `i5-8400` fails the threshold.
+**Practical rule:** a requirement matches when the row's name sits inside the text **or** the row covers everything the text asks for. Because the accepted set is the **union** of the two rules, a re-run can only add matches — it can never revoke one that either rule alone accepted.
 
 ### 5.6 Ranking (lines 63–69)
 
@@ -238,7 +239,7 @@ Line 83 → `['matched_model' => null, 'score' => null, 'match_status' => 'unres
 
 ---
 
-## 6. RAM matching — `resolveDatabaseRam()` lines 86–105
+## 6. RAM matching — `resolveDatabaseRam()`
 
 ```php
 if (!$capacityGb) {
@@ -257,12 +258,19 @@ FROM ram_benchmarks WHERE capacity_gb = :capacity
 ORDER BY ABS(CAST(speed_mhz AS SIGNED) - :speed) LIMIT 1
    → 'nearest'    if $speedMhz non-zero
    → 'estimated'  if $speedMhz is 0
-   → 'unresolved' if no row for that capacity
+   → (no row for that capacity → step 3)
+
+// 3) nearest capacity — the CSV only measures 2/4/8/16/32/64 GB
+SELECT capacity_gb, speed_mhz, score, source_version
+FROM ram_benchmarks
+ORDER BY ABS(CAST(capacity_gb AS SIGNED) - :capacity), score ASC LIMIT 1
+   → 'estimated'   with matched_capacity_gb = the capacity actually used
+   → 'unresolved'  only if the table is empty
 ```
 
 **No marker gate and no string matching** — RAM is purely numeric.
 
-> **Note:** step 2 cannot fall back to a *different* capacity. If no row exists with that exact `capacity_gb`, the query returns nothing → `unresolved`. (Contrast `benchmark-resolver.php::resolveRamBenchmark()` lines 181–184, which *does* fall back to all rows — but **that function is never called by the DB resolver**. Two implementations, only one is live.)
+> **Note:** step 3 was added when the batch resolver left every 1/3/5/6/12 GB requirement `NULL` — the six-row CSV has no such capacity and step 2 matched capacity exactly. The substituted capacity stays visible in `matched_capacity_gb`, the status is `estimated`, ties go to the lower score (the same conservative tie-break the model scan uses), and rows that resolved at step 1/2 are untouched — so no previously-resolved score changes. The DB resolver now behaves like `benchmark-resolver.php::resolveRamBenchmark()` always did (it falls back to all rows); there is no longer a "two implementations, only one is live" discrepancy.
 
 ---
 
@@ -325,37 +333,40 @@ C:\xampp\php\php.exe resolve-game-benchmarks.php 25
 
 > ### "If I add a game from the admin panel, what must happen before its benchmark information is ready?"
 >
-> **You must run the resolver manually from a terminal:**
+> **Nothing manual — the save resolves it.** `update-games.php` claims the `sync_jobs` row (`queued → running`) and calls `resolveGameBenchmarksNow()` for that one game before responding, so benchmarks are ready the moment the success message returns:
 >
-> ```bash
-> cd C:\xampp\htdocs\New\GameSpec-Optimizer\MODULES
-> C:\xampp\php\php.exe resolve-game-benchmarks.php 25
+> ```
+> Game added successfully and is ready for FPS prediction.
 > ```
 >
-> Until that command runs, the game has:
-> - `games.is_active = 1` (set at insert time, so it *appears* in lists)
-> - **zero** rows in `game_benchmark_matches`
-> - `cpu_benchmark` / `gpu_benchmark` / `ram_benchmark` = `null` in the API response
-> - a `sync_jobs` row still at `status = 'queued'`
+> The response also carries `prediction_ready: true` and `benchmark_resolution: {unresolved: []}` — use those, not the message text, to decide what to show.
 >
-> **Prediction will fail**, because `hardware-specs-input.php` requires `game_cpu_min`, `game_gpu_min`, `game_ram_min`, `cpu_score`, `gpu_score`, `ram_score` to all be numeric, and `parseInt(null)` is `NaN`.
+> If resolution **fails** (e.g. `Radeon RX 6600 XT` is not a key in `gpu_benchmarks`):
+> - the game stays `games.is_active = 0` — **hidden from every user page**
+> - `prediction_ready: false` and `benchmark_resolution.unresolved: ["GPU", …]` say exactly which hardware type to fix
+> - the admin list still shows the game, labelled `HIDDEN FROM USERS (benchmark unresolved)`
+> - `sync_jobs.status = 'failed'` with `last_error` for the audit trail
 >
-> **If the resolver runs and any one of CPU/GPU/RAM fails to match, `is_active` is set to 0 and the game disappears from *both* the user and admin lists.**
+> **Prediction will fail** for such a game, because `hardware-specs-input.php` requires `game_cpu_min`, `game_gpu_min`, `game_ram_min`, `cpu_score`, `gpu_score`, `ram_score` to all be numeric, and `parseInt(null)` is `NaN`. The `is_active = 0` gate is what keeps that from happening in practice.
+>
+> The CLI resolver (`C:\xampp\php\php.exe resolve-game-benchmarks.php 25`) is now only a **fallback** for jobs left behind by a crashed request or the install-time backfill.
 
 ### Recommended sequence after adding a game
 
 ```bash
-# 1. Confirm the queue has work   (SQL in §11)
+# 1. Read the save response:
+#      prediction_ready: true              → nothing to do
+#      prediction_ready: false             → step 2
 
-# 2. Run the resolver
-cd C:\xampp\htdocs\New\GameSpec-Optimizer\MODULES
-C:\xampp\php\php.exe resolve-game-benchmarks.php 25
+# 2. Open the admin game list; the game is flagged
+#      "HIDDEN FROM USERS (benchmark unresolved)"
+#    Fix the unmatched requirement text (use benchmark_resolution.unresolved
+#    to know whether CPU, GPU or RAM failed) and save again.
 
 # 3. Confirm all three matches have scores   (SQL in §11)
-
-# 4. If any are 'unresolved':
-#      - fix the requirement text in the admin panel (see §5.3 / §5.5)
-#      - re-run step 2
+#    Optionally drain anything left over:
+#        cd C:\xampp\htdocs\New\GameSpec-Optimizer\MODULES
+#        C:\xampp\php\php.exe resolve-game-benchmarks.php 25
 ```
 
 ---
@@ -444,9 +455,9 @@ All `SELECT` only — safe to run repeatedly.
 | Job `failed` | Exception during processing | `sync_jobs.last_error` |
 | Job `running` for hours | Crashed mid-run | `job-maintenance.php` recovers after 2 h |
 | CPU `unresolved` | No marker word (§5.3) | `game_benchmark_matches.required_text` |
-| CPU `unresolved` | Text too short for 0.99 (§5.5) | compare `required_text` with `cpu_benchmarks.normalized_model` |
+| CPU `unresolved` | Neither coverage direction reaches 0.99 (§5.5) | compare `required_text` with `cpu_benchmarks.normalized_model` |
 | GPU `unresolved` | Requirement names an excluded card (quadro/titan) | `gpu_benchmarks` has no such row |
-| RAM `unresolved` | Capacity not in the 6-row CSV | `SELECT * FROM ram_benchmarks` |
+| RAM `unresolved` | `ram_capacity_gb` NULL/0, or `ram_benchmarks` empty | `game_requirements.ram_capacity_gb`, `SELECT * FROM ram_benchmarks` |
 | RAM `estimated` (not `nearest`) | `ram_speed_mhz` was 0/NULL | `game_requirements.ram_speed_mhz` |
 | Game vanished after running resolver | 1 of 3 scores NULL → `is_active = 0` | the gate query in §11 |
 | Good score became NULL | Re-run overwrote it (§4) | compare `resolved_at` history |

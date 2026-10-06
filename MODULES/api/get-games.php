@@ -14,10 +14,33 @@ try {
     $limit = max(1, min(100, (int) ($_GET['limit'] ?? 50)));
     $offset = ($page - 1) * $limit;
 
+    /*
+     * Visibility gate for the LIST (not for the game row itself).
+     *
+     * Users must only ever receive games with is_active = 1. The admin Game
+     * Management list needs the inactive ones too: a game whose benchmark
+     * resolution failed is saved with is_active = 0, and hiding it here would
+     * leave the admin with no way to correct the CPU/GPU spelling and re-save
+     * it — exactly what the save warning tells them to do.
+     *
+     * include_inactive is honoured only for an authenticated admin session,
+     * so an ordinary user request can never pull unpublished games. When the
+     * flag is absent no session is started at all, keeping the public path
+     * exactly as cheap as before.
+     */
+    $includeInactive = false;
+    if (($_GET['include_inactive'] ?? '') === '1') {
+        require_once __DIR__ . '/../auth.php';
+        $includeInactive = isAdminUser();
+    }
+
     $conditions = [
-        'g.is_active = 1',
+        '1 = 1',
     ];
-    
+    if (!$includeInactive) {
+        $conditions[] = 'g.is_active = 1';
+    }
+
     $parameters = [];
 
     if ($search !== '') {
@@ -90,6 +113,9 @@ try {
 
         $games[] = [
             'game_id' => (int) $row['game_id'],
+            // Consumers that filter or label by visibility read this directly;
+            // it was always present in g.* but never surfaced before.
+            'is_active' => (int) $row['is_active'],
             'rawg_id' => (int) $row['rawg_id'],
             'steam_app_id' => (int) $row['steam_app_id'],
             'title' => $row['title'],

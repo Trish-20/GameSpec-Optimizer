@@ -2295,45 +2295,146 @@ function hideHardwareDetectionLoading() {
 function normalizeHardwareText(value) {
     return String(value || '')
         .toLowerCase()
-        .replace(/\([^)]*\)/g, ' ')
+        // Remove trademark markers while retaining meaningful qualifiers such
+        // as (Laptop), (Mobile), and (Max-Q).
+        .replace(/\((?:r|tm)\)/g, ' ')
         .replace(/\b(?:11th|12th|13th|14th|15th)\s*gen\b/g, '')
-        .replace(/\b(?:processor|cpu|gpu|graphics|card|nvidia|amd|intel)\b/g, ' ')
+        .replace(/\b(?:processor|cpu|gpu|graphics|card|video|adapter|nvidia|amd|intel|geforce|radeon|quadro|tesla|rtx|gtx|rx|arc)\b/g, ' ')
+        .replace(/\b(?:angle|direct3d(?:1[01])?|d3d(?:1[01])?|opengl|opengles|vs_\d+_\d+|ps_\d+_\d+)\b/g, ' ')
         .replace(/[^a-z0-9]+/g, ' ')
         .trim();
 }
 
-function findBestHardwareMatch(items, detectedModel) {
-    if (!Array.isArray(items) || !detectedModel) return null;
+function getGpuBrandFamily(value) {
+    const text = String(value || '').toLowerCase();
+    if (/\b(?:nvidia|geforce|quadro|tesla)\b/.test(text)) return 'nvidia';
+    if (/\b(?:amd|radeon)\b/.test(text)) return 'amd';
+    if (/\b(?:intel|iris|uhd|arc)\b/.test(text)) return 'intel';
+    return null;
+}
 
-    const target = normalizeHardwareText(detectedModel);
-    const targetTokens = target.split(/\s+/).filter(token => token.length > 1);
-    const targetIdentifiers = targetTokens.filter(token => /\d/.test(token) && token.length >= 3);
+function getGpuModelIdentifiers(normalized) {
+    return normalized.split(/\s+/).filter(token =>
+        token.length >= 3 && /\d/.test(token) && !/^0x[\da-f]+$/i.test(token)
+    );
+}
 
-    const scoredMatches = items.map(item => {
-        const model = normalizeHardwareText(item.model);
-        const modelTokens = model.split(/\s+/).filter(token => token.length > 1);
-        const modelIdentifiers = modelTokens.filter(token => /\d/.test(token) && token.length >= 3);
-        const identifierHits = modelIdentifiers.filter(token => targetIdentifiers.includes(token)).length;
+function getGpuVariantSignature(normalized) {
+    const tokens = new Set(normalized.split(/\s+/));
+    const variants = [];
+    ['laptop', 'mobile', 'ti', 'super', 'xt', 'xtx', 'max', 'pro', 'workstation'].forEach(token => {
+        if (tokens.has(token)) variants.push(token);
+    });
+    if (tokens.has('max') && tokens.has('q')) {
+        variants.splice(variants.indexOf('max'), 1, 'max-q');
+    }
+    return variants.sort().join('|');
+}
 
-        // A shared family token is not enough to identify a device. Require
-        // a matching model identifier whenever the detected name contains one.
-        if (targetIdentifiers.length && identifierHits === 0) {
-            return { item, score: -1 };
-        }
+function analyzeGpuHardwareMatch(items, detectedModel) {
+    const normalizedTarget = normalizeHardwareText(detectedModel);
+    const targetIdentifiers = getGpuModelIdentifiers(normalizedTarget);
+    const targetBrand = getGpuBrandFamily(detectedModel);
+    const targetVariant = getGpuVariantSignature(normalizedTarget);
 
-        const tokenHits = modelTokens.filter(token => targetTokens.includes(token)).length;
-        const tokenCoverage = modelTokens.length ? tokenHits / modelTokens.length : 0;
-        const targetCoverage = targetTokens.length ? tokenHits / targetTokens.length : 0;
-        const exact = model === target ? 1 : 0;
+    const result = {
+        normalized: normalizedTarget,
+        model_identifiers: targetIdentifiers,
+        reason: 'insufficient_model_detail',
+        match: null,
+        catalogue_candidates: []
+    };
+    if (!Array.isArray(items) || !normalizedTarget) return result;
 
+    const catalogue = items.map(item => {
+        const normalizedModel = normalizeHardwareText(item.model);
         return {
             item,
-            score: exact ? 100 : (identifierHits * 50) + (tokenCoverage * 35) + (targetCoverage * 15)
+            normalized: normalizedModel,
+            identifiers: getGpuModelIdentifiers(normalizedModel),
+            brand: getGpuBrandFamily(item.model),
+            variant: getGpuVariantSignature(normalizedModel)
         };
-    }).sort((a, b) => b.score - a.score);
+    });
 
-    const best = scoredMatches[0];
-    return best && best.score >= 50 ? best.item : null;
+    // Text-only devices such as Iris Xe can be identified only by their exact
+    // normalized name. Do not use a family-token score for a fuzzy guess.
+    if (!targetIdentifiers.length) {
+        const exact = catalogue.filter(candidate => candidate.normalized === normalizedTarget);
+        if (exact.length === 1) {
+            result.reason = 'exact_normalized_model';
+            result.match = exact[0].item;
+        } else if (exact.length > 1) {
+            result.reason = 'duplicate_catalogue_identity';
+        }
+        return result;
+    }
+
+    let identified = catalogue.filter(candidate =>
+        candidate.identifiers.length === targetIdentifiers.length &&
+        targetIdentifiers.every(identifier => candidate.identifiers.includes(identifier))
+    );
+    if (targetBrand) {
+        identified = identified.filter(candidate => !candidate.brand || candidate.brand === targetBrand);
+    }
+    if (!identified.length) {
+        const overlaps = catalogue.filter(candidate =>
+            candidate.identifiers.some(identifier => targetIdentifiers.includes(identifier))
+        );
+        result.catalogue_candidates = overlaps.map(candidate => ({
+            model: candidate.item.model,
+            identifiers: candidate.identifiers,
+            variant: candidate.variant,
+            rejected: 'model_identifiers_conflict_or_are_incomplete'
+        }));
+        result.reason = overlaps.length ? 'model_identifiers_conflict_or_are_incomplete' : 'model_identifier_not_in_catalogue';
+        return result;
+    }
+
+    result.catalogue_candidates = identified.map(candidate => ({
+        model: candidate.item.model,
+        identifiers: candidate.identifiers,
+        variant: candidate.variant,
+        rejected: null
+    }));
+
+    if (targetVariant) {
+        identified = identified.filter(candidate => candidate.variant === targetVariant);
+        if (!identified.length) {
+            result.reason = 'variant_not_in_catalogue';
+            result.catalogue_candidates = catalogue
+                .filter(candidate => candidate.identifiers.length === targetIdentifiers.length &&
+                    targetIdentifiers.every(identifier => candidate.identifiers.includes(identifier)))
+                .map(candidate => ({
+                    model: candidate.item.model,
+                    identifiers: candidate.identifiers,
+                    variant: candidate.variant,
+                    rejected: 'variant_does_not_match'
+                }));
+            return result;
+        }
+    } else if (identified.some(candidate => candidate.variant)) {
+        // If the renderer omits a mobile/desktop or performance variant, do
+        // not silently choose one of the catalogue variants.
+        result.reason = 'variant_not_exposed_by_browser';
+        return result;
+    }
+
+    const normalizedModels = [...new Set(identified.map(candidate => candidate.normalized))];
+    if (normalizedModels.length !== 1 || identified.length !== 1) {
+        result.reason = 'ambiguous_catalogue_identity';
+        return result;
+    }
+
+    result.reason = 'unique_model_identifier_and_variant';
+    result.match = identified[0].item;
+    return result;
+}
+
+function findBestHardwareMatch(items, detectedModel, diagnostic = null) {
+    const analysis = analyzeGpuHardwareMatch(items, detectedModel);
+    if (diagnostic && typeof diagnostic === 'object') Object.assign(diagnostic, analysis);
+    return analysis.match;
 }
 
 function findClosestRamOption(ramGb) {
@@ -2369,22 +2470,9 @@ function formatCpuCoreLabel(cpu) {
 // ============================================================================
 // BROWSER-SIDE HARDWARE DETECTION
 // ============================================================================
-// The Detect Hardware button used to call MODULES/api/get-hardware.php, which
-// shelled out to a Python helper ON THE WEB SERVER. That is only correct when
-// the server is the user's own machine (local XAMPP). Once deployed it reports
-// the server's CPU/GPU/RAM rather than the visitor's, and it fails outright on
-// Linux because the helper depends on WMIC and kernel32.
-//
-// Detection now runs in the browser, so it describes the machine the
-// prediction is actually about. The trade-off is precision: browsers
-// deliberately coarsen what they expose, so every value produced here is an
-// ESTIMATE and is reported as one. Nothing is invented, and a missing signal
-// never blocks the page - the searchable dropdowns remain the accurate route.
-//
-// MODULES/api/get-hardware.php is intentionally left in place and untouched.
-//
-// Reused as-is: findBestHardwareMatch(), findClosestRamOption(),
-// searchDropdownApis.{cpu,gpu,ram} and the existing prediction workflow.
+// Detection runs on the visitor's device. Browser APIs can expose limited GPU
+// renderer/adapter information and an approximate RAM bucket, but do not expose
+// an exact CPU model or a reliable list of every physical GPU.
 
 // Renderer strings are vendor specific, and on Windows they arrive wrapped in
 // ANGLE boilerplate, for example:
@@ -2416,17 +2504,6 @@ function extractGpuRendererCandidates(rendererString) {
     push(raw);
 
     return candidates;
-}
-
-function findGpuMatchFromRenderer(rendererString) {
-    const candidates = extractGpuRendererCandidates(rendererString);
-
-    for (const candidate of candidates) {
-        const match = findBestHardwareMatch(gpus, candidate);
-        if (match) return match;
-    }
-
-    return null;
 }
 
 // Reads the GPU name straight from the graphics driver. Returns null when the
@@ -2476,32 +2553,131 @@ function detectGpuRendererString() {
     }
 }
 
-// Browsers never expose the CPU model, only how many logical cores the machine
-// has. cpu_benchmarks carries a `cores` column, so the closest defensible
-// answer is the best-scoring CPU with that exact core count. No partial
-// credit: if nothing matches, the user is asked to pick.
-function findCpuByCoreCount(coreCount) {
-    if (!Array.isArray(cpus) || !cpus.length) return null;
-    if (!Number.isFinite(coreCount) || coreCount <= 0) return null;
-
-    const exact = cpus.filter(cpu => Number(cpu.cores) === coreCount);
-    return exact.length ? exact[0] : null;
-}
-
-// navigator.hardwareConcurrency: logical cores, or null if unavailable.
-function detectLogicalCoreCount() {
+async function detectBrowserGpuInfo() {
+    let webgpuAvailable = false;
     try {
-        const cores = Number(navigator.hardwareConcurrency);
-        if (!Number.isFinite(cores) || cores <= 0) return null;
-        return cores;
+        webgpuAvailable = Boolean(navigator.gpu && typeof navigator.gpu.requestAdapter === 'function');
     } catch (error) {
-        return null;
+        // Treat a blocked or throwing WebGPU getter as unavailable.
     }
+
+    const diagnostics = {
+        webgl_renderer: null,
+        webgpu_available: webgpuAvailable,
+        webgpu_power_preference: 'high-performance',
+        webgpu_adapter_info: null,
+        match_attempts: [],
+        match_status: 'browser_did_not_expose_identifying_gpu_model',
+        selected_catalogue_gpu: null
+    };
+    const signals = [];
+
+    // A high-performance preference asks the browser for its preferred
+    // gaming adapter. It is a preference only: browsers may ignore it, hide
+    // adapter details, or return the same adapter used by WebGL.
+    try {
+        if (navigator.gpu && typeof navigator.gpu.requestAdapter === 'function') {
+            const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
+            if (adapter) {
+                let info = adapter.info || null;
+                if (!info && typeof adapter.requestAdapterInfo === 'function') {
+                    info = await adapter.requestAdapterInfo();
+                }
+                if (info) {
+                    diagnostics.webgpu_adapter_info = {
+                        vendor: String(info.vendor || '').trim() || null,
+                        architecture: String(info.architecture || '').trim() || null,
+                        device: String(info.device || '').trim() || null,
+                        description: String(info.description || '').trim() || null
+                    };
+                    const identifyingText = [
+                        diagnostics.webgpu_adapter_info.vendor,
+                        diagnostics.webgpu_adapter_info.description
+                    ].filter(Boolean).join(' ');
+                    if (identifyingText) {
+                        signals.push({
+                            source: 'WebGPU high-performance preference',
+                            value: identifyingText
+                        });
+                    }
+                    // Some implementations provide a model only in device.
+                    if (diagnostics.webgpu_adapter_info.device) {
+                        signals.push({
+                            source: 'WebGPU adapter device field',
+                            value: [
+                                diagnostics.webgpu_adapter_info.vendor,
+                                diagnostics.webgpu_adapter_info.device
+                            ].filter(Boolean).join(' ')
+                        });
+                    }
+                }
+            }
+        }
+    } catch (error) {
+        diagnostics.webgpu_error = String(error && error.message || error);
+        // WebGPU is optional and can be disabled by browser or privacy policy.
+    }
+
+    const renderer = detectGpuRendererString();
+    diagnostics.webgl_renderer = renderer;
+    if (renderer) signals.push({ source: 'WebGL renderer', value: renderer });
+
+    // Evaluate every browser signal. A WebGPU high-performance preference is
+    // useful, but it is not proof of which adapter a game will use. If signals
+    // resolve to different catalogue rows, keep the user's current choice.
+    const matchedRows = new Map();
+    for (const signal of signals) {
+        const candidates = extractGpuRendererCandidates(signal.value);
+        candidates.push(signal.value);
+        for (const candidate of candidates) {
+            const matchDetails = {};
+            const match = findBestHardwareMatch(gpus, candidate, matchDetails);
+            diagnostics.match_attempts.push({
+                source: signal.source,
+                raw_signal: signal.value,
+                candidate,
+                normalized: matchDetails.normalized,
+                model_identifiers: matchDetails.model_identifiers,
+                reason: matchDetails.reason,
+                catalogue_candidates: matchDetails.catalogue_candidates,
+                catalogue_model: match ? match.model : null
+            });
+            if (match) {
+                if (!matchedRows.has(match.model)) matchedRows.set(match.model, { signal, candidate, match });
+            }
+        }
+    }
+
+    if (matchedRows.size === 1) {
+        const selected = [...matchedRows.values()][0];
+        diagnostics.match_status = 'matched';
+        diagnostics.selected_catalogue_gpu = selected.match.model;
+        return { ...selected, diagnostics };
+    }
+    if (matchedRows.size > 1) {
+        diagnostics.match_status = 'conflicting_browser_gpu_signals';
+        diagnostics.conflicting_catalogue_gpus = [...matchedRows.keys()];
+        return { signal: null, candidate: null, match: null, diagnostics };
+    }
+
+    const reasons = diagnostics.match_attempts.map(attempt => attempt.reason);
+    if (reasons.includes('variant_not_exposed_by_browser') ||
+        reasons.includes('ambiguous_catalogue_identity') ||
+        reasons.includes('duplicate_catalogue_identity') ||
+        reasons.includes('model_identifiers_conflict_or_are_incomplete')) {
+        diagnostics.match_status = 'catalogue_match_ambiguous';
+    } else if (reasons.includes('model_identifier_not_in_catalogue')) {
+        diagnostics.match_status = 'model_not_found_in_catalogue';
+    } else if (signals.length) {
+        diagnostics.match_status = 'browser_signal_not_specific_enough';
+    }
+
+    return { signal: null, candidate: null, match: null, diagnostics };
 }
 
-// navigator.deviceMemory is Chromium only, bucketed, and capped at 8 GB, so a
-// 32 GB machine legitimately reports 8. Returns null when unsupported.
-function detectDeviceMemoryGb() {
+// navigator.deviceMemory is bucketed and capped by browsers. Treat it only as
+// an estimate, never as the computer's exact installed RAM.
+function detectApproximateRamGb() {
     try {
         const gb = Number(navigator.deviceMemory);
         if (!Number.isFinite(gb) || gb <= 0) return null;
@@ -2547,6 +2723,12 @@ function applyRamSelection(capacityGb) {
     if (select) select.value = capacityGb === null ? '' : String(capacityGb);
 }
 
+function getSelectedHardwareLabel(searchInputId) {
+    const input = document.getElementById(searchInputId);
+    const value = input ? String(input.value || '').trim() : '';
+    return value || null;
+}
+
 async function detectHardware() {
     if (isDetectingHardware) return;
 
@@ -2555,39 +2737,57 @@ async function detectHardware() {
 
     try {
         await loadFPSPredictionDropdowns();
+        const gpuInfo = await detectBrowserGpuInfo();
+        const ramEstimateGb = detectApproximateRamGb();
+        const ramClosest = ramEstimateGb === null
+            ? null
+            : findClosestRamOption(ramEstimateGb);
 
-        // GPU: read from the graphics driver, then matched against the
-        // benchmark table by the same finder the original flow used.
-        const rendererString = detectGpuRendererString();
-        const gpuMatch = rendererString ? findGpuMatchFromRenderer(rendererString) : null;
+        // No standard browser API exposes an exact CPU model. Clear any stale
+        // CPU value instead of leaving a previous core-count guess in the form.
+        applyCpuSelection(null);
+        if (gpuInfo.match) applyGpuSelection(gpuInfo.match);
+        if (ramClosest !== null) applyRamSelection(ramClosest);
 
-        // CPU: browsers only expose a core count, so this records what was
-        // actually read and names the table entry it matched, rather than
-        // presenting a guessed model as though it had been detected.
-        const coreCount = detectLogicalCoreCount();
-        const cpuMatch = findCpuByCoreCount(coreCount);
+        const diagnostic = {
+            detection_method: 'browser',
+            cpu_information: {
+                exact_model_available: false,
+                reason: 'Standard browser APIs do not expose the processor model.',
+                logical_processor_count_used: false
+            },
+            selected_catalogue_cpu: getSelectedHardwareLabel('cpuSearch'),
+            raw_webgl_renderer: gpuInfo.diagnostics.webgl_renderer,
+            raw_webgpu_adapter_info: gpuInfo.diagnostics.webgpu_adapter_info,
+            normalized_gpu_candidates: gpuInfo.diagnostics.match_attempts.map(attempt => ({
+                source: attempt.source,
+                raw: attempt.candidate,
+                normalized: attempt.normalized,
+                model_identifiers: attempt.model_identifiers,
+                considered_catalogue_rows: attempt.catalogue_candidates,
+                reason: attempt.reason,
+                selected_catalogue_row: attempt.catalogue_model
+            })),
+            gpu_match_status: gpuInfo.diagnostics.match_status,
+            selected_catalogue_gpu: getSelectedHardwareLabel('gpuSearch'),
+            ram_estimate_gb: ramEstimateGb,
+            selected_ram_tier: getSelectedHardwareLabel('ramSearch')
+        };
+        console.info('Hardware detection diagnostics', diagnostic);
 
-        // RAM: navigator.deviceMemory is approximate, Chromium-only, and
-        // capped at 8 GB. findClosestRamOption() snaps it to a known tier.
-        const deviceMemoryGb = detectDeviceMemoryGb();
-        const ramClosest = deviceMemoryGb === null ? null : findClosestRamOption(deviceMemoryGb);
-
-        applyCpuSelection(cpuMatch);
-        applyGpuSelection(gpuMatch);
-        applyRamSelection(ramClosest);
-
-        // Original modal content: one "Label: value" line per detected part.
-        const detectedParts = [];
-        if (cpuMatch) {
-            detectedParts.push(`CPU: ${coreCount} logical cores (closest match: ${cpuMatch.model})`);
-        }
-        if (gpuMatch) detectedParts.push(`GPU: ${gpuMatch.model}`);
-        if (ramClosest !== null) detectedParts.push(`RAM: ${ramClosest} GB`);
-
-        showModal(
-            'Hardware Detected',
-            detectedParts.length ? detectedParts.join('\n') : 'Hardware detected successfully.'
-        );
+        const gpuResultMessage = gpuInfo.match
+            ? `GPU benchmark: ${gpuInfo.match.model}`
+            : `GPU not auto-selected: ${gpuInfo.diagnostics.match_status.replace(/_/g, ' ')}; choose it manually if needed.`;
+        showModal('Browser Hardware Check', [
+            'Detection ran in your browser on this device.',
+            'CPU: Unable to detect exact CPU model. Please select manually.',
+            `WebGL renderer: ${gpuInfo.diagnostics.webgl_renderer || 'not available or hidden by the browser'}`,
+            `WebGPU adapter: ${gpuInfo.diagnostics.webgpu_adapter_info ? JSON.stringify(gpuInfo.diagnostics.webgpu_adapter_info) : 'not available or hidden by the browser'}`,
+            gpuResultMessage,
+            `RAM estimate: ${ramEstimateGb === null ? 'not available' : `about ${ramEstimateGb} GB (browser estimate)`}`,
+            `RAM benchmark tier: ${ramClosest === null ? 'no match; select manually' : `${ramClosest} GB (based on estimate)`}`,
+            'GPU information may identify only the browser-selected adapter, not every GPU in the device.'
+        ].join('\n'));
     } catch (error) {
         console.error('Hardware detection failed:', error);
         showModal('Error', error.message || 'Unable to detect hardware automatically.');

@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/admin-auth.php';
+// resolveGameBenchmarksNow() lives in the resolver module and is reused here so
+// the automatic path and the CLI batch path cannot drift apart. The resolver
+// only drains its queue when PHP_SAPI === 'cli', so requiring it from this web
+// request defines the functions without triggering any batch work.
+require_once __DIR__ . '/../resolve-game-benchmarks.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -349,6 +354,7 @@ try {
                  release_year = :release_year,
                  genres = :genres,
                  platforms = :platforms,
+                 is_active = 0,
                  updated_at = NOW()
              WHERE game_id = :game_id'
         );
@@ -365,9 +371,6 @@ try {
         ]);
 
         $currentGameId = $gameId;
-
-        $successMessage =
-            'Game updated successfully. Benchmark resolution queued.';
     }
 
     /*
@@ -468,6 +471,15 @@ try {
          *
          * rawg_id and steam_app_id remain NULL because
          * this is a manually added game.
+         *
+         * is_active is written as 0, NOT 1. The visibility gate requires a
+         * non-NULL CPU, GPU and RAM benchmark score on the minimum
+         * requirement, and those scores do not exist yet at INSERT time.
+         * Inserting as active published the game to get-games.php before it
+         * had any benchmark data, so users could select it and then be
+         * rejected by hardware-specs-input.php. The game is inserted
+         * invisible, resolved immediately below, and only then promoted to
+         * active by recomputeGameEligibility() if all three resolved.
          */
         $insertGame = $database->prepare(
             'INSERT INTO games
@@ -494,7 +506,7 @@ try {
                     :release_year,
                     :genres,
                     :platforms,
-                    1,
+                    0,
                     NOW(),
                     NOW()
                 )'
@@ -512,9 +524,6 @@ try {
         ]);
 
         $currentGameId = (int) $database->lastInsertId();
-
-        $successMessage =
-            'Game added successfully. Benchmark resolution queued.';
     }
 
     /*
@@ -570,8 +579,16 @@ try {
 
     /*
      * ============================================================
-     * QUEUE BENCHMARK RESOLUTION
+     * QUEUE + RUN BENCHMARK RESOLUTION
      * ============================================================
+     *
+     * The sync_jobs row is still created, so the queue, its statuses and
+     * job-maintenance.php all keep working exactly as before and the save
+     * stays auditable. The difference is that the job is no longer left
+     * sitting in "queued" waiting for someone to open a terminal: it is
+     * claimed and resolved right here, for this one game only.
+     *
+     * Only $currentGameId is resolved, never the whole queue.
      */
 
     $syncJob = $database->prepare(
@@ -595,16 +612,101 @@ try {
         'game_id' => $currentGameId
     ]);
 
+    $benchmarkJobId = (int) $database->lastInsertId();
+
+    // Claim the job with the same conditional UPDATE the CLI batch uses. The
+    // rowCount check keeps this safe if two requests race: only the one that
+    // actually flips queued -> running proceeds to resolve.
+    $claimBenchmarkJob = $database->prepare(
+        'UPDATE sync_jobs
+         SET status = "running", attempts = attempts + 1
+         WHERE job_id = :job_id AND status = "queued"'
+    );
+    $claimBenchmarkJob->execute(['job_id' => $benchmarkJobId]);
+
+    $resolution = null;
+    $resolutionError = null;
+
+    if ($claimBenchmarkJob->rowCount() === 1) {
+        try {
+            $resolution = resolveGameBenchmarksNow($database, $currentGameId);
+
+            // A completed job means "resolution ran", not "everything matched".
+            // An unresolved component is a legitimate outcome, so it is
+            // recorded in last_error for diagnosis while the game simply stays
+            // inactive instead of being falsely promoted.
+            $unresolved = $resolution['unresolved'];
+            $completeBenchmarkJob = $database->prepare(
+                'UPDATE sync_jobs
+                 SET status = "complete", last_error = :last_error
+                 WHERE job_id = :job_id'
+            );
+            $completeBenchmarkJob->execute([
+                'last_error' => $unresolved === []
+                    ? null
+                    : 'Unresolved minimum requirement(s): ' . implode(', ', $unresolved) . '. The game stays inactive until these resolve.',
+                'job_id' => $benchmarkJobId,
+            ]);
+        } catch (Throwable $benchmarkError) {
+            $resolutionError = $benchmarkError->getMessage();
+
+            error_log('update-games.php benchmark resolution failed: ' . $resolutionError);
+
+            $database->prepare(
+                'UPDATE sync_jobs
+                 SET status = "failed", last_error = :last_error
+                 WHERE job_id = :job_id'
+            )->execute([
+                'last_error' => 'Benchmark resolution error: ' . $resolutionError,
+                'job_id' => $benchmarkJobId,
+            ]);
+        }
+    }
+
     /*
      * ============================================================
      * SUCCESS
      * ============================================================
+     *
+     * The response reports whether the game is genuinely prediction-ready so
+     * the admin panel can tell the truth instead of always claiming success.
      */
+
+    $wasEdit = $gameId > 0;
+    $verb = $wasEdit ? 'updated' : 'added';
+    $predictionReady = $resolution !== null && $resolution['ready'];
+
+    if ($resolutionError !== null) {
+        $message = 'Game ' . $verb . ', but benchmark resolution failed to run. '
+            . 'The game is saved but not available for prediction.';
+    } elseif ($predictionReady) {
+        $message = 'Game ' . $verb . ' successfully and is ready for FPS prediction.';
+    } elseif ($resolution === null) {
+        // The claim UPDATE did not flip queued -> running, which only happens
+        // when another request already holds the job. Nothing failed; the
+        // outcome is simply not known yet, so say that instead of guessing.
+        $message = 'Game ' . $verb . ' saved. Benchmark resolution is already '
+            . 'running for it; the game becomes available for prediction once that finishes.';
+    } else {
+        $missing = $resolution['unresolved'] === []
+            ? 'benchmark data'
+            : implode(' and ', $resolution['unresolved']);
+        $message = 'Game ' . $verb . ', but benchmark resolution is incomplete '
+            . '(' . $missing . ' could not be matched). The game is not yet available for prediction.';
+    }
 
     echo json_encode([
         'success' => true,
         'game_id' => $currentGameId,
-        'message' => $successMessage
+        'message' => $message,
+        'prediction_ready' => $predictionReady,
+        'benchmark_resolution' => [
+            'status' => $resolutionError !== null ? 'failed' : 'complete',
+            'is_active' => $resolution !== null ? $resolution['is_active'] : false,
+            'unresolved' => $resolution !== null ? $resolution['unresolved'] : ['CPU', 'GPU', 'RAM'],
+            'detail' => $resolution !== null ? $resolution['detail'] : null,
+            'error' => $resolutionError,
+        ],
     ]);
 
 } catch (Throwable $error) {

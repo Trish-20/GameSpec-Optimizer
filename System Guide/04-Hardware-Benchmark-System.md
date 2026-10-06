@@ -230,10 +230,20 @@ game_requirements.cpu_text                cpu_benchmarks
    `core, ryzen, threadripper, athlon, phenom, fx, xeon, pentium, celeron`.
    **If not, the part is skipped entirely** — this is why `"1.7 Ghz"` and `"Example CPU"` never match.
 4. **Exact query** (line 36): `WHERE normalized_model = :normalized LIMIT 1` → `match_status = 'exact'`.
-5. **Fuzzy scan** (lines 43–61): for every row compute
-   `candidateCoverage = |candidateTokens ∩ requiredTokens| / |candidateTokens|`
-   and keep candidates with **`candidateCoverage >= 0.99`** — the DB model name must be *almost fully contained* in your text.
-6. **Rank** (lines 63–69): more token hits first; tie-break by **lower score** (conservative choice).
+5. **Fuzzy scan**: for every row compute both coverage directions and keep the
+   candidate when **either** reaches 0.99 — the accepted set is the **union** of
+   the two rules:
+   - `requiredCoverage = |hits| / |requiredTokens|` — the row covers everything
+     the requirement asked for, so the row may carry extra tokens the text never
+     mentions (`core i7 3770k` inside the row `core i7 3770k 3 50ghz` → 3/3);
+   - `candidateCoverage = |hits| / |candidateTokens|` — the row's own name sits
+     almost entirely inside the requirement text (`gtx 1630` inside a longer
+     requirement → 2/2).
+
+   Because the union never removes a match that either rule alone accepted, a
+   score that resolved before cannot go back to `NULL` because of a scan change
+   — a re-run can only add matches.
+6. **Rank**: more token hits first; tie-break by **lower score** (conservative choice).
 7. Nothing → `match_status = 'unresolved'`, `benchmark_score = NULL`.
 
 ### 7.2 GPU requirement → GPU benchmark
@@ -260,7 +270,14 @@ SELECT … FROM ram_benchmarks WHERE capacity_gb = :capacity
    ORDER BY ABS(CAST(speed_mhz AS SIGNED) - :speed) LIMIT 1
    → 'nearest'     if $speedMhz is non-zero
    → 'estimated'   if $speedMhz is 0
-   → 'unresolved'  if no row at all
+   → (no row with that capacity → step 3)
+
+// 3. nearest capacity — the CSV only measures 2/4/8/16/32/64 GB, while
+//    requirements also ask for 1/3/5/6/12 GB
+SELECT … FROM ram_benchmarks
+ORDER BY ABS(CAST(capacity_gb AS SIGNED) - :capacity), score ASC LIMIT 1
+   → 'estimated'   with matched_capacity_gb = the capacity actually used
+   → 'unresolved'  only if the table is empty
 ```
 
 **RAM does not need a marker word** — it is matched numerically, not textually.
@@ -272,8 +289,8 @@ SELECT … FROM ram_benchmarks WHERE capacity_gb = :capacity
 | Case | Result |
 |---|---|
 | Requirement text has no marker word | Part skipped; `unresolved`; `benchmark_score = NULL` |
-| Model string too short for the 0.99 containment rule | No candidate; `unresolved` |
-| RAM capacity not in `ram_benchmarks` (e.g. 12 GB, 24 GB) | `unresolved` |
+| Neither coverage direction reaches 0.99 (text names no catalogue model) | No candidate; `unresolved` |
+| RAM capacity not in `ram_benchmarks` (e.g. 12 GB, 24 GB) | step 3 nearest capacity → `estimated` — **still succeeds** |
 | RAM capacity present but exact speed missing | `nearest` — **still succeeds** |
 | `ram_capacity_gb` is NULL or 0 | immediate `unresolved` (line 88) |
 | Reference table empty (import never run) | everything `unresolved` |
@@ -281,7 +298,7 @@ SELECT … FROM ram_benchmarks WHERE capacity_gb = :capacity
 **Consequences of a NULL score:**
 
 1. `resolve-game-benchmarks.php:128-142` sets `games.is_active = 0` unless **all three** resolve.
-2. `get-games.php:18` filters `g.is_active = 1` → the game disappears from **both** user and admin lists.
+2. `get-games.php` filters `g.is_active = 1` → the game disappears from every **user** list. The **admin** list stays complete because `loadAdminGames()` sends `include_inactive=1` (honoured only for authenticated admins), so the game is still listed, flagged `HIDDEN FROM USERS (benchmark unresolved)`, and editable — fix the text and re-save it.
 3. If it still reaches prediction, `parseInt(null)` → `NaN` and `hardware-specs-input.php` returns *"Missing or invalid field: game_cpu_min"*.
 
 For a **user's own hardware** that fails to match, the dropdown never receives a score, so `predictFPS()` stops at its guards:

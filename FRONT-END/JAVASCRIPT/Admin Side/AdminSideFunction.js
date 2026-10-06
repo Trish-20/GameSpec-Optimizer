@@ -161,7 +161,10 @@
             gpu_benchmark: benchmarks.gpu?.score ?? null,
             ram_benchmark: benchmarks.ram?.score ?? null,
             genres: Array.isArray(game.genres) ? game.genres : [],
-            release_year: game.release_year ?? null
+            release_year: game.release_year ?? null,
+            // Games that failed benchmark resolution come back with
+            // is_active = 0 so the list can label them as hidden from users.
+            is_active: Number(game.is_active ?? 1)
         };
     }
 
@@ -389,7 +392,12 @@
     // --- LOAD GAMES FOR ADMIN ---
     async function loadAdminGames() {
         try {
-            const response = await adminFetch('../../../MODULES/api/get-games.php');
+            // include_inactive=1 keeps a game whose benchmark resolution failed
+            // (is_active = 0) visible in Game Management, so the admin can
+            // correct the CPU/GPU spelling and re-save it. get-games.php only
+            // honours the flag for an authenticated admin session; users still
+            // receive active games only.
+            const response = await adminFetch('../../../MODULES/api/get-games.php?include_inactive=1');
             adminGames = (await response.json()).map(normalizeAdminGame);
             populateDatalist('gameTitleOptions', adminGames.map(game => game.title));
             const [cpuResponse, gpuResponse] = await Promise.all([
@@ -464,7 +472,14 @@
             ];
             if (genreText) metaParts.push(`Genre: ${genreText}`);
             if (game.release_year) metaParts.push(`Year: ${game.release_year}`);
-            const searchIndex = `${game.title} ${game.cpu_model} ${game.gpu_model} ${game.ram_model} ${genreText} ${game.release_year || ''}`.toLowerCase();
+            const hiddenFromUsers = Number(game.is_active) !== 1;
+            if (hiddenFromUsers) {
+                // The game row exists and stays editable here, but the gate
+                // keeps it out of every user-facing list until its minimum
+                // CPU/GPU/RAM benchmarks all resolve.
+                metaParts.unshift('HIDDEN FROM USERS (benchmark unresolved)');
+            }
+            const searchIndex = `${game.title} ${game.cpu_model} ${game.gpu_model} ${game.ram_model} ${genreText} ${game.release_year || ''} ${hiddenFromUsers ? 'hidden from users benchmark unresolved' : ''}`.toLowerCase();
 
             listEl.innerHTML += `
                 <div class="data-item" data-search="${searchIndex}">
@@ -1087,10 +1102,41 @@
                     // Reload the games from MySQL without refreshing the page.
                     await loadAdminGames();
 
-                    showModal(
-                        'Success',
-                        result.message || 'Game saved successfully.'
-                    );
+                    // update-games.php resolves benchmarks synchronously, so
+                    // prediction_ready is the real outcome rather than an
+                    // assumption. Report the truth: a game that could not be
+                    // fully matched stays invisible to users, and saying
+                    // "Success" without saying so would be misleading.
+                    const resolution = result.benchmark_resolution || {};
+                    const unresolved = resolution.unresolved || [];
+
+                    if (result.prediction_ready) {
+                        showModal(
+                            'Success',
+                            result.message || 'Game saved successfully.'
+                        );
+                    } else {
+                        let detail =
+                            result.message ||
+                            'Game saved, but benchmark resolution is incomplete.';
+
+                        if (unresolved.length) {
+                            detail +=
+                                '\n\nCould not match: ' +
+                                unresolved.join(', ') +
+                                '. Check the CPU/GPU spelling against the benchmark tables.';
+                        }
+
+                        if (resolution.error) {
+                            detail += '\n\nDetails: ' + resolution.error;
+                        }
+
+                        detail +=
+                            '\n\nThis game is saved but will not appear for users until its benchmark data resolves. '
+                            + 'It stays in your game list marked "HIDDEN FROM USERS" so you can correct it and save again.';
+
+                        showModal('Warning', detail);
+                    }
 
                 } catch (error) {
                     console.error('Error saving game:', error);

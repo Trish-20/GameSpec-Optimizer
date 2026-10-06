@@ -6,7 +6,13 @@ function normalizeBenchmarkName(string $value): string
 {
     $value = strtolower($value);
     $value = str_replace(['(r)', '(tm)', '™', '®'], '', $value);
-    $value = preg_replace('/\b(nvidia|amd|intel|geforce|radeon)\b/', '', $value);
+    // "cpu" is grouped with the vendor words on purpose. Requirement text often
+    // says "Intel CPU Core i5-2500K", while the catalogue stores the part as
+    // "core i5 2500k". Leaving the stray "cpu" token in the requirement meant it
+    // could never be satisfied by any catalogue row, so the part stayed
+    // unresolved. No row in cpu_benchmarks or gpu_benchmarks contains this token
+    // (verified: 0 matches), so removing it cannot merge two distinct parts.
+    $value = preg_replace('/\b(nvidia|amd|intel|geforce|radeon|cpu)\b/', '', $value);
     $value = preg_replace('/[^a-z0-9]+/', ' ', $value);
     return trim(preg_replace('/\s+/', ' ', $value));
 }
