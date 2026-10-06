@@ -37,28 +37,39 @@ if (!$account) {
 <?php include 'header.php'; ?>
 
 <main class="content">
-    <div class="page-container">
-        <h2>Account Settings</h2>
-        <section class="admin-card" style="max-width: 680px;">
-            <h3>Recovery email</h3>
-            <p>Your email is used only for password recovery. It is not required for username and password sign-in.</p>
+    <div class="page-container admin-settings-layout">
+        <header class="admin-page-heading">
+            <h2>Account Settings</h2>
+            <p>Manage your administrator account and password recovery information.</p>
+        </header>
+        <section class="admin-card admin-settings-card">
+            <div class="admin-settings-card-heading">
+                <h3>Account Information</h3>
+                <p>Your username is used for sign-in. Add a recovery email to use Forgot Password.</p>
+            </div>
             <?php if ($account): ?>
-                <p><strong>Username:</strong> <?= htmlspecialchars((string) $account['username'], ENT_QUOTES, 'UTF-8') ?></p>
-                <form id="adminEmailForm">
-                    <label for="adminEmail">Email address <span>(optional; required to use Forgot Password)</span></label>
-                    <input
-                        id="adminEmail"
-                        name="email"
-                        type="email"
-                        maxlength="254"
-                        autocomplete="email"
-                        value="<?= htmlspecialchars((string) ($account['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-                    >
-                    <button type="submit" class="btn-primary">Save Email</button>
-                    <p id="adminEmailStatus" role="status" aria-live="polite"></p>
-                </form>
+                <div class="admin-account-form-grid">
+                    <div class="admin-form-field">
+                        <label for="adminUsername">Username</label>
+                        <input id="adminUsername" type="text" value="<?= htmlspecialchars((string) $account['username'], ENT_QUOTES, 'UTF-8') ?>" readonly aria-readonly="true">
+                    </div>
+                    <form id="adminEmailForm" class="admin-form-field admin-email-form">
+                        <label for="adminEmail">Recovery Email</label>
+                        <input
+                            id="adminEmail"
+                            name="email"
+                            type="email"
+                            maxlength="254"
+                            autocomplete="email"
+                            value="<?= htmlspecialchars((string) ($account['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                        >
+                        <small>Your recovery email is used for password recovery.</small>
+                        <button type="submit" class="btn-primary">Save Changes</button>
+                        <p id="adminEmailStatus" class="admin-form-status" role="status" aria-live="polite"></p>
+                    </form>
+                </div>
             <?php else: ?>
-                <p role="alert">Account settings are temporarily unavailable.</p>
+                <p class="admin-form-status is-error" role="alert">Account settings are temporarily unavailable.</p>
             <?php endif; ?>
         </section>
     </div>
@@ -71,11 +82,17 @@ if (!$account) {
     const adminEmailForm = document.getElementById('adminEmailForm');
     const adminEmailStatus = document.getElementById('adminEmailStatus');
 
+    const setAdminEmailStatus = (message, state = '') => {
+        if (!adminEmailStatus) return;
+        adminEmailStatus.textContent = message;
+        adminEmailStatus.className = `admin-form-status${state ? ` is-${state}` : ''}`;
+    };
+
     adminEmailForm?.addEventListener('submit', async (event) => {
         event.preventDefault();
         const button = adminEmailForm.querySelector('[type="submit"]');
         button.disabled = true;
-        adminEmailStatus.textContent = '';
+        setAdminEmailStatus('');
 
         try {
             const response = await adminFetch('../../../MODULES/api/update-admin-email.php', {
@@ -87,9 +104,9 @@ if (!$account) {
             if (!response.ok || !result || result.success !== true) {
                 throw new Error(result?.message || 'Unable to update the account email.');
             }
-            adminEmailStatus.textContent = result.message;
+            setAdminEmailStatus(result.message, 'success');
         } catch (error) {
-            adminEmailStatus.textContent = error.message || 'Unable to update the account email.';
+            setAdminEmailStatus(error.message || 'Unable to update the account email.', 'error');
         } finally {
             button.disabled = false;
         }

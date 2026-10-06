@@ -37,33 +37,51 @@ try {
 <?php include 'header.php'; ?>
 
 <main class="content">
-    <div class="page-container">
-        <h2>Admin Account Management</h2>
-        <section class="admin-card" style="max-width: 760px;">
-            <h3>Create Admin Account</h3>
-            <p>The new administrator can sign in with their username and password and manage their recovery email in Account Settings.</p>
-            <form id="createAdminForm" novalidate>
-                <label for="newAdminUsername">Username</label>
-                <input id="newAdminUsername" name="username" type="text" minlength="3" maxlength="50"
-                    pattern="[A-Za-z0-9][A-Za-z0-9._-]{2,49}" autocomplete="off" required>
-                <small>Use 3–50 letters, numbers, dots, underscores, or hyphens; start with a letter or number.</small>
+    <div class="page-container admin-settings-layout">
+        <header class="admin-page-heading">
+            <h2>Admin Accounts</h2>
+            <p>Create administrator accounts for authorized system users.</p>
+        </header>
+        <section class="admin-card admin-settings-card admin-create-card">
+            <div class="admin-settings-card-heading">
+                <h3>Create Admin Account</h3>
+                <p>New administrators can sign in with their username and password.</p>
+            </div>
+            <form id="createAdminForm" class="admin-create-form" novalidate>
+                <div class="admin-account-form-grid">
+                    <div class="admin-form-field">
+                        <label for="newAdminUsername">Username</label>
+                        <input id="newAdminUsername" name="username" type="text" minlength="3" maxlength="50"
+                            pattern="[A-Za-z0-9][A-Za-z0-9._-]{2,49}" autocomplete="off" required>
+                        <small>Use 3 to 50 letters, numbers, dots, underscores, or hyphens; start with a letter or number.</small>
+                    </div>
 
-                <label for="newAdminEmail">Email</label>
-                <input id="newAdminEmail" name="email" type="email" maxlength="254" autocomplete="email" required>
+                    <div class="admin-form-field">
+                        <label for="newAdminEmail">Email</label>
+                        <input id="newAdminEmail" name="email" type="email" maxlength="254" autocomplete="email" required>
+                    </div>
 
-                <label for="newAdminDisplayName">Display Name</label>
-                <input id="newAdminDisplayName" name="display_name" type="text" maxlength="100" autocomplete="name">
+                    <div class="admin-form-field">
+                        <label for="newAdminDisplayName">Display Name</label>
+                        <input id="newAdminDisplayName" name="display_name" type="text" maxlength="100" autocomplete="name">
+                    </div>
 
-                <label for="newAdminPassword">Password</label>
-                <input id="newAdminPassword" name="password" type="password" minlength="12" maxlength="1024"
-                    autocomplete="new-password" required>
+                    <div class="admin-form-field">
+                        <label for="newAdminPassword">Password</label>
+                        <input id="newAdminPassword" name="password" type="password" minlength="12" maxlength="1024"
+                            autocomplete="new-password" required>
+                    </div>
 
-                <label for="newAdminPasswordConfirmation">Confirm Password</label>
-                <input id="newAdminPasswordConfirmation" name="password_confirmation" type="password" minlength="12"
-                    maxlength="1024" autocomplete="new-password" required>
-
-                <button class="btn-primary" type="submit">Create Account</button>
-                <p id="createAdminStatus" role="status" aria-live="polite"></p>
+                    <div class="admin-form-field">
+                        <label for="newAdminPasswordConfirmation">Confirm Password</label>
+                        <input id="newAdminPasswordConfirmation" name="password_confirmation" type="password" minlength="12"
+                            maxlength="1024" autocomplete="new-password" required>
+                    </div>
+                </div>
+                <div class="admin-create-actions">
+                    <button class="btn-primary" type="submit">Create Account</button>
+                    <p id="createAdminStatus" class="admin-form-status" role="status" aria-live="polite"></p>
+                </div>
             </form>
         </section>
     </div>
@@ -76,14 +94,19 @@ try {
     const createAdminForm = document.getElementById('createAdminForm');
     const createAdminStatus = document.getElementById('createAdminStatus');
 
+    const setCreateAdminStatus = (message, state = '') => {
+        createAdminStatus.textContent = message;
+        createAdminStatus.className = `admin-form-status${state ? ` is-${state}` : ''}`;
+    };
+
     createAdminForm?.addEventListener('submit', async (event) => {
         event.preventDefault();
-        createAdminStatus.textContent = '';
+        setCreateAdminStatus('');
         if (!createAdminForm.reportValidity()) return;
 
         const fields = new FormData(createAdminForm);
         if (fields.get('password') !== fields.get('password_confirmation')) {
-            createAdminStatus.textContent = 'The passwords do not match.';
+            setCreateAdminStatus('The passwords do not match.', 'error');
             return;
         }
 
@@ -107,9 +130,9 @@ try {
             }
 
             createAdminForm.reset();
-            createAdminStatus.textContent = result.message;
+            setCreateAdminStatus(result.message, 'success');
         } catch (error) {
-            createAdminStatus.textContent = error.message || 'Unable to create admin account.';
+            setCreateAdminStatus(error.message || 'Unable to create admin account.', 'error');
         } finally {
             button.disabled = false;
         }

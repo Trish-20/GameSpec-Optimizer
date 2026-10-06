@@ -2188,3 +2188,192 @@ body {
         padding: 40px 24px 48px;
     }
 }
+
+/* ---------- ADMIN ACCOUNT PAGES ---------- */
+.admin-settings-layout {
+    width: min(100%, 960px);
+    max-width: 960px;
+}
+
+.admin-page-heading {
+    margin: 0 0 22px;
+}
+
+.page-container .admin-page-heading h2 {
+    margin: 0 0 8px;
+    font-size: 27px;
+}
+
+.admin-page-heading p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.admin-settings-card {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 28px;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background: linear-gradient(145deg, #22232a, var(--bg-card) 72%);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.2);
+}
+
+.admin-settings-card-heading {
+    margin-bottom: 22px;
+    padding-bottom: 17px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.admin-settings-card .admin-settings-card-heading h3 {
+    margin: 0 0 7px;
+    color: var(--color-text-main);
+    font-size: 18px;
+}
+
+.admin-settings-card .admin-settings-card-heading p {
+    margin: 0;
+    line-height: 1.55;
+}
+
+.admin-account-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 24px;
+    align-items: start;
+}
+
+.admin-form-field {
+    min-width: 0;
+}
+
+.admin-form-field label {
+    margin-bottom: 8px;
+    color: var(--color-text-main);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.admin-form-field input {
+    min-height: 46px;
+    margin: 0;
+    padding: 11px 13px;
+    border-radius: 9px;
+    background: var(--bg-card-sub);
+}
+
+.admin-form-field input:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+}
+
+.admin-form-field input[readonly] {
+    color: #c7c8ce;
+    background: rgba(17, 17, 20, 0.55);
+    cursor: default;
+}
+
+.admin-form-field small {
+    display: block;
+    margin-top: 7px;
+    color: var(--color-text-muted);
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.admin-email-form .btn-primary,
+.admin-create-actions .btn-primary {
+    min-height: 42px;
+    margin: 15px 0 0;
+    padding: 10px 18px;
+    border-radius: 9px;
+}
+
+.admin-email-form .btn-primary:focus-visible,
+.admin-create-actions .btn-primary:focus-visible {
+    outline: 2px solid var(--color-text-main);
+    outline-offset: 3px;
+}
+
+.admin-create-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px 18px;
+    margin-top: 4px;
+}
+
+.admin-form-status {
+    display: none;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0;
+    padding: 10px 13px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    font-size: 13px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.admin-form-status:not(:empty) {
+    display: block;
+}
+
+.admin-form-status.is-success {
+    color: #baf4d0;
+    border-color: rgba(69, 201, 138, 0.35);
+    background: rgba(69, 201, 138, 0.1);
+}
+
+.admin-form-status.is-error {
+    color: #ffc2ca;
+    border-color: rgba(244, 63, 94, 0.35);
+    background: rgba(244, 63, 94, 0.1);
+}
+
+.admin-email-form .admin-form-status {
+    margin-top: 12px;
+}
+
+@media (max-width: 760px) {
+    .admin-page-heading {
+        margin-bottom: 17px;
+    }
+
+    .page-container .admin-page-heading h2 {
+        font-size: 23px;
+    }
+
+    .admin-settings-card {
+        padding: 21px;
+    }
+
+    .admin-account-form-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 17px;
+    }
+
+    .admin-create-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .admin-create-actions .btn-primary,
+    .admin-email-form .btn-primary {
+        width: 100%;
+    }
+}
+
+@media (max-width: 420px) {
+    .admin-settings-card {
+        padding: 17px;
+    }
+
+    .admin-settings-card-heading {
+        margin-bottom: 18px;
+        padding-bottom: 14px;
+    }
+}
