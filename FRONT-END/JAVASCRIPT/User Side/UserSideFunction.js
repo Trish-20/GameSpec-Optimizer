@@ -2093,14 +2093,33 @@ async function handleFeedbackSubmit(event) {
     }
 
     try {
-        const { response, result } = await requestFeedbackApi(`${FEEDBACK_API_BASE}/submit-feedback.php`, {
+        // Keep this payload identical for the database save and email notice.
+        const feedbackPayload = { title, comment, rating, username };
+
+        // Keep the existing database-backed community feedback behavior.
+        const { response: saveResponse, result: saveResult } = await requestFeedbackApi(`${FEEDBACK_API_BASE}/submit-feedback.php`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ title, comment, rating, username }),
+            body: JSON.stringify(feedbackPayload),
         });
 
-        if (!response.ok || !result || result.success === false) {
-            throw new Error(describeFeedbackFailure(response, result, "Feedback could not be submitted."));
+        if (!saveResponse.ok || !saveResult || saveResult.success !== true) {
+            throw new Error(describeFeedbackFailure(saveResponse, saveResult, "Feedback could not be submitted."));
+        }
+
+        // Email delivery is an additional notification. If Brevo is temporarily
+        // unavailable, the already-saved feedback must not be resubmitted.
+        let emailDeliveryFailed = false;
+        try {
+            const { response: emailResponse, result: emailResult } = await requestFeedbackApi(`${FEEDBACK_API_BASE}/send-feedback-email.php`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(feedbackPayload),
+            });
+            emailDeliveryFailed = !emailResponse.ok || !emailResult || emailResult.success !== true;
+        } catch (emailError) {
+            emailDeliveryFailed = true;
+            console.warn("Feedback was saved, but its email notification could not be sent.", emailError);
         }
 
         // MySQL is the source of truth: reload the list from the server.
@@ -2114,7 +2133,9 @@ async function handleFeedbackSubmit(event) {
 
         form.reset();
         closeFeedbackModal();
-        alert(result.message || "Thank you! Your feedback has been submitted.");
+        alert(emailDeliveryFailed
+            ? "Your feedback was submitted, but its notification email could not be sent."
+            : (saveResult.message || "Thank you! Your feedback has been submitted."));
     } catch (error) {
         console.warn("Unable to submit feedback.", error);
         alert(error.message || "Feedback could not be submitted. Please try again.");

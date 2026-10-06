@@ -33,7 +33,17 @@ function loadEnvironment(): array
     // Cloud hosts and CI supply secrets as real environment variables, and
     // there is no .env.local file in a container image. These take precedence
     // over the file so a deployed platform can always override local values.
-    foreach (['DB_CONNECTION_STRING', 'DB_SSL_CA', 'RAW_API_KEY', 'APP_ENV', 'PYTHON_BIN'] as $name) {
+    foreach ([
+        'DB_CONNECTION_STRING',
+        'DB_SSL_CA',
+        'RAW_API_KEY',
+        'APP_ENV',
+        'PYTHON_BIN',
+        'BREVO_API_KEY',
+        'BREVO_SENDER_EMAIL',
+        'BREVO_SENDER_NAME',
+        'FEEDBACK_RECIPIENT_EMAIL',
+    ] as $name) {
         $value = getenv($name);
         if ($value !== false && $value !== '') {
             $environment[$name] = $value;
