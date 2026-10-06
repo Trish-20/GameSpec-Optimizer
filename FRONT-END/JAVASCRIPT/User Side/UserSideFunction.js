@@ -2729,6 +2729,43 @@ function getSelectedHardwareLabel(searchInputId) {
     return value || null;
 }
 
+function showHardwareDetectionSummary(cpuStatus, gpuStatus, ramStatus) {
+    showModal('Hardware Detected', '');
+
+    const body = document.getElementById('modalBody');
+    if (!body) return;
+
+    const summary = document.createElement('div');
+    summary.className = 'hardware-detection-summary';
+
+    [
+        ['CPU', cpuStatus],
+        ['GPU', gpuStatus],
+        ['RAM', ramStatus]
+    ].forEach(([component, status]) => {
+        const row = document.createElement('section');
+        row.className = 'hardware-detection-summary-row';
+
+        const label = document.createElement('strong');
+        label.className = 'hardware-detection-summary-label';
+        label.textContent = component;
+
+        const detail = document.createElement('span');
+        detail.className = 'hardware-detection-summary-status';
+        detail.textContent = status;
+
+        row.append(label, detail);
+        summary.appendChild(row);
+    });
+
+    const note = document.createElement('p');
+    note.className = 'hardware-detection-summary-note';
+    note.textContent = 'GPU detection may vary depending on your browser and device.';
+    summary.appendChild(note);
+
+    body.replaceChildren(summary);
+}
+
 async function detectHardware() {
     if (isDetectingHardware) return;
 
@@ -2775,19 +2812,14 @@ async function detectHardware() {
         };
         console.info('Hardware detection diagnostics', diagnostic);
 
-        const cpuResultMessage = 'CPU: Could not be detected automatically.\nPlease select your CPU manually.';
+        const cpuResultMessage = 'Could not be detected automatically. Please select manually.';
         const gpuResultMessage = gpuInfo.match
-            ? `GPU: ${gpuInfo.match.model}`
-            : 'GPU: Could not be detected automatically.\nPlease select your GPU manually.';
+            ? gpuInfo.match.model
+            : 'Could not be detected automatically. Please select manually.';
         const ramResultMessage = ramClosest === null
-            ? 'RAM: Could not be detected automatically.\nPlease select your RAM manually.'
-            : `RAM: ${ramClosest} GB (estimated)`;
-        showModal('Hardware Detected', [
-            cpuResultMessage,
-            gpuResultMessage,
-            ramResultMessage,
-            'Note: GPU detection may vary depending on your browser and device.'
-        ].join('\n\n'));
+            ? 'Could not be detected automatically. Please select manually.'
+            : `${ramClosest} GB (estimated)`;
+        showHardwareDetectionSummary(cpuResultMessage, gpuResultMessage, ramResultMessage);
     } catch (error) {
         console.error('Hardware detection failed:', error);
         showModal('Error', error.message || 'Unable to detect hardware automatically.');
