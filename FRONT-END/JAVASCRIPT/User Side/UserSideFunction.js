@@ -2775,19 +2775,19 @@ async function detectHardware() {
         };
         console.info('Hardware detection diagnostics', diagnostic);
 
+        const cpuResultMessage = 'CPU: Could not be detected automatically.\nPlease select your CPU manually.';
         const gpuResultMessage = gpuInfo.match
-            ? `GPU benchmark: ${gpuInfo.match.model}`
-            : `GPU not auto-selected: ${gpuInfo.diagnostics.match_status.replace(/_/g, ' ')}; choose it manually if needed.`;
-        showModal('Browser Hardware Check', [
-            'Detection ran in your browser on this device.',
-            'CPU: Unable to detect exact CPU model. Please select manually.',
-            `WebGL renderer: ${gpuInfo.diagnostics.webgl_renderer || 'not available or hidden by the browser'}`,
-            `WebGPU adapter: ${gpuInfo.diagnostics.webgpu_adapter_info ? JSON.stringify(gpuInfo.diagnostics.webgpu_adapter_info) : 'not available or hidden by the browser'}`,
+            ? `GPU: ${gpuInfo.match.model}`
+            : 'GPU: Could not be detected automatically.\nPlease select your GPU manually.';
+        const ramResultMessage = ramClosest === null
+            ? 'RAM: Could not be detected automatically.\nPlease select your RAM manually.'
+            : `RAM: ${ramClosest} GB (estimated)`;
+        showModal('Hardware Detected', [
+            cpuResultMessage,
             gpuResultMessage,
-            `RAM estimate: ${ramEstimateGb === null ? 'not available' : `about ${ramEstimateGb} GB (browser estimate)`}`,
-            `RAM benchmark tier: ${ramClosest === null ? 'no match; select manually' : `${ramClosest} GB (based on estimate)`}`,
-            'GPU information may identify only the browser-selected adapter, not every GPU in the device.'
-        ].join('\n'));
+            ramResultMessage,
+            'Note: GPU detection may vary depending on your browser and device.'
+        ].join('\n\n'));
     } catch (error) {
         console.error('Hardware detection failed:', error);
         showModal('Error', error.message || 'Unable to detect hardware automatically.');
