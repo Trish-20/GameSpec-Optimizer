@@ -1174,7 +1174,7 @@
                 const score = Number(scoreRaw);
 
                 // Validate input
-                const cpuError = validateHardwareCatalogueEntry('cpu', model, scoreRaw);
+                const cpuError = validateHardwareInput('cpu', model, scoreRaw);
                 if (cpuError) {
                     showModal('Warning', cpuError);
                     return;
@@ -1244,8 +1244,7 @@
                 const scoreRaw = document.getElementById('gpuScore')?.value;
                 const score = Number(scoreRaw);
 
-                // Require an exact model and score from the loaded benchmark catalogue.
-                const gpuError = validateHardwareCatalogueEntry('gpu', model, scoreRaw);
+                const gpuError = validateHardwareInput('gpu', model, scoreRaw);
                 if (gpuError) {
                     setHardwareFormValidationError('gpu', gpuError);
                     return;
@@ -1310,8 +1309,7 @@
                 const scoreRaw = document.getElementById('ramScore')?.value;
                 const score = Number(scoreRaw);
 
-                // Require an exact capacity/speed and score from the loaded catalogue.
-                const ramError = validateHardwareCatalogueEntry('ram', model, scoreRaw);
+                const ramError = validateHardwareInput('ram', model, scoreRaw);
                 if (ramError) {
                     setHardwareFormValidationError('ram', ramError);
                     return;

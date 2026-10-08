@@ -71,7 +71,7 @@
                 <p class="input-help">Choose your computer's current power mode. Check it in Windows under Settings > System > Power &amp; battery > Power mode.</p>
 
                 <div class="fps-action-row">
-                    <button type="button" class="detect-hardware-btn" onclick="detectHardware()">Detect Hardware</button>
+                    <button type="button" class="detect-hardware-btn" onclick="detectHardware()">Detect My Hardware</button>
                     <button type="button" onclick="predictFPS()">Analyze Performance</button>
                 </div>
             </div>

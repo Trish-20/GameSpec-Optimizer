@@ -120,7 +120,11 @@ async function initializeFPSPredictionDropdowns() {
     initSearchDropdown('gpu', gpus, gpu => gpu.model, gpu => gpu.score);
         // RAM uses capacity field for label (e.g. "8 GB"), score for value
     const ramData = [];
-    [4, 8, 16, 32, 64].forEach(cap => {
+    const availableRamCapacities = [...new Set(ramBenchmarks
+        .map(item => Number(item.capacity))
+        .filter(capacity => Number.isFinite(capacity) && capacity > 0))]
+        .sort((a, b) => a - b);
+    (availableRamCapacities.length ? availableRamCapacities : [4, 8, 16, 32, 64]).forEach(cap => {
         const match = ramBenchmarks.find(r => Number(r.capacity) === cap);
         ramData.push({
             label: `${cap} GB`,
@@ -952,6 +956,7 @@ function initSearchDropdown(type, data, getLabel, getValue, onSelect) {
     
     function selectItem(item) {
         isSelecting = true;
+        clearDetectedHardwareSelection(type);
         searchInput.value = getLabel(item);
         if (hiddenInput) hiddenInput.value = getValue(item);
         if (hiddenInput) {
@@ -984,6 +989,7 @@ function initSearchDropdown(type, data, getLabel, getValue, onSelect) {
     });
     
     searchInput.addEventListener('input', () => {
+        clearDetectedHardwareSelection(type);
         populateList(searchInput.value);
         if (hiddenInput) hiddenInput.value = ''; // Clear selection when typing
         dropdown.classList.add('active');
@@ -2485,9 +2491,12 @@ function findBestHardwareMatch(items, detectedModel, diagnostic = null) {
 }
 
 function findClosestRamOption(ramGb) {
-    // RAM options are now rendered by the searchable dropdown as hidden input options.
-    // Build the expected set from the known RAM tiers and match against the hidden input.
-    const options = [4, 8, 16, 32, 64];
+    // Use capacities returned from the live benchmark table so newly maintained
+    // RAM capacities are available to both selection and browser detection.
+    const catalogCapacities = [...new Set((Array.isArray(ramBenchmarks) ? ramBenchmarks : [])
+        .map(item => Number(item.capacity))
+        .filter(value => Number.isFinite(value) && value > 0))];
+    const options = catalogCapacities.length ? catalogCapacities : [4, 8, 16, 32, 64];
 
     if (!options.length || !Number.isFinite(ramGb)) return null;
 
@@ -2776,8 +2785,8 @@ function getSelectedHardwareLabel(searchInputId) {
     return value || null;
 }
 
-function showHardwareDetectionSummary(components) {
-    showModal('Hardware Detected', '');
+function showHardwareDetectionSummary(components, title = 'Hardware Detected', noteText = 'Only exact benchmark matches are applied. Unmatched hardware needs manual selection.') {
+    showModal(title, '');
 
     const body = document.getElementById('modalBody');
     if (!body) return;
@@ -2807,7 +2816,7 @@ function showHardwareDetectionSummary(components) {
 
     const note = document.createElement('p');
     note.className = 'hardware-detection-summary-note';
-    note.textContent = 'GPU detection may vary depending on your browser and device.';
+    note.textContent = noteText;
     summary.appendChild(note);
 
     body.replaceChildren(summary);
@@ -2821,65 +2830,90 @@ async function detectHardware() {
 
     try {
         await loadFPSPredictionDropdowns();
-        const gpuInfo = await detectBrowserGpuInfo();
-        const ramEstimateGb = detectApproximateRamGb();
-        const ramClosest = ramEstimateGb === null
-            ? null
-            : findClosestRamOption(ramEstimateGb);
+        detectedHardwareSelection = { cpu: null, gpu: null, ram: null };
+        hardwareDetectionUsed = false;
 
-        // No standard browser API exposes an exact CPU model. Clear any stale
-        // CPU value instead of leaving a previous core-count guess in the form.
-        applyCpuSelection(null);
-        if (gpuInfo.match) applyGpuSelection(gpuInfo.match);
-        if (ramClosest !== null) applyRamSelection(ramClosest);
+        let response;
+        try {
+            response = await fetch('http://127.0.0.1:43127/v1/hardware-match', {
+                method: 'GET',
+                mode: 'cors',
+                cache: 'no-store'
+            });
+        } catch (error) {
+            throw new Error('Detector unavailable. Start GameSpec Hardware Detector and allow this website to access the local service. You can still select hardware manually.');
+        }
 
-        const diagnostic = {
-            detection_method: 'browser',
-            cpu_information: {
-                exact_model_available: false,
-                reason: 'Standard browser APIs do not expose the processor model.',
-                logical_processor_count_used: false
-            },
-            selected_catalogue_cpu: getSelectedHardwareLabel('cpuSearch'),
-            raw_webgl_renderer: gpuInfo.diagnostics.webgl_renderer,
-            raw_webgpu_adapter_info: gpuInfo.diagnostics.webgpu_adapter_info,
-            normalized_gpu_candidates: gpuInfo.diagnostics.match_attempts.map(attempt => ({
-                source: attempt.source,
-                raw: attempt.candidate,
-                normalized: attempt.normalized,
-                model_identifiers: attempt.model_identifiers,
-                considered_catalogue_rows: attempt.catalogue_candidates,
-                reason: attempt.reason,
-                selected_catalogue_row: attempt.catalogue_model
-            })),
-            gpu_match_status: gpuInfo.diagnostics.match_status,
-            selected_catalogue_gpu: getSelectedHardwareLabel('gpuSearch'),
-            ram_estimate_gb: ramEstimateGb,
-            selected_ram_tier: getSelectedHardwareLabel('ramSearch')
-        };
-        console.info('Hardware detection diagnostics', diagnostic);
+        const result = await response.json().catch(() => null);
+        if (result?.status === 'catalogue_unavailable') {
+            showModal('Benchmark Catalogue Unavailable', 'The detector is running, but it could not load the GameSpec benchmark catalogue. Try again later or select your hardware manually.');
+            return;
+        }
+        if (!response.ok || !result || !['matched', 'no_match'].includes(result.status)) {
+            throw new Error('Detector unavailable or returned an invalid response. Start or restart GameSpec Hardware Detector. You can still select hardware manually.');
+        }
 
-        hardwareDetectionUsed = true;
-        showHardwareDetectionSummary([
-            {
-                label: 'CPU',
-                result: 'Not detected',
-                status: 'Select your CPU manually'
-            },
-            {
-                label: 'GPU',
-                result: gpuInfo.match ? gpuInfo.match.model : 'Not detected',
-                status: gpuInfo.match ? 'Detected' : 'Select your GPU manually'
-            },
-            {
-                label: 'RAM',
-                result: ramClosest === null ? 'Not detected' : `${ramClosest} GB`,
-                status: ramClosest === null ? 'Select your RAM manually' : 'Estimated'
+        const readMatch = (component, name) => {
+            if (!component || component.status === 'no_match') return null;
+            const score = Number(component.score);
+            if (component.status !== 'match' || !String(component.model || '').trim() || !Number.isSafeInteger(score) || score <= 0) {
+                throw new Error(`The detector returned invalid ${name} benchmark data. Please select it manually.`);
             }
-        ]);
+            return { model: String(component.model).trim(), score };
+        };
+
+        const cpuMatch = readMatch(result.cpu, 'CPU');
+        const gpuMatch = readMatch(result.gpu, 'GPU');
+        const ramMatch = readMatch(result.ram, 'RAM');
+        if (gpuMatch) {
+            gpuMatch.gpuId = Number(result.gpu.gpuId);
+            if (!Number.isSafeInteger(gpuMatch.gpuId) || gpuMatch.gpuId <= 0) {
+                throw new Error('The detector did not return a valid GPU catalogue reference. Please select your GPU manually.');
+            }
+            gpuMatch.gpu_id = gpuMatch.gpuId;
+        }
+        if (ramMatch) {
+            ramMatch.capacityGb = Number(result.ram.capacityGb);
+            ramMatch.speedMhz = Number(result.ram.speedMhz);
+            if (!Number.isFinite(ramMatch.capacityGb) || ramMatch.capacityGb <= 0
+                || !Number.isSafeInteger(ramMatch.speedMhz) || ramMatch.speedMhz <= 0) {
+                throw new Error('The detector did not return a valid RAM capacity and speed. Please select RAM manually.');
+            }
+        }
+
+        const allMatched = Boolean(cpuMatch && gpuMatch && ramMatch);
+        if (result.status === 'matched' && !allMatched) {
+            throw new Error('The detector reported a match but one or more component results were incomplete. Please select hardware manually.');
+        }
+
+        detectedHardwareSelection = { cpu: cpuMatch, gpu: gpuMatch, ram: ramMatch };
+        applyCpuSelection(cpuMatch);
+        applyGpuSelection(gpuMatch);
+        applyRamSelection(ramMatch ? Math.round(ramMatch.capacityGb) : null);
+        if (ramMatch) {
+            document.getElementById('ramSearch').value = `${ramMatch.capacityGb} GB @ ${ramMatch.speedMhz} MHz`;
+        }
+        hardwareDetectionUsed = allMatched;
+
+        const componentSummary = (label, match, detail) => ({
+            label,
+            result: match ? match.model : 'Not found in catalogue',
+            status: match ? `Exact match · score ${match.score}${detail || ''}` : 'Choose this component manually; no score was guessed.'
+        });
+        showHardwareDetectionSummary(
+            [
+                componentSummary('CPU', cpuMatch),
+                componentSummary('GPU', gpuMatch, gpuMatch ? ` · GPU ID ${gpuMatch.gpuId}` : ''),
+                componentSummary('RAM', ramMatch, ramMatch ? ` · ${ramMatch.capacityGb} GB @ ${ramMatch.speedMhz} MHz` : '')
+            ],
+            allMatched ? 'Hardware Detected' : 'Hardware Match Incomplete',
+            allMatched
+                ? 'All three components matched the GameSpec benchmark catalogue exactly.'
+                : 'Only exact matches were filled. Select any unmatched component manually before predicting.'
+        );
     } catch (error) {
         console.error('Hardware detection failed:', error);
-        showModal('Error', error.message || 'Unable to detect hardware automatically.');
+        showModal('Detector Unavailable', error.message || 'Start GameSpec Hardware Detector or select hardware manually.');
     } finally {
         isDetectingHardware = false;
         hideHardwareDetectionLoading();
@@ -3155,6 +3189,13 @@ function buildGraphicsSuggestions(fpsDelta, currentQuality, compatibilityIssues 
 // --- FPS PREDICTION FUNCTIONALITY (ML-backed + Loading Screen while predicting) ---
 let isPredictingFPS = false;
 let hardwareDetectionUsed = false;
+let detectedHardwareSelection = { cpu: null, gpu: null, ram: null };
+
+function clearDetectedHardwareSelection(component) {
+    if (!['cpu', 'gpu', 'ram'].includes(component)) return;
+    detectedHardwareSelection[component] = null;
+    hardwareDetectionUsed = false;
+}
 
 function showPredictionLoading() {
     let overlay = document.getElementById('performanceAnalysisLoadingOverlay');
@@ -3205,8 +3246,8 @@ async function predictFPS() {
     const game = document.getElementById("selectedGame").value;
     if (!game) return showModal('Warning', 'Please select a game first.');
 
-    const cpuScore = document.getElementById("cpuSelect").value;
-    const gpuScore = document.getElementById("gpuSelect").value;
+    const cpuScore = detectedHardwareSelection.cpu?.score ?? document.getElementById("cpuSelect").value;
+    const gpuScore = detectedHardwareSelection.gpu?.score ?? document.getElementById("gpuSelect").value;
     const ramSelect = document.getElementById("ramSelect");
     
     if (!cpuScore) return showModal('Warning', 'Please select a CPU.');
@@ -3215,12 +3256,21 @@ async function predictFPS() {
 
     const cpuScoreNum = parseInt(cpuScore, 10);
     const gpuScoreNum = parseInt(gpuScore, 10);
-    const ramGB = parseInt(ramSelect.value, 10);
-    if (!ramBenchmarks.length) await loadRAMBenchmarks();
-    const ramOptions = ramBenchmarks
-        .filter(item => Number(item.capacity) === ramGB)
-        .sort((a, b) => Number(a.score) - Number(b.score));
-    const ramScoreNum = Number(ramOptions[0]?.score);
+    const ramGB = detectedHardwareSelection.ram
+        ? Math.round(detectedHardwareSelection.ram.capacityGb)
+        : parseInt(ramSelect.value, 10);
+    let ramScoreNum;
+    if (detectedHardwareSelection.ram) {
+        // The detector matched capacity and speed against one exact catalogue row.
+        // Keep its score; do not replace it with the manual capacity-only fallback.
+        ramScoreNum = detectedHardwareSelection.ram.score;
+    } else {
+        if (!ramBenchmarks.length) await loadRAMBenchmarks();
+        const ramOptions = ramBenchmarks
+            .filter(item => Number(item.capacity) === ramGB)
+            .sort((a, b) => Number(a.score) - Number(b.score));
+        ramScoreNum = Number(ramOptions[0]?.score);
+    }
     if (!Number.isFinite(ramScoreNum)) {
         return showModal('Warning', `No benchmark score is available for ${ramGB} GB RAM.`);
     }
@@ -3296,7 +3346,9 @@ async function predictFPS() {
         game_ram_min: parseInt(selectedGame.ram_benchmark, 10),
         cpu_score: cpuScoreNum,
         gpu_score: gpuScoreNum,
-        gpu_benchmark_id: Number(document.getElementById("gpuSelect").dataset.benchmarkId) || null,
+        gpu_benchmark_id: detectedHardwareSelection.gpu?.gpuId
+            || Number(document.getElementById("gpuSelect").dataset.benchmarkId)
+            || null,
         ram_score: ramScoreNum,
         res_width: 1920,
         res_height: 1080,
