@@ -66,11 +66,10 @@ if (!$account) {
                             autocomplete="email"
                             value="<?= htmlspecialchars((string) ($account['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"   
                         >
-                         <small>Your recovery email is used for password recovery.</small>
                         <div class="admin-email-form-footer">
-                            
+                            <small>Your recovery email is used for password recovery.</small>
+                            <button type="submit" class="btn-primary">Save Changes</button>
                         </div>
-                        <button type="submit" class="btn-primary">Save Changes</button>
                         <p id="adminEmailStatus" class="admin-form-status" role="status" aria-live="polite"></p>
                     </form>
                 </div>

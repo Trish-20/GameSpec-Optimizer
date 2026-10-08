@@ -2345,6 +2345,11 @@ body {
 .admin-email-form-footer .btn-primary {
     flex: 0 0 auto;
     margin-top: 0;
+    width: auto;
+    max-width: 100%;
+    align-self: flex-end;
+    white-space: nowrap;
+    box-sizing: border-box;
 }
 
 .admin-email-form .btn-primary:focus-visible,
@@ -2423,8 +2428,13 @@ body {
     }
 
     .admin-email-form-footer {
-        align-items: stretch;
+        align-items: flex-start;
         flex-direction: column;
+    }
+
+    .admin-email-form-footer .btn-primary {
+        width: auto;
+        align-self: flex-end;
     }
 
 }
