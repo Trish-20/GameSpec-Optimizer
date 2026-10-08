@@ -2286,11 +2286,13 @@ function showHardwareDetectionLoading() {
 
     if (!overlay) {
         const html = `
-            <div id="hardwareDetectionLoadingOverlay" class="prediction-loading-overlay">
-                <div class="prediction-loading-card">
-                    <div class="prediction-spinner"></div>
-                    <h3>Detecting Hardware</h3>
-                    <p>Please wait while your CPU, GPU, and RAM are detected.</p>
+            <div id="hardwareDetectionLoadingOverlay" class="prediction-loading-overlay hardware-detection-overlay">
+                <div class="prediction-loading-card hardware-detection-loading-card" role="status" aria-live="polite">
+                    <h3>Detecting hardware</h3>
+                    <p id="hardwareDetectionLoadingStatus">Preparing benchmark data...</p>
+                    <div class="hardware-detection-progress" role="progressbar" aria-label="Hardware detection in progress">
+                        <span></span>
+                    </div>
                 </div>
             </div>
         `;
@@ -2320,7 +2322,7 @@ function hideHardwareDetectionLoading() {
     const button = document.querySelector('.detect-hardware-btn');
     if (button) {
         button.disabled = false;
-        button.textContent = button.dataset.originalText || 'Detect Hardware';
+        button.textContent = button.dataset.originalText || 'Detect My Hardware';
     }
 }
 
@@ -2832,6 +2834,8 @@ async function detectHardware() {
         await loadFPSPredictionDropdowns();
         detectedHardwareSelection = { cpu: null, gpu: null, ram: null };
         hardwareDetectionUsed = false;
+        const loadingStatus = document.getElementById('hardwareDetectionLoadingStatus');
+        if (loadingStatus) loadingStatus.textContent = 'Connecting to the local detector...';
 
         let response;
         try {
@@ -2844,6 +2848,7 @@ async function detectHardware() {
             throw new Error('Detector unavailable. Start GameSpec Hardware Detector and allow this website to access the local service. You can still select hardware manually.');
         }
 
+        if (loadingStatus) loadingStatus.textContent = 'Reading exact hardware matches...';
         const result = await response.json().catch(() => null);
         if (result?.status === 'catalogue_unavailable') {
             showModal('Benchmark Catalogue Unavailable', 'The detector is running, but it could not load the GameSpec benchmark catalogue. Try again later or select your hardware manually.');
@@ -2908,8 +2913,8 @@ async function detectHardware() {
             ],
             allMatched ? 'Hardware Detected' : 'Hardware Match Incomplete',
             allMatched
-                ? 'All three components matched the GameSpec benchmark catalogue exactly.'
-                : 'Only exact matches were filled. Select any unmatched component manually before predicting.'
+                ? 'All components matched the benchmark catalogue.'
+                : 'Matched components were filled. Select the remaining hardware manually.'
         );
     } catch (error) {
         console.error('Hardware detection failed:', error);
