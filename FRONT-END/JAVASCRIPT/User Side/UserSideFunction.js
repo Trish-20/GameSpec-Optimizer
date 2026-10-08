@@ -2288,11 +2288,9 @@ function showHardwareDetectionLoading() {
         const html = `
             <div id="hardwareDetectionLoadingOverlay" class="prediction-loading-overlay hardware-detection-overlay">
                 <div class="prediction-loading-card hardware-detection-loading-card" role="status" aria-live="polite">
+                    <div class="prediction-spinner hardware-detection-spinner" aria-hidden="true"></div>
                     <h3>Detecting hardware</h3>
                     <p id="hardwareDetectionLoadingStatus">Preparing benchmark data...</p>
-                    <div class="hardware-detection-progress" role="progressbar" aria-label="Hardware detection in progress">
-                        <span></span>
-                    </div>
                 </div>
             </div>
         `;
@@ -2787,7 +2785,7 @@ function getSelectedHardwareLabel(searchInputId) {
     return value || null;
 }
 
-function showHardwareDetectionSummary(components, title = 'Hardware Detected', noteText = 'Only exact benchmark matches are applied. Unmatched hardware needs manual selection.') {
+function showHardwareDetectionSummary(components, title = 'Hardware Detected') {
     showModal(title, '');
 
     const body = document.getElementById('modalBody');
@@ -2815,11 +2813,6 @@ function showHardwareDetectionSummary(components, title = 'Hardware Detected', n
         row.append(label, value, detail);
         summary.appendChild(row);
     });
-
-    const note = document.createElement('p');
-    note.className = 'hardware-detection-summary-note';
-    note.textContent = noteText;
-    summary.appendChild(note);
 
     body.replaceChildren(summary);
 }
@@ -2911,10 +2904,7 @@ async function detectHardware() {
                 componentSummary('GPU', gpuMatch),
                 componentSummary('RAM', ramMatch)
             ],
-            allMatched ? 'Hardware Detected' : 'Hardware Match Incomplete',
-            allMatched
-                ? 'All components matched the benchmark catalogue.'
-                : 'Matched components were filled. Select the remaining hardware manually.'
+            allMatched ? 'Hardware Detected' : 'Hardware Match Incomplete'
         );
     } catch (error) {
         console.error('Hardware detection failed:', error);

@@ -4246,7 +4246,7 @@ a:focus-visible {
 .hardware-detection-summary {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 10px;
 }
 
 .hardware-detection-summary-row {
@@ -4256,12 +4256,7 @@ a:focus-visible {
     column-gap: 12px;
     row-gap: 2px;
     align-items: center;
-    padding: 10px 2px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.hardware-detection-summary-row:last-child {
-    border-bottom: 0;
+    padding: 2px;
 }
 
 .hardware-detection-summary-label {
@@ -4291,13 +4286,6 @@ a:focus-visible {
     overflow-wrap: anywhere;
 }
 
-.hardware-detection-summary-note {
-    margin: 8px 0 0;
-    color: var(--color-text-muted);
-    font-size: 11px;
-    line-height: 1.4;
-}
-
 .hardware-detection-overlay {
     background: rgba(0, 0, 0, 0.58);
     -webkit-backdrop-filter: blur(4px);
@@ -4320,51 +4308,25 @@ a:focus-visible {
     font-size: 13px;
 }
 
-.hardware-detection-progress {
-    height: 5px;
-    overflow: hidden;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.12);
-}
-
-.hardware-detection-progress span {
-    display: block;
-    width: 32%;
-    height: 100%;
-    border-radius: inherit;
-    background: var(--color-brand);
-    animation: hardware-detection-progress 1.25s ease-in-out infinite;
-}
-
-@keyframes hardware-detection-progress {
-    from { transform: translateX(-110%); }
-    to { transform: translateX(420%); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .hardware-detection-progress span {
-        width: 100%;
-        animation: none;
-        opacity: 0.65;
-    }
+.hardware-detection-spinner {
+    animation: prediction-spin 0.9s linear infinite;
+    will-change: transform;
+    margin-bottom: 16px;
 }
 
 @media (max-width: 600px) {
     .hardware-detection-summary {
-        gap: 0;
+        gap: 8px;
     }
 
     .hardware-detection-summary-row {
         grid-template-columns: 42px minmax(0, 1fr);
         column-gap: 9px;
-        padding: 9px 1px;
+        padding: 2px 1px;
     }
 
     .hardware-detection-summary-result {
         font-size: 14px;
     }
 
-    .hardware-detection-summary-note {
-        font-size: 11px;
-    }
 }
