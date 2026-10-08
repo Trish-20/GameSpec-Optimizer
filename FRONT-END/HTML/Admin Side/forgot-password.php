@@ -7,10 +7,11 @@ require_once __DIR__ . '/../../../MODULES/db.php';
 
 startApplicationSession();
 
-$message = 'If an account matches that email, a reset link has been sent.';
+$message = '';
 $csrf = csrfToken();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && hasValidCsrfToken()) {
+    $message = 'If an account matches that email, a reset link has been sent.';
     $email = trim((string) ($_POST['email'] ?? ''));
 
     if ($email !== '' && strlen($email) <= 254 && filter_var($email, FILTER_VALIDATE_EMAIL) !== false) {
@@ -51,7 +52,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && hasValidCsrfToken()) {
                     throw new RuntimeException('Password reset base URL is not configured.');
                 }
 
-                $resetUrl = $baseUrl . '/FRONT-END/HTML/Admin%20Side/reset-password.php?selector='
+                // Include the application's install folder when it is served
+                // below the configured site URL (for example, XAMPP /New/GameSpec-Optimizer).
+                $scriptPath = str_replace('\\', '/', rawurldecode((string) ($_SERVER['SCRIPT_NAME'] ?? '')));
+                $forgotPath = '/FRONT-END/HTML/Admin Side/forgot-password.php';
+                $scriptPrefix = str_ends_with($scriptPath, $forgotPath)
+                    ? rtrim(substr($scriptPath, 0, -strlen($forgotPath)), '/')
+                    : '';
+                $basePath = rtrim((string) ($baseParts['path'] ?? ''), '/');
+                $installPath = $basePath;
+                if ($scriptPrefix !== '' && $basePath === '') {
+                    $installPath = $scriptPrefix;
+                } elseif ($scriptPrefix !== '' && str_starts_with($scriptPrefix, $basePath . '/')) {
+                    $installPath = $scriptPrefix;
+                }
+                $siteOrigin = $baseParts['scheme'] . '://' . $baseParts['host']
+                    . (isset($baseParts['port']) ? ':' . $baseParts['port'] : '');
+
+                $resetUrl = $siteOrigin . $installPath . '/FRONT-END/HTML/Admin%20Side/reset-password.php?selector='
                     . rawurlencode($selector) . '&token=' . rawurlencode($validator);
                 $apiKey = trim((string) ($environment['BREVO_API_KEY'] ?? ''));
                 $senderEmail = trim((string) ($environment['BREVO_SENDER_EMAIL'] ?? ''));

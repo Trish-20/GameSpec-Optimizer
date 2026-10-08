@@ -64,12 +64,13 @@ if (!$account) {
                             type="email"
                             maxlength="254"
                             autocomplete="email"
-                            value="<?= htmlspecialchars((string) ($account['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                            value="<?= htmlspecialchars((string) ($account['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"   
                         >
+                         <small>Your recovery email is used for password recovery.</small>
                         <div class="admin-email-form-footer">
-                            <small>Your recovery email is used for password recovery.</small>
-                            <button type="submit" class="btn-primary">Save Changes</button>
+                            
                         </div>
+                        <button type="submit" class="btn-primary">Save Changes</button>
                         <p id="adminEmailStatus" class="admin-form-status" role="status" aria-live="polite"></p>
                     </form>
                 </div>
@@ -97,7 +98,7 @@ if (!$account) {
                     <div class="form-field"><label for="newAdminPassword">Password</label><input id="newAdminPassword" name="password" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></div>
                     <div class="form-field"><label for="newAdminPasswordConfirmation">Confirm Password</label><input id="newAdminPasswordConfirmation" name="password_confirmation" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></div>
                 </div>
-                <!-- <div class=" -->form-action-row"><button class="btn-primary" type="submit">Create Account</button><button class="btn-secondary" id="cancelCreateAdmin" type="button">Cancel</button><p id="createAdminStatus" class="admin-form-status" role="status" aria-live="polite"></p></div>
+                <div class="form-action-row"><button class="btn-primary" type="submit">Create Account</button><button class="btn-secondary" id="cancelCreateAdmin" type="button">Cancel</button><p id="createAdminStatus" class="admin-form-status" role="status" aria-live="polite"></p></div>
             </form>
         </section>
     </div>
@@ -156,9 +157,22 @@ if (!$account) {
             adminAccountsRows.innerHTML = accounts.length ? accounts.map(account => `<tr>
                 <td>${escapeAccountValue(account.username)}</td><td>${escapeAccountValue(account.email || '—')}</td>
                 <td>${escapeAccountValue(account.role)}</td><td>${escapeAccountValue(account.status)}</td>
-                <td>${escapeAccountValue(account.created_at || '—')}</td><td>${escapeAccountValue(account.last_login_at || '—')}</td>
+                <td>${escapeAccountValue(formatAdminDateTime(account.created_at))}</td><td>${escapeAccountValue(formatAdminDateTime(account.last_login_at))}</td>
             </tr>`).join('') : '<tr><td colspan="6">No administrator accounts found.</td></tr>';
         } catch (error) { adminAccountsRows.innerHTML = `<tr><td colspan="6">${escapeAccountValue(error.message || 'Account list unavailable.')}</td></tr>`; }
+    }
+    function formatAdminDateTime(value) {
+        if (!value) return '—';
+        const date = new Date(String(value).replace(' ', 'T'));
+        if (Number.isNaN(date.getTime())) return String(value);
+        return new Intl.DateTimeFormat('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true,
+        }).format(date);
     }
     function escapeAccountValue(value) {
         return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
