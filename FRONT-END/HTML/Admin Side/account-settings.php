@@ -97,7 +97,7 @@ if (!$account) {
                     <div class="form-field"><label for="newAdminPassword">Password</label><input id="newAdminPassword" name="password" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></div>
                     <div class="form-field"><label for="newAdminPasswordConfirmation">Confirm Password</label><input id="newAdminPasswordConfirmation" name="password_confirmation" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></div>
                 </div>
-                <div class="form-action-row"><button class="btn-primary" type="submit">Create Account</button><button class="btn-secondary" id="cancelCreateAdmin" type="button">Cancel</button><p id="createAdminStatus" class="admin-form-status" role="status" aria-live="polite"></p></div>
+                <!-- <div class=" -->form-action-row"><button class="btn-primary" type="submit">Create Account</button><button class="btn-secondary" id="cancelCreateAdmin" type="button">Cancel</button><p id="createAdminStatus" class="admin-form-status" role="status" aria-live="polite"></p></div>
             </form>
         </section>
     </div>

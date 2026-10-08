@@ -2113,9 +2113,26 @@ body {
 
 /* Prediction history page: feature layouts use the shared Admin components. */
 .prediction-history-card { min-width: 0; }
-.prediction-history-card .report-header-row { margin-bottom: 20px; }
+.prediction-history-card .report-header-row {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-color);
+}
 .prediction-history-card .report-header-row h3 { margin: 0; }
-.prediction-filter-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+.prediction-history-card .report-header-row .report-btn { align-self: flex-end; }
+.prediction-filter-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
 .prediction-filter-row .search-box { flex: 1 1 230px; min-width: 180px; margin: 0; }
 .prediction-filter-row input, .prediction-filter-row select { min-width: 150px; flex: 1 1 170px; min-height: 44px; margin: 0; }
 .prediction-filter-row .search-box input { min-height: 44px; margin: 0; }
@@ -2268,12 +2285,12 @@ body {
 
 .admin-email-form-footer {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    align-items: flex-end;
+    flex-direction: column;
     gap: 16px;
     margin-top: 10px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border-color);
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
 }
 
 .admin-email-form-footer small {
@@ -2282,6 +2299,7 @@ body {
 
 .admin-email-form-footer .btn-primary {
     flex: 0 0 auto;
+    margin-top: 0;
 }
 
 .admin-email-form .btn-primary:focus-visible,
@@ -2359,10 +2377,6 @@ body {
         width: 100%;
     }
 
-    .admin-email-form-footer {
-        align-items: stretch;
-        flex-direction: column;
-    }
 }
 
 @media (max-width: 420px) {
