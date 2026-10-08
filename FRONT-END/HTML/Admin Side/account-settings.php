@@ -37,27 +37,26 @@ if (!$account) {
 <?php include 'header.php'; ?>
 
 <main class="content">
-    <div class="page-container admin-settings-layout">
+    <div class="page-container">
         <header class="admin-page-heading">
             <h2>Account Management</h2>
-            <p>Manage your account recovery details and authorized administrator access.</p>
+            <p>Manage your administrator account and view authorized administrator accounts.</p>
         </header>
-        <section class="admin-card admin-settings-card">
-            <div class="admin-settings-card-heading">
-                <h3>My Account</h3>
-                <p>Your username is used for sign-in. Add a recovery email to use Forgot Password.</p>
-            </div>
+        <section class="admin-card">
+            <h3>My Account</h3>
+            <p>Your username is used for sign-in. Add a recovery email to use Forgot Password.</p>
+            <hr>
             <?php if ($account): ?>
-                <div class="admin-account-form-grid">
-                    <div class="admin-form-field">
+                <div class="form-grid-2x2">
+                    <div class="form-field">
                         <label for="adminUsername">Username</label>
                         <input id="adminUsername" type="text" value="<?= htmlspecialchars((string) $account['username'], ENT_QUOTES, 'UTF-8') ?>" readonly aria-readonly="true">
                     </div>
-                    <div class="admin-form-field">
+                    <div class="form-field">
                         <label>Role / Status</label>
                         <input type="text" value="<?= htmlspecialchars((string) $account['role'] . ' / ' . (string) $account['status'], ENT_QUOTES, 'UTF-8') ?>" readonly aria-readonly="true">
                     </div>
-                    <form id="adminEmailForm" class="admin-form-field admin-email-form">
+                    <form id="adminEmailForm" class="form-field admin-email-form">
                         <label for="adminEmail">Recovery Email</label>
                         <input
                             id="adminEmail"
@@ -76,28 +75,27 @@ if (!$account) {
                 <p class="admin-form-status is-error" role="alert">Account settings are temporarily unavailable.</p>
             <?php endif; ?>
         </section>
-        <section class="admin-card admin-settings-card admin-create-card">
-            <div class="admin-settings-card-heading">
-                <h3>Administrator Accounts</h3>
-                <p>Accounts with administrator access to this panel.</p>
-            </div>
-            <div class="admin-table-scroll">
-                <table class="admin-account-table">
-                    <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Created At</th><th>Last Login</th></tr></thead>
+        <section class="admin-card admin-create-card">
+            <h3>Administrator Accounts</h3>
+            <p>Accounts with administrator access to this panel.</p>
+            <hr>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Created</th><th>Last Login</th></tr></thead>
                     <tbody id="adminAccountsRows"><tr><td colspan="6">Loading administrator accounts...</td></tr></tbody>
                 </table>
             </div>
-            <div class="admin-create-actions"><button id="showCreateAdmin" class="btn-primary" type="button">+ Create Administrator</button></div>
+            <div class="form-action-row"><button id="showCreateAdmin" class="btn-primary" type="button">+ Create Administrator</button></div>
             <form id="createAdminForm" class="admin-create-form" hidden novalidate>
                 <h4>Create Administrator</h4>
-                <div class="admin-account-form-grid">
-                    <div class="admin-form-field"><label for="newAdminUsername">Username</label><input id="newAdminUsername" name="username" type="text" minlength="3" maxlength="50" pattern="[A-Za-z0-9][A-Za-z0-9._-]{2,49}" required></div>
-                    <div class="admin-form-field"><label for="newAdminEmail">Email</label><input id="newAdminEmail" name="email" type="email" maxlength="254" required></div>
-                    <div class="admin-form-field"><label for="newAdminDisplayName">Display Name</label><input id="newAdminDisplayName" name="display_name" type="text" maxlength="100"></div>
-                    <div class="admin-form-field"><label for="newAdminPassword">Password</label><input id="newAdminPassword" name="password" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></div>
-                    <div class="admin-form-field"><label for="newAdminPasswordConfirmation">Confirm Password</label><input id="newAdminPasswordConfirmation" name="password_confirmation" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></div>
+                <div class="form-grid-2x2">
+                    <div class="form-field"><label for="newAdminUsername">Username</label><input id="newAdminUsername" name="username" type="text" minlength="3" maxlength="50" pattern="[A-Za-z0-9][A-Za-z0-9._-]{2,49}" required></div>
+                    <div class="form-field"><label for="newAdminEmail">Email</label><input id="newAdminEmail" name="email" type="email" maxlength="254" required></div>
+                    <div class="form-field"><label for="newAdminDisplayName">Display Name</label><input id="newAdminDisplayName" name="display_name" type="text" maxlength="100"></div>
+                    <div class="form-field"><label for="newAdminPassword">Password</label><input id="newAdminPassword" name="password" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></div>
+                    <div class="form-field"><label for="newAdminPasswordConfirmation">Confirm Password</label><input id="newAdminPasswordConfirmation" name="password_confirmation" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></div>
                 </div>
-                <div class="admin-create-actions"><button class="btn-primary" type="submit">Create Account</button><button class="btn-secondary" id="cancelCreateAdmin" type="button">Cancel</button><p id="createAdminStatus" class="admin-form-status" role="status" aria-live="polite"></p></div>
+                <div class="form-action-row"><button class="btn-primary" type="submit">Create Account</button><button class="btn-secondary" id="cancelCreateAdmin" type="button">Cancel</button><p id="createAdminStatus" class="admin-form-status" role="status" aria-live="polite"></p></div>
             </form>
         </section>
     </div>
