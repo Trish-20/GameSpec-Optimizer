@@ -38,7 +38,6 @@ require_once __DIR__ . '/admin-guard.php';
                     <option value="balanced">Balanced</option>
                     <option value="performance">Performance</option>
                 </select>
-                <button id="historySearchButton" class="btn-primary" type="button">Search</button>
             </div>
             <div id="historyState" class="no-results-state prediction-history-state" role="status"><p>Loading prediction history...</p></div>
             <div class="table-container" id="predictionTableWrap" hidden>
@@ -142,7 +141,13 @@ async function showPredictionDetails(id) {
     } catch (error) { body.textContent = error.message || 'Unable to load prediction details.'; }
 }
 
-document.getElementById('historySearchButton').addEventListener('click', () => { historyPage = 1; loadHistory(); });
+let historySearchTimer;
+document.getElementById('historyGameFilter').addEventListener('input', () => {
+    clearTimeout(historySearchTimer);
+    historySearchTimer = setTimeout(() => { historyPage = 1; loadHistory(); }, 300);
+});
+document.getElementById('historyDateFilter').addEventListener('change', () => { historyPage = 1; loadHistory(); });
+document.getElementById('historyModeFilter').addEventListener('change', () => { historyPage = 1; loadHistory(); });
 document.getElementById('historyExportButton').addEventListener('click', () => { window.location.href = `${historyApi}?action=export&${queryFor(getFilters())}`; });
 rowsBody.addEventListener('click', event => { const button = event.target.closest('[data-prediction-id]'); if (button) showPredictionDetails(button.dataset.predictionId); });
 function closePredictionDetails() { const modal = document.getElementById('predictionDetailsModal'); modal.classList.remove('active'); modal.setAttribute('aria-hidden', 'true'); }

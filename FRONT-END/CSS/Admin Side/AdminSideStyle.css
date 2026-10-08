@@ -2120,15 +2120,16 @@ body {
 .prediction-history-card { min-width: 0; }
 .prediction-history-card .report-header-row {
     display: flex;
-    align-items: flex-start;
-    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
     gap: 12px;
     margin-bottom: 16px;
     padding-bottom: 14px;
     border-bottom: 1px solid var(--border-color);
 }
 .prediction-history-card .report-header-row h3 { margin: 0; }
-.prediction-history-card .report-header-row .report-btn { align-self: flex-end; }
+.prediction-history-card .report-header-row .report-btn { align-self: auto; }
 .prediction-filter-row {
     display: flex;
     align-items: center;
