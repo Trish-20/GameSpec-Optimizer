@@ -2139,6 +2139,11 @@ body {
 .prediction-detail-section dt { color: var(--color-text-muted); font-size: 11px; }
 .prediction-detail-section dd { margin: 3px 0 0; color: var(--color-text-main); font-size: 13px; overflow-wrap: anywhere; white-space: pre-wrap; }
 .admin-create-card { margin-top: 22px; }
+.admin-create-card > .form-action-row {
+    margin-top: 0;
+    padding-top: 17px;
+    border-top: 1px solid var(--border-color);
+}
 .admin-create-form h4 { color: var(--color-text-main); margin: 18px 0 12px; }
 .feedback-voted-note { align-self: center; color: var(--color-text-muted); font-size: 12px; }
 .feedback-helpful-btn:disabled { opacity: .72; cursor: not-allowed; }
@@ -2250,6 +2255,35 @@ body {
     border-radius: 9px;
 }
 
+.admin-email-form {
+    min-width: 0;
+}
+
+.admin-email-form > input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.admin-email-form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.admin-email-form-footer small {
+    margin: 0;
+}
+
+.admin-email-form-footer .btn-primary {
+    flex: 0 0 auto;
+}
+
 .admin-email-form .btn-primary:focus-visible,
 .admin-create-actions .btn-primary:focus-visible {
     outline: 2px solid var(--color-text-main);
@@ -2323,6 +2357,11 @@ body {
     .admin-create-actions .btn-primary,
     .admin-email-form .btn-primary {
         width: 100%;
+    }
+
+    .admin-email-form-footer {
+        align-items: stretch;
+        flex-direction: column;
     }
 }
 
