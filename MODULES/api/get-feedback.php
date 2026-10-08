@@ -9,6 +9,7 @@ header('Content-Type: application/json; charset=utf-8');
 
 try {
     $database = databaseConnection();
+    $databaseOffsetMinutes = databaseUtcOffsetMinutes($database);
 
     $search = trim((string) ($_GET['search'] ?? ''));
     $rating = (int) ($_GET['rating'] ?? 0);
@@ -74,6 +75,7 @@ try {
             'reported' => (int) $row['reported_count'] > 0,
             'is_approved' => (int) $row['is_approved'] === 1,
             'created_at' => (string) $row['created_at'],
+            'database_utc_offset_minutes' => $databaseOffsetMinutes,
         ];
     }
 

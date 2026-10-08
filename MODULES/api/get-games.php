@@ -33,6 +33,7 @@ try {
         require_once __DIR__ . '/../auth.php';
         $includeInactive = isAdminUser();
     }
+    $sortRecent = $includeInactive && ($_GET['sort'] ?? '') === 'recent';
 
     $conditions = [
         '1 = 1',
@@ -56,7 +57,8 @@ try {
         $parameters['genre'] = $genre;
     }
 
-    $sql = 'SELECT g.* FROM games g WHERE ' . implode(' AND ', $conditions) . ' ORDER BY g.title ASC LIMIT :limit OFFSET :offset';
+    $orderBy = $sortRecent ? 'g.created_at DESC, g.game_id DESC' : 'g.title ASC';
+    $sql = 'SELECT g.* FROM games g WHERE ' . implode(' AND ', $conditions) . ' ORDER BY ' . $orderBy . ' LIMIT :limit OFFSET :offset';
     $statement = $database->prepare($sql);
     foreach ($parameters as $name => $value) {
         $statement->bindValue(':' . $name, $value, PDO::PARAM_STR);
@@ -124,6 +126,7 @@ try {
             'description' => $row['description'],
             'image' => $row['cover_url'],
             'release_date' => $row['release_date'],
+            'created_at' => $row['created_at'] ?? null,
             'release_year' => $row['release_year'] !== null ? (int) $row['release_year'] : null,
             'genres' => json_decode((string) $row['genres'], true) ?: [],
             'platforms' => json_decode((string) $row['platforms'], true) ?: [],

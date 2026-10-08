@@ -88,11 +88,15 @@
                     <p>Configure your hardware and click "Analyze Performance" to see results</p>
                 </div>
             </div>
-            <div class="result-section prediction-history" id="predictionHistorySection" aria-live="polite">
-                <h4>Prediction History</h4>
-                <p class="result-explanation">Your previous performance checks will appear here.</p>
+            <section class="feedback-preview prediction-history" id="predictionHistorySection" aria-live="polite">
+                <div class="feedback-header">
+                    <div>
+                        <h3>Prediction History</h3>
+                        <p>Your previous performance checks will appear here.</p>
+                    </div>
+                </div>
                 <div id="predictionHistoryList" class="prediction-history-list"></div>
-            </div>
+            </section>
 
             <section class="feedback-preview">
                 <div class="feedback-header">

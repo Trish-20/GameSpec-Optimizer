@@ -1367,7 +1367,7 @@
         try {
             // Load all data
             const [gamesRes, cpusRes, gpusRes] = await Promise.all([
-                adminFetch('../../../MODULES/api/get-games.php'),
+                adminFetch('../../../MODULES/api/get-games.php?include_inactive=1&sort=recent&limit=100'),
                 adminFetch('../../../MODULES/api/get-cpus.php'),
                 adminFetch('../../../MODULES/api/get-gpus.php')
             ]);

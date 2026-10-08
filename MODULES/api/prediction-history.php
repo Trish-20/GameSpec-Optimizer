@@ -17,6 +17,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
 
 try {
     $database = databaseConnection();
+    $databaseOffsetMinutes = databaseUtcOffsetMinutes($database);
     $action = (string) ($_GET['action'] ?? 'list');
 
     if ($action === 'summary') {
@@ -36,6 +37,7 @@ try {
             'predictions_today' => (int) ($summary['predictions_today'] ?? 0),
             'games_analyzed' => (int) ($summary['games_analyzed'] ?? 0),
             'most_analyzed_game' => $most ? (string) $most['game_title'] : null,
+            'database_utc_offset_minutes' => $databaseOffsetMinutes,
         ], JSON_UNESCAPED_UNICODE);
         exit;
     }
@@ -55,6 +57,7 @@ try {
             echo json_encode(['success' => false, 'message' => 'Prediction not found.']);
             exit;
         }
+        $row['database_utc_offset_minutes'] = $databaseOffsetMinutes;
         echo json_encode($row, JSON_UNESCAPED_UNICODE);
         exit;
     }
@@ -88,7 +91,15 @@ try {
         $statement = $database->prepare('SELECT * FROM prediction_history' . $clause . ' ORDER BY created_at DESC, prediction_id DESC');
         $statement->execute($params);
         while ($row = $statement->fetch()) {
-            $values = [$row['prediction_id'], $row['created_at'], $row['game_title'], $row['cpu_model'], $row['gpu_model'], $row['ram_gb'], $row['graphics_preset'], $row['performance_mode'], $row['predicted_fps'], $row['recommendation'], $row['hardware_input_method']];
+            $createdAt = (string) ($row['created_at'] ?? '');
+            try {
+                $databaseZone = new DateTimeZone(sprintf('%+03d:%02d', intdiv($databaseOffsetMinutes, 60), abs($databaseOffsetMinutes % 60)));
+                $timestamp = new DateTimeImmutable($createdAt, $databaseZone);
+                $createdAt = $timestamp->setTimezone(new DateTimeZone('Asia/Taipei'))->format('M j, Y, g:i A');
+            } catch (Throwable $error) {
+                // Keep the source timestamp if a legacy row has an unexpected format.
+            }
+            $values = [$row['prediction_id'], $createdAt, $row['game_title'], $row['cpu_model'], $row['gpu_model'], $row['ram_gb'], $row['graphics_preset'], $row['performance_mode'], $row['predicted_fps'], $row['recommendation'], $row['hardware_input_method']];
             foreach ($values as &$value) {
                 if (is_string($value) && preg_match('/^[\s]*[=+@-]/', $value)) {
                     $value = "'" . $value;
@@ -117,7 +128,7 @@ try {
     $statement->bindValue(':limit', $pageSize, PDO::PARAM_INT);
     $statement->bindValue(':offset', ($page - 1) * $pageSize, PDO::PARAM_INT);
     $statement->execute();
-    echo json_encode(['records' => $statement->fetchAll(), 'page' => $page, 'page_size' => $pageSize, 'total' => $total], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['records' => $statement->fetchAll(), 'page' => $page, 'page_size' => $pageSize, 'total' => $total, 'database_utc_offset_minutes' => $databaseOffsetMinutes], JSON_UNESCAPED_UNICODE);
 } catch (Throwable $error) {
     error_log('Prediction history request failed.');
     http_response_code(500);

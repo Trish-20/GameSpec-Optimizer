@@ -17,6 +17,7 @@ requireAdminApi();
 
 try {
     $database = databaseConnection();
+    $databaseOffsetMinutes = databaseUtcOffsetMinutes($database);
 
     // The report reason column is added on first write; older rows simply have
     // no reason, so read it only when it is actually present.
@@ -53,6 +54,7 @@ try {
             'reported' => (int) $row['reported_count'] > 0,
             'is_approved' => (int) $row['is_approved'] === 1,
             'created_at' => (string) $row['created_at'],
+            'database_utc_offset_minutes' => $databaseOffsetMinutes,
         ];
     }
 

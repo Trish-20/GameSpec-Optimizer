@@ -66,12 +66,30 @@ function normalizeAdminFeedback(item) {
         username: isAnonymous ? "Anonymous" : String(item.username ?? item.display_name ?? "Guest"),
         is_anonymous: isAnonymous,
         created_at: item.created_at || "",
+        database_utc_offset_minutes: Number(item.database_utc_offset_minutes) || 0,
         helpful_count: Number(item.helpful_count || 0),
         reported_count: Number(item.reported_count || 0),
         reported: Boolean(item.reported) || Number(item.reported_count || 0) > 0,
         is_approved: item.is_approved === undefined ? true : Boolean(item.is_approved),
         report_reason: String(item.report_reason ?? ""),
     };
+}
+
+function formatAdminTimestamp(value, databaseOffsetMinutes = 0) {
+    if (!value) return "Recently added";
+    const text = String(value);
+    let date;
+    if (/[zZ]$|[+-]\d{2}:?\d{2}$/.test(text)) {
+        date = new Date(text);
+    } else {
+        const parts = text.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+        if (!parts) return text;
+        date = new Date(Date.UTC(Number(parts[1]), Number(parts[2]) - 1, Number(parts[3]), Number(parts[4]), Number(parts[5]), Number(parts[6] || 0)) - databaseOffsetMinutes * 60_000);
+    }
+    return Number.isNaN(date.getTime()) ? text : new Intl.DateTimeFormat('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true,
+        timeZone: 'Asia/Taipei'
+    }).format(date);
 }
 
 async function requestFeedbackAdmin(url, options) {
@@ -178,7 +196,7 @@ function renderFeedbackAdmin() {
         const title = escapeHtml(item.title || "Untitled feedback");
         const comment = escapeHtml(item.comment || "No comment provided.");
         const username = item.is_anonymous ? "Anonymous" : escapeHtml(item.username || "Guest");
-        const createdAt = item.created_at ? new Date(item.created_at).toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" }) : "Recently added";
+        const createdAt = formatAdminTimestamp(item.created_at, item.database_utc_offset_minutes);
         const rating = Math.max(0, Math.min(5, Number(item.rating) || 0));
         const stars = "★".repeat(rating) + "☆".repeat(5 - rating);
         // Delete acts on the real database row via feedback_id.

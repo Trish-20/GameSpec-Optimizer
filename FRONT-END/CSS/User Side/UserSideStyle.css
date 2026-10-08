@@ -2971,7 +2971,8 @@
 
 .prediction-history {
     grid-column: 1 / -1;
-    width: 100%;
+    width: 96%;
+    margin-top: -13px;
     box-sizing: border-box;
 }
 
@@ -2992,6 +2993,10 @@
    Uses the existing .result-explanation structure — no extra markup. */
 .prediction-history .result-explanation {
     margin-bottom: 0;
+}
+
+.prediction-history .feedback-header {
+    margin-bottom: 14px;
 }
 
 .prediction-history-list {

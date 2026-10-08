@@ -68,6 +68,16 @@ const tableWrap = document.getElementById('predictionTableWrap');
 const escapeHistory = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 let historyPage = 1;
 let historyPages = 1;
+function formatHistoryTimestamp(value, databaseOffsetMinutes = 0) {
+    if (!value) return '—';
+    const parts = String(value).match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+    if (!parts) return String(value);
+    const date = new Date(Date.UTC(Number(parts[1]), Number(parts[2]) - 1, Number(parts[3]), Number(parts[4]), Number(parts[5]), Number(parts[6] || 0)) - Number(databaseOffsetMinutes || 0) * 60_000);
+    return Number.isNaN(date.getTime()) ? String(value) : new Intl.DateTimeFormat('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true,
+        timeZone: 'Asia/Taipei'
+    }).format(date);
+}
 const getFilters = () => ({ game: document.getElementById('historyGameFilter').value.trim(), date: document.getElementById('historyDateFilter').value, mode: document.getElementById('historyModeFilter').value });
 const queryFor = (values) => new URLSearchParams(Object.entries(values).filter(([, value]) => value));
 
@@ -91,7 +101,7 @@ async function loadHistory() {
         historyPages = Math.max(1, Math.ceil(data.total / data.page_size));
         rowsBody.innerHTML = data.records.map(record => `<tr>
             <td class="prediction-id-cell">${escapeHistory(record.prediction_id)}</td>
-            <td>${escapeHistory(new Date(record.created_at.replace(' ', 'T')).toLocaleString())}</td>
+            <td>${escapeHistory(formatHistoryTimestamp(record.created_at, data.database_utc_offset_minutes))}</td>
             <td>${escapeHistory(record.game_title)}</td><td>${escapeHistory(record.predicted_fps)} FPS</td>
             <td>${escapeHistory(record.performance_mode)}</td>
             <td><button type="button" class="report-btn prediction-details-button" data-prediction-id="${escapeHistory(record.prediction_id)}">Details</button></td>
@@ -127,7 +137,7 @@ async function showPredictionDetails(id) {
         if (!response.ok) throw new Error(record.message || 'Unable to load prediction details.');
         const predictedFps = record.predicted_fps === null || record.predicted_fps === undefined || record.predicted_fps === '' ? null : `${record.predicted_fps} FPS`;
         const sections = [
-            ['General', [['Prediction ID', record.prediction_id], ['Date/Time', record.created_at], ['Game', record.game_title]]],
+            ['General', [['Prediction ID', record.prediction_id], ['Date/Time', formatHistoryTimestamp(record.created_at, record.database_utc_offset_minutes)], ['Game', record.game_title]]],
             ['Hardware', [['CPU', record.cpu_model], ['GPU', record.gpu_model], ['RAM', record.ram_gb ? `${record.ram_gb} GB` : null]]],
             ['Preferences', [['Graphics Preset', record.graphics_preset], ['Performance Mode', record.performance_mode]]],
             ['Prediction', [['Predicted FPS', predictedFps]]],

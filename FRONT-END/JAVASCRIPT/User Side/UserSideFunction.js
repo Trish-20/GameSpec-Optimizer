@@ -1687,6 +1687,7 @@ function normalizeFeedbackRecord(item) {
         username,
         is_anonymous: isAnonymous,
         created_at: item.created_at || "",
+        database_utc_offset_minutes: Number(item.database_utc_offset_minutes) || 0,
         helpful_count: Number(item.helpful_count || 0),
         reported_count: Number(item.reported_count || 0),
         reported: Boolean(item.reported) || Number(item.reported_count || 0) > 0,
@@ -1707,10 +1708,33 @@ function sortFeedbackState(items) {
         const helpfulDiff = Number(b.helpful_count || 0) - Number(a.helpful_count || 0);
         if (helpfulDiff !== 0) return helpfulDiff;
 
-        const createdA = a.created_at ? new Date(a.created_at).getTime() : 0;
-        const createdB = b.created_at ? new Date(b.created_at).getTime() : 0;
+        const createdA = parseDisplayDate(a.created_at, a.database_utc_offset_minutes)?.getTime() || 0;
+        const createdB = parseDisplayDate(b.created_at, b.database_utc_offset_minutes)?.getTime() || 0;
         return createdB - createdA;
     });
+}
+
+function parseDisplayDate(value, databaseOffsetMinutes = 0) {
+    if (!value) return null;
+    const text = String(value);
+    if (/[zZ]$|[+-]\d{2}:?\d{2}$/.test(text)) {
+        const parsed = new Date(text);
+        return Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
+    const parts = text.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+    if (!parts) return null;
+    return new Date(Date.UTC(
+        Number(parts[1]), Number(parts[2]) - 1, Number(parts[3]),
+        Number(parts[4]), Number(parts[5]), Number(parts[6] || 0)
+    ) - Number(databaseOffsetMinutes || 0) * 60_000);
+}
+
+function formatDisplayDateTime(value, databaseOffsetMinutes = 0) {
+    const date = parseDisplayDate(value, databaseOffsetMinutes);
+    return date ? new Intl.DateTimeFormat('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric',
+        hour: 'numeric', minute: '2-digit', hour12: true
+    }).format(date) : 'Recently added';
 }
 
 feedbackState = sortFeedbackState(feedbackState);
@@ -1734,7 +1758,7 @@ function buildFeedbackCardHtml(item, index = 0, { showDelete = false } = {}) {
     const comment = escapeHtml(item.comment || "No comment provided.");
     const rating = Number(item.rating) || 0;
     const username = item.is_anonymous ? "Anonymous" : escapeHtml(item.username || "Guest");
-    const createdAt = item.created_at ? new Date(item.created_at).toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" }) : "Recently added";
+    const createdAt = formatDisplayDateTime(item.created_at, item.database_utc_offset_minutes);
     const stars = "★".repeat(rating) + "☆".repeat(5 - rating);
     const helpfulCount = Number(item.helpful_count || 0);
     const hasVotedHelpful = hasHelpfulVote(feedbackId);
@@ -1762,7 +1786,6 @@ function buildFeedbackCardHtml(item, index = 0, { showDelete = false } = {}) {
                     <button type="button" class="feedback-action-btn feedback-helpful-btn" onclick="markFeedbackHelpful(${actionKey})" ${hasVotedHelpful ? "disabled" : ""} aria-label="${hasVotedHelpful ? "You've already marked this feedback as helpful." : "Mark feedback as helpful"}">
                         <i class="fas fa-thumbs-up"></i> Helpful${hasVotedHelpful ? " ✓" : ""}
                     </button>
-                    ${hasVotedHelpful ? '<span class="feedback-voted-note" role="status">You\'ve already marked this feedback as helpful.</span>' : ""}
                     <button type="button" class="feedback-action-btn feedback-report-btn" onclick="reportFeedbackItem(${actionKey})" ${isReported ? "disabled" : ""}>
                         <i class="fas fa-flag"></i> ${isReported ? "Reported" : "Report"}
                     </button>
@@ -2209,7 +2232,7 @@ function filterFeedback() {
             const title = String(item.title || "").toLowerCase();
             const comment = String(item.comment || "").toLowerCase();
             const username = String(item.username || "").toLowerCase();
-            const createdAt = item.created_at ? new Date(item.created_at).toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" }).toLowerCase() : "";
+            const createdAt = formatDisplayDateTime(item.created_at, item.database_utc_offset_minutes).toLowerCase();
             const rating = String(item.rating || "");
 
             const matchesSearch =
@@ -3683,15 +3706,12 @@ function friendlyPerformanceModeLabel(mode) {
 
 function friendlyHistoryDate(value) {
     if (!value) return 'Recently checked';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return 'Recently checked';
-    const today = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(today.getDate() - 1);
-    const sameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-    if (sameDay(date, today)) return 'Today';
-    if (sameDay(date, yesterday)) return 'Yesterday';
-    return date.toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' });
+    const date = parseDisplayDate(value);
+    if (!date) return 'Recently checked';
+    return new Intl.DateTimeFormat('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric',
+        hour: 'numeric', minute: '2-digit', hour12: true
+    }).format(date);
 }
 
 function predictionHistoryCard(entry) {

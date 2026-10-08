@@ -170,3 +170,11 @@ function ensureFeedbackReportReasonColumn(PDO $database): bool
 
     return true;
 }
+
+/** Return the database session's current offset from UTC for timestamp display. */
+function databaseUtcOffsetMinutes(PDO $database): int
+{
+    return (int) $database->query(
+        'SELECT TIMESTAMPDIFF(MINUTE, UTC_TIMESTAMP(), NOW())'
+    )->fetchColumn();
+}
