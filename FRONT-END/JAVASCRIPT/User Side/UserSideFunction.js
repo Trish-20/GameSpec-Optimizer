@@ -2895,16 +2895,16 @@ async function detectHardware() {
         }
         hardwareDetectionUsed = allMatched;
 
-        const componentSummary = (label, match, detail) => ({
+        const componentSummary = (label, match) => ({
             label,
             result: match ? match.model : 'Not found in catalogue',
-            status: match ? `Exact match · score ${match.score}${detail || ''}` : 'Choose this component manually; no score was guessed.'
+            status: match ? 'Exact match \u00b7 score ' + match.score : 'Choose this component manually; no score was guessed.'
         });
         showHardwareDetectionSummary(
             [
                 componentSummary('CPU', cpuMatch),
-                componentSummary('GPU', gpuMatch, gpuMatch ? ` · GPU ID ${gpuMatch.gpuId}` : ''),
-                componentSummary('RAM', ramMatch, ramMatch ? ` · ${ramMatch.capacityGb} GB @ ${ramMatch.speedMhz} MHz` : '')
+                componentSummary('GPU', gpuMatch),
+                componentSummary('RAM', ramMatch)
             ],
             allMatched ? 'Hardware Detected' : 'Hardware Match Incomplete',
             allMatched
