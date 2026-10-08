@@ -4309,9 +4309,22 @@ a:focus-visible {
 }
 
 .hardware-detection-spinner {
-    animation: prediction-spin 0.9s linear infinite;
+    animation: hardware-detection-spin 0.9s linear infinite;
     will-change: transform;
     margin-bottom: 16px;
+}
+
+@keyframes hardware-detection-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Keep this activity indicator visibly moving even when the site-wide reduced
+   motion rule shortens other animations to a single frame. */
+@media (prefers-reduced-motion: reduce) {
+    .hardware-detection-spinner {
+        animation-duration: 0.9s !important;
+        animation-iteration-count: infinite !important;
+    }
 }
 
 @media (max-width: 600px) {
