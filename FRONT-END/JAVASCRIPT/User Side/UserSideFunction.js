@@ -3199,7 +3199,7 @@ function showPredictionLoading() {
         const html = `
             <div id="performanceAnalysisLoadingOverlay" class="prediction-loading-overlay">
                 <div class="prediction-loading-card">
-                    <div class="prediction-spinner"></div>
+                    <div class="prediction-spinner performance-analysis-spinner" aria-hidden="true"></div>
                     <h3>Analyzing Performance</h3>
                     <p>Please wait while the ML model evaluates your setup.</p>
                 </div>

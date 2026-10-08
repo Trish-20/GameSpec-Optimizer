@@ -4309,19 +4309,25 @@ a:focus-visible {
 }
 
 .hardware-detection-spinner {
-    animation: hardware-detection-spin 0.9s linear infinite;
+    animation: activity-spinner-rotation 0.9s linear infinite;
     will-change: transform;
     margin-bottom: 16px;
 }
 
-@keyframes hardware-detection-spin {
+.performance-analysis-spinner {
+    animation: activity-spinner-rotation 0.9s linear infinite;
+    will-change: transform;
+}
+
+@keyframes activity-spinner-rotation {
     to { transform: rotate(360deg); }
 }
 
 /* Keep this activity indicator visibly moving even when the site-wide reduced
    motion rule shortens other animations to a single frame. */
 @media (prefers-reduced-motion: reduce) {
-    .hardware-detection-spinner {
+    .hardware-detection-spinner,
+    .performance-analysis-spinner {
         animation-duration: 0.9s !important;
         animation-iteration-count: infinite !important;
     }
