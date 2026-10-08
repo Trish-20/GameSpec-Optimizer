@@ -8,6 +8,9 @@ require_once __DIR__ . '/../../../MODULES/db.php';
 startApplicationSession();
 requireAdminPage();
 
+header('Location: account-settings.php', true, 302);
+exit;
+
 try {
     $database = databaseConnection();
     $activeAdmin = $database->prepare(

@@ -12,7 +12,7 @@ $account = null;
 try {
     $database = databaseConnection();
     $statement = $database->prepare(
-        'SELECT username, email FROM users WHERE user_id = :user_id AND role = "admin" AND status = "active" LIMIT 1'
+        'SELECT username, email, role, status FROM users WHERE user_id = :user_id AND role = "admin" AND status = "active" LIMIT 1'
     );
     $statement->execute(['user_id' => (int) $_SESSION['user_id']]);
     $account = $statement->fetch();
@@ -29,7 +29,7 @@ if (!$account) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Settings - Admin Panel</title>
+    <title>Account Management - Admin Panel</title>
     <link rel="stylesheet" href="../../CSS/Admin Side/AdminSideStyle.css">
     <link rel="stylesheet" href="../../CSS/shared/MobileResponsive.css?v=<?= @filemtime(__DIR__ . '/../../CSS/shared/MobileResponsive.css') ?: '1' ?>">
 </head>
@@ -39,12 +39,12 @@ if (!$account) {
 <main class="content">
     <div class="page-container admin-settings-layout">
         <header class="admin-page-heading">
-            <h2>Account Settings</h2>
-            <p>Manage your administrator account and password recovery information.</p>
+            <h2>Account Management</h2>
+            <p>Manage your account recovery details and authorized administrator access.</p>
         </header>
         <section class="admin-card admin-settings-card">
             <div class="admin-settings-card-heading">
-                <h3>Account Information</h3>
+                <h3>My Account</h3>
                 <p>Your username is used for sign-in. Add a recovery email to use Forgot Password.</p>
             </div>
             <?php if ($account): ?>
@@ -52,6 +52,10 @@ if (!$account) {
                     <div class="admin-form-field">
                         <label for="adminUsername">Username</label>
                         <input id="adminUsername" type="text" value="<?= htmlspecialchars((string) $account['username'], ENT_QUOTES, 'UTF-8') ?>" readonly aria-readonly="true">
+                    </div>
+                    <div class="admin-form-field">
+                        <label>Role / Status</label>
+                        <input type="text" value="<?= htmlspecialchars((string) $account['role'] . ' / ' . (string) $account['status'], ENT_QUOTES, 'UTF-8') ?>" readonly aria-readonly="true">
                     </div>
                     <form id="adminEmailForm" class="admin-form-field admin-email-form">
                         <label for="adminEmail">Recovery Email</label>
@@ -72,12 +76,36 @@ if (!$account) {
                 <p class="admin-form-status is-error" role="alert">Account settings are temporarily unavailable.</p>
             <?php endif; ?>
         </section>
+        <section class="admin-card admin-settings-card admin-create-card">
+            <div class="admin-settings-card-heading">
+                <h3>Administrator Accounts</h3>
+                <p>Accounts with administrator access to this panel.</p>
+            </div>
+            <div class="admin-table-scroll">
+                <table class="admin-account-table">
+                    <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Created At</th><th>Last Login</th></tr></thead>
+                    <tbody id="adminAccountsRows"><tr><td colspan="6">Loading administrator accounts...</td></tr></tbody>
+                </table>
+            </div>
+            <div class="admin-create-actions"><button id="showCreateAdmin" class="btn-primary" type="button">+ Create Administrator</button></div>
+            <form id="createAdminForm" class="admin-create-form" hidden novalidate>
+                <h4>Create Administrator</h4>
+                <div class="admin-account-form-grid">
+                    <div class="admin-form-field"><label for="newAdminUsername">Username</label><input id="newAdminUsername" name="username" type="text" minlength="3" maxlength="50" pattern="[A-Za-z0-9][A-Za-z0-9._-]{2,49}" required></div>
+                    <div class="admin-form-field"><label for="newAdminEmail">Email</label><input id="newAdminEmail" name="email" type="email" maxlength="254" required></div>
+                    <div class="admin-form-field"><label for="newAdminDisplayName">Display Name</label><input id="newAdminDisplayName" name="display_name" type="text" maxlength="100"></div>
+                    <div class="admin-form-field"><label for="newAdminPassword">Password</label><input id="newAdminPassword" name="password" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></div>
+                    <div class="admin-form-field"><label for="newAdminPasswordConfirmation">Confirm Password</label><input id="newAdminPasswordConfirmation" name="password_confirmation" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></div>
+                </div>
+                <div class="admin-create-actions"><button class="btn-primary" type="submit">Create Account</button><button class="btn-secondary" id="cancelCreateAdmin" type="button">Cancel</button><p id="createAdminStatus" class="admin-form-status" role="status" aria-live="polite"></p></div>
+            </form>
+        </section>
     </div>
 </main>
 
 <?php include 'footer.php'; ?>
 <script>
-    document.querySelector('[data-page="account"]')?.classList.add('active');
+    document.querySelector('[data-page="account-management"]')?.classList.add('active');
 
     const adminEmailForm = document.getElementById('adminEmailForm');
     const adminEmailStatus = document.getElementById('adminEmailStatus');
@@ -111,6 +139,53 @@ if (!$account) {
             button.disabled = false;
         }
     });
+
+    const adminAccountsRows = document.getElementById('adminAccountsRows');
+    const createAdminForm = document.getElementById('createAdminForm');
+    const createAdminStatus = document.getElementById('createAdminStatus');
+    const setCreateAdminStatus = (message, state = '') => {
+        createAdminStatus.textContent = message;
+        createAdminStatus.className = `admin-form-status${state ? ` is-${state}` : ''}`;
+    };
+    async function loadAdminAccounts() {
+        adminAccountsRows.innerHTML = '<tr><td colspan="6">Loading administrator accounts...</td></tr>';
+        try {
+            const response = await adminFetch('../../../MODULES/api/get-admin-accounts.php');
+            const accounts = await response.json();
+            if (!response.ok || !Array.isArray(accounts)) throw new Error(accounts.message || 'Unable to load administrator accounts.');
+            adminAccountsRows.innerHTML = accounts.length ? accounts.map(account => `<tr>
+                <td>${escapeAccountValue(account.username)}</td><td>${escapeAccountValue(account.email || '—')}</td>
+                <td>${escapeAccountValue(account.role)}</td><td>${escapeAccountValue(account.status)}</td>
+                <td>${escapeAccountValue(account.created_at || '—')}</td><td>${escapeAccountValue(account.last_login_at || '—')}</td>
+            </tr>`).join('') : '<tr><td colspan="6">No administrator accounts found.</td></tr>';
+        } catch (error) { adminAccountsRows.innerHTML = `<tr><td colspan="6">${escapeAccountValue(error.message || 'Account list unavailable.')}</td></tr>`; }
+    }
+    function escapeAccountValue(value) {
+        return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    }
+    document.getElementById('showCreateAdmin').addEventListener('click', () => { createAdminForm.hidden = false; });
+    document.getElementById('cancelCreateAdmin').addEventListener('click', () => { createAdminForm.reset(); createAdminForm.hidden = true; setCreateAdminStatus(''); });
+    createAdminForm.addEventListener('submit', async event => {
+        event.preventDefault();
+        if (!createAdminForm.reportValidity()) return;
+        const fields = new FormData(createAdminForm);
+        if (fields.get('password') !== fields.get('password_confirmation')) return setCreateAdminStatus('The passwords do not match.', 'error');
+        const button = createAdminForm.querySelector('[type="submit"]');
+        button.disabled = true;
+        try {
+            const response = await adminFetch('../../../MODULES/api/create-admin.php', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: String(fields.get('username')).trim(), email: String(fields.get('email')).trim(), display_name: String(fields.get('display_name') || '').trim(), password: String(fields.get('password')), password_confirmation: String(fields.get('password_confirmation')) })
+            });
+            const result = await response.json().catch(() => null);
+            if (!response.ok || !result?.success) throw new Error(result?.message || 'Unable to create administrator account.');
+            createAdminForm.reset();
+            setCreateAdminStatus(result.message, 'success');
+            await loadAdminAccounts();
+        } catch (error) { setCreateAdminStatus(error.message || 'Unable to create administrator account.', 'error'); }
+        finally { button.disabled = false; }
+    });
+    loadAdminAccounts();
 </script>
 <script src="../../JAVASCRIPT/Admin Side/AdminSideFunction.js?v=<?= @filemtime(__DIR__ . '/../../JAVASCRIPT/Admin Side/AdminSideFunction.js') ?: '1' ?>"></script>
 </body>

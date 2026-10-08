@@ -1277,79 +1277,6 @@ body {
 }
 
 
-/* ---------- STATUS GRID (ML Training Page Module) ---------- */
-.status-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-}
-
-.status-item {
-    padding: 16px;
-    background: var(--bg-card-sub);
-    border-radius: 12px;
-}
-
-.status-label {
-    display: block;
-    font-size: 12px;
-    color: #6e6f76;
-    margin-bottom: 4px;
-    text-transform: uppercase;
-}
-
-.status-value {
-    display: block;
-    font-size: 20px;
-    font-weight: 600;
-    color: white;
-}
-
-/* ---------- ML GENERIC ACTION LAYOUTS ---------- */
-.action-buttons {
-    display: flex;
-    justify-content: flex-end; /* pushes buttons to the right */
-    align-items: center;
-    gap: 12px;                 /* spacing between buttons */
-    margin-top: 12px;
-    margin-bottom: 20px;
-    width: 100%;
-}
-
-.training-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 25px; /* consistent spacing between cards */
-}
-
-
-
-/* ---------- MONOSPACED LOG CORE CONTAINER ---------- */
-.log-container {
-    background: var(--bg-sidebar);
-    border-radius: 12px;
-    padding: 16px;
-    max-height: 300px;
-    overflow-y: auto;
-    font-family: SFMono-Regular, Consolas, monospace;
-    font-size: 13px;
-    border: 1px solid #1e1f25;
-}
-
-.log-entry {
-    color: var(--color-text-muted);
-    margin: 6px 0;
-    padding-bottom: 6px;
-}
-
-.log-entry.success {
-    color: var(--color-brand);
-}
-
-.log-entry.error {
-    color: var(--color-danger);
-}
-
 /* ---------- RESTRUCTURED TABLES GRID SYSTEM ---------- */
 .tables-grid {
     display: grid;
@@ -1753,7 +1680,6 @@ body {
         transform: translateY(-1px);
     }
     /* Collapses layouts to single-stream vertical grids */
-    .status-grid,
     .tables-grid,
     .tables-grid.embedded {
         grid-template-columns: 1fr;
@@ -1798,7 +1724,6 @@ body {
 .admin-card,
 .tables-grid,
 .hardware-grid,
-.training-grid,
 .form-grid-2x2 {
     min-width: 0;
 }
@@ -1831,7 +1756,6 @@ body {
     }
 
     .report-buttons,
-    .action-buttons,
     .form-action-row {
         width: 100%;
         max-width: 100%;
@@ -1839,14 +1763,12 @@ body {
     }
 
     .report-btn,
-    .action-buttons .report-btn,
     .form-action-row button {
         min-width: 0;
         max-width: 100%;
         width: 100%;
     }
 
-    .status-item,
     .feedback-admin-item,
     .game-admin-item,
     .hardware-item {
@@ -2187,6 +2109,49 @@ body {
     .admin-login-form-panel {
         padding: 40px 24px 48px;
     }
+}
+
+/* Prediction history and combined administrator account management. */
+.prediction-history-intro { color: var(--color-text-muted); margin: -8px 0 22px; }
+.prediction-summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 22px; }
+.prediction-stat { display: flex; flex-direction: column; gap: 9px; }
+.prediction-stat span { color: var(--color-text-muted); font-size: 13px; }
+.prediction-stat strong { color: var(--color-text-main); font-size: 23px; overflow-wrap: anywhere; }
+.prediction-history-card { min-width: 0; }
+.prediction-filter-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+.prediction-filter-row input, .prediction-filter-row select { min-width: 160px; flex: 1 1 170px; }
+.prediction-filter-row button { min-height: 42px; }
+.prediction-history-state { padding: 22px 8px; color: var(--color-text-muted); text-align: center; }
+.prediction-history-state.is-error { color: var(--color-danger); }
+.prediction-table-wrap { max-height: 620px; overflow: auto; }
+.prediction-table { min-width: 740px; }
+.prediction-id-cell { font-family: SFMono-Regular, Consolas, monospace; font-size: 12px; }
+.prediction-details-button { padding: 8px 12px; }
+.prediction-details-dialog { width: min(100%, 720px); max-height: min(86vh, 850px); overflow: auto; }
+.prediction-detail-section { margin: 0 0 20px; }
+.prediction-detail-section h3 { color: var(--color-brand); margin: 0 0 10px; }
+.prediction-detail-section dl { margin: 0; display: grid; gap: 8px; }
+.prediction-detail-section dl > div { display: grid; grid-template-columns: minmax(130px, 0.35fr) minmax(0, 1fr); gap: 14px; border-bottom: 1px solid var(--border-color); padding: 8px 0; }
+.prediction-detail-section dt { color: var(--color-text-muted); }
+.prediction-detail-section dd { margin: 0; color: var(--color-text-main); overflow-wrap: anywhere; white-space: pre-wrap; }
+.admin-table-scroll { width: 100%; overflow-x: auto; }
+.admin-account-table { width: 100%; min-width: 680px; border-collapse: collapse; }
+.admin-account-table th, .admin-account-table td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border-color); }
+.admin-account-table th { color: var(--color-text-muted); font-weight: 600; }
+.admin-account-table td { color: var(--color-text-main); }
+.admin-create-card { margin-top: 22px; }
+.admin-create-form[hidden] { display: none; }
+.admin-create-form h4 { color: var(--color-text-main); margin: 18px 0 12px; }
+.feedback-voted-note { align-self: center; color: var(--color-text-muted); font-size: 12px; }
+.feedback-helpful-btn:disabled { opacity: .72; cursor: not-allowed; }
+@media (max-width: 900px) {
+    .prediction-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+    .prediction-summary-grid { grid-template-columns: 1fr; }
+    .prediction-filter-row { flex-direction: column; }
+    .prediction-filter-row input, .prediction-filter-row select, .prediction-filter-row button { width: 100%; }
+    .prediction-detail-section dl > div { grid-template-columns: 1fr; gap: 4px; }
 }
 
 /* ---------- ADMIN ACCOUNT PAGES ---------- */

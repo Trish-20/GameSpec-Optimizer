@@ -6,6 +6,13 @@ require_once __DIR__ . '/../db.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
+if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+    header('Allow: POST');
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Method not allowed.']);
+    exit;
+}
+
 $input = json_decode(file_get_contents('php://input'), true);
 if (!is_array($input)) {
     $input = $_POST;
@@ -19,25 +26,12 @@ foreach (['feedback_id', 'feedbackId', 'review_id', 'reviewId', 'id'] as $key) {
     }
 }
 if ($feedbackId <= 0) {
-    foreach (['feedback_id', 'feedbackId', 'review_id', 'reviewId', 'id'] as $key) {
-        if (isset($_GET[$key])) {
-            $feedbackId = (int) $_GET[$key];
-            break;
-        }
-    }
-}
-
-if ($feedbackId <= 0) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'A valid feedback_id is required.']);
     exit;
 }
 
 $reason = trim((string) ($input['report_reason'] ?? $input['reportReason'] ?? $input['reason'] ?? ''));
-
-if ($reason === '' && isset($_GET['report_reason'])) {
-    $reason = trim((string) $_GET['report_reason']);
-}
 
 if ($reason === '') {
     http_response_code(400);

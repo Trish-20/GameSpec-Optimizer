@@ -1731,6 +1731,7 @@ function buildFeedbackCardHtml(item, index = 0, { showDelete = false } = {}) {
     const createdAt = item.created_at ? new Date(item.created_at).toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" }) : "Recently added";
     const stars = "★".repeat(rating) + "☆".repeat(5 - rating);
     const helpfulCount = Number(item.helpful_count || 0);
+    const hasVotedHelpful = hasHelpfulVote(feedbackId);
     const isReported = Boolean(item.reported);
     const usernameText = item.is_anonymous ? "Anonymous" : String(item.username || "Guest");
 
@@ -1752,9 +1753,10 @@ function buildFeedbackCardHtml(item, index = 0, { showDelete = false } = {}) {
             <div class="feedback-card-footer">
                 <span class="feedback-helpful-count">Helpful <strong>${helpfulCount}</strong></span>
                 <div class="feedback-actions">
-                    <button type="button" class="feedback-action-btn feedback-helpful-btn" onclick="markFeedbackHelpful(${actionKey})">
-                        <i class="fas fa-thumbs-up"></i> Helpful
+                    <button type="button" class="feedback-action-btn feedback-helpful-btn" onclick="markFeedbackHelpful(${actionKey})" ${hasVotedHelpful ? "disabled" : ""} aria-label="${hasVotedHelpful ? "You've already marked this feedback as helpful." : "Mark feedback as helpful"}">
+                        <i class="fas fa-thumbs-up"></i> Helpful${hasVotedHelpful ? " ✓" : ""}
                     </button>
+                    ${hasVotedHelpful ? '<span class="feedback-voted-note" role="status">You\'ve already marked this feedback as helpful.</span>' : ""}
                     <button type="button" class="feedback-action-btn feedback-report-btn" onclick="reportFeedbackItem(${actionKey})" ${isReported ? "disabled" : ""}>
                         <i class="fas fa-flag"></i> ${isReported ? "Reported" : "Report"}
                     </button>
@@ -1819,7 +1821,7 @@ function changeFeedbackPage(page) {
     currentFeedbackPage = page;
     const listContainer = document.getElementById("feedbackList");
     if (listContainer) {
-        renderFeedbackPage(listContainer, filteredFeedbackState, { showDelete: true });
+        renderFeedbackPage(listContainer, filteredFeedbackState);
     }
 }
 
@@ -1848,6 +1850,7 @@ function findFeedbackIndex(key) {
 
 async function postFeedbackAction(endpoint, feedbackId, reportReason) {
     const body = { feedback_id: feedbackId };
+    if (endpoint === "helpful-feedback.php") body.voter_token = getHelpfulVoterToken();
     // report-feedback.php requires a reason; other endpoints ignore it.
     if (reportReason) body.report_reason = reportReason;
 
@@ -1896,12 +1899,15 @@ async function markFeedbackHelpful(key) {
 
     const feedbackId = getFeedbackIdentity(feedbackState[index]);
     if (feedbackId <= 0) return;
+    if (hasHelpfulVote(feedbackId)) return;
 
     try {
         const result = await postFeedbackAction("helpful-feedback.php", feedbackId);
         feedbackState[index].helpful_count = Number(result.helpful_count ?? feedbackState[index].helpful_count ?? 0) + 0;
+        localStorage.setItem(`gamespec.helpful-voted.${feedbackId}`, "1");
     } catch (error) {
         console.warn("Unable to mark feedback as helpful.", error);
+        showModal('Notice', error.message || "Unable to mark feedback as helpful.");
         return;
     }
     filterFeedback();
@@ -1919,11 +1925,10 @@ async function markFeedbackHelpful(key) {
 // ---------------------------------------------------------------------------
 
 const REPORT_REASONS = [
-    "It's spam or advertising",
-    "It contains rude or offensive language",
-    "The information is wrong or misleading",
-    "It is irrelevant to this app",
-    "It is duplicated feedback",
+    "Offensive or abusive",
+    "Spam",
+    "Irrelevant",
+    "Inappropriate content",
     "Other"
 ];
 
@@ -2217,7 +2222,7 @@ function filterFeedback() {
     currentFeedbackPage = 1;
     const listContainer = document.getElementById("feedbackList");
     if (listContainer) {
-        renderFeedbackPage(listContainer, filteredFeedbackState, { showDelete: true });
+        renderFeedbackPage(listContainer, filteredFeedbackState);
     }
 }
 
@@ -2450,6 +2455,27 @@ function analyzeGpuHardwareMatch(items, detectedModel) {
     result.reason = 'unique_model_identifier_and_variant';
     result.match = identified[0].item;
     return result;
+}
+
+function getHelpfulVoterToken() {
+    const key = "gamespec.helpful-voter-token.v1";
+    try {
+        let token = localStorage.getItem(key);
+        if (!/^[a-f0-9]{64}$/i.test(token || "")) {
+            const bytes = new Uint8Array(32);
+            if (window.crypto?.getRandomValues) window.crypto.getRandomValues(bytes);
+            else for (let i = 0; i < bytes.length; i += 1) bytes[i] = Math.floor(Math.random() * 256);
+            token = Array.from(bytes, byte => byte.toString(16).padStart(2, "0")).join("");
+            localStorage.setItem(key, token);
+        }
+        return token;
+    } catch (error) { return ""; }
+}
+
+function hasHelpfulVote(feedbackId) {
+    if (!feedbackId) return false;
+    try { return localStorage.getItem(`gamespec.helpful-voted.${feedbackId}`) === "1"; }
+    catch (error) { return false; }
 }
 
 function findBestHardwareMatch(items, detectedModel, diagnostic = null) {
@@ -2833,6 +2859,7 @@ async function detectHardware() {
         };
         console.info('Hardware detection diagnostics', diagnostic);
 
+        hardwareDetectionUsed = true;
         showHardwareDetectionSummary([
             {
                 label: 'CPU',
@@ -3127,6 +3154,7 @@ function buildGraphicsSuggestions(fpsDelta, currentQuality, compatibilityIssues 
 
 // --- FPS PREDICTION FUNCTIONALITY (ML-backed + Loading Screen while predicting) ---
 let isPredictingFPS = false;
+let hardwareDetectionUsed = false;
 
 function showPredictionLoading() {
     let overlay = document.getElementById('performanceAnalysisLoadingOverlay');
@@ -3277,7 +3305,11 @@ async function predictFPS() {
         texture_quality: presetMap[quality] || 'Medium',
         anti_aliasing: antiAliasMap[quality] || 'Off',
         vsync: 'Off',
-        performance_mode: performanceMode
+        performance_mode: performanceMode,
+        cpu_model: cpuName === 'Selected CPU' ? '' : cpuName,
+        gpu_model: gpuName === 'Selected GPU' ? '' : gpuName,
+        ram_gb: ramGB,
+        hardware_input_method: hardwareDetectionUsed ? 'detected' : 'manually entered'
     };
 
     isPredictingFPS = true;

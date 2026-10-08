@@ -26,20 +26,16 @@
         <i class="fas fa-server nav-icon"></i> Hardware Management
     </a>
 
-    <a href="ml-training.php" class="nav-btn" data-page="ml">
-        <i class="fas fa-brain nav-icon"></i> ML Training
+    <a href="prediction-history.php" class="nav-btn" data-page="prediction-history">
+        <i class="fas fa-chart-line nav-icon"></i> Prediction History
     </a>
 
     <a href="feedback-management.php" class="nav-btn" data-page="feedback">
         <i class="fas fa-comments nav-icon"></i> Feedback Management
     </a>
 
-    <a href="account-settings.php" class="nav-btn" data-page="account">
-        <i class="fas fa-user-cog nav-icon"></i> Account Settings
-    </a>
-
-    <a href="admin-accounts.php" class="nav-btn" data-page="admin-accounts">
-        <i class="fas fa-user-shield nav-icon"></i> Admin Accounts
+    <a href="account-settings.php" class="nav-btn" data-page="account-management">
+        <i class="fas fa-user-cog nav-icon"></i> Account Management
     </a>
         <!-- Hidden user side access -->
         <div class="hidden-user-btn" onclick="handleUserClick()"></div>

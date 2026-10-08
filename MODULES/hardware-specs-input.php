@@ -6,6 +6,66 @@ header('Content-Type: application/json');
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/benchmark-resolver.php';
 
+/** Store an anonymous event only after the existing ML predictor succeeded. */
+function recordSuccessfulPrediction(array $inputs, array $result): void
+{
+    if (($result['success'] ?? false) !== true || !isset($result['predicted_fps']) || !is_numeric($result['predicted_fps'])) {
+        return;
+    }
+    $game = trim((string) ($inputs['game_title'] ?? ''));
+    $cpu = trim((string) ($inputs['cpu_model'] ?? ''));
+    $gpu = trim((string) ($inputs['gpu_model'] ?? ''));
+    $ram = filter_var($inputs['ram_gb'] ?? null, FILTER_VALIDATE_INT);
+    $preset = (string) ($inputs['graphics_preset'] ?? '');
+    $mode = (string) ($inputs['performance_mode'] ?? 'balanced');
+    $method = (string) ($inputs['hardware_input_method'] ?? 'manually entered');
+    $fps = (float) $result['predicted_fps'];
+    if ($game === '' || mb_strlen($game) > 255 || mb_strlen($cpu) > 255 || mb_strlen($gpu) > 255
+        || $ram === false || $ram < 1 || $ram > 4096
+        || !in_array($preset, ['Low', 'Medium', 'High', 'Ultra'], true)
+        || !in_array($mode, ['battery', 'balanced', 'performance'], true)
+        || !in_array($method, ['detected', 'manually entered'], true)
+        || !is_finite($fps) || $fps < 1 || $fps > 500) {
+        return;
+    }
+
+    $recommendation = $fps >= 75
+        ? 'Your PC should run this game smoothly.'
+        : ($fps >= 45
+            ? 'Your PC should run this game with some settings adjustments.'
+            : 'Your PC may need lower settings or a hardware upgrade.');
+    $predictionId = sprintf('%s-%s-%s-%s-%s', bin2hex(random_bytes(4)), bin2hex(random_bytes(2)),
+        bin2hex(random_bytes(2)), bin2hex(random_bytes(2)), bin2hex(random_bytes(6)));
+
+    try {
+        $database = databaseConnection();
+        $insert = $database->prepare(
+            'INSERT INTO prediction_history
+                (prediction_id, game_title, cpu_model, gpu_model, ram_gb, graphics_preset,
+                 performance_mode, predicted_fps, recommendation, hardware_input_method)
+             VALUES
+                (:prediction_id, :game_title, :cpu_model, :gpu_model, :ram_gb, :graphics_preset,
+                 :performance_mode, :predicted_fps, :recommendation, :hardware_input_method)'
+        );
+        $insert->execute([
+            'prediction_id' => $predictionId,
+            'game_title' => $game,
+            'cpu_model' => $cpu !== '' ? $cpu : null,
+            'gpu_model' => $gpu !== '' ? $gpu : null,
+            'ram_gb' => $ram,
+            'graphics_preset' => $preset,
+            'performance_mode' => $mode,
+            'predicted_fps' => round($fps, 1),
+            'recommendation' => $recommendation,
+            'hardware_input_method' => $method,
+        ]);
+    } catch (Throwable $error) {
+        // A history-write failure must not turn a completed model prediction
+        // into a failed user request.
+        error_log('Anonymous prediction history write failed.');
+    }
+}
+
 $inputs = json_decode(file_get_contents('php://input'), true);
 if (!$inputs) {
     die(json_encode(['success' => false, 'message' => 'Invalid JSON data']));
@@ -155,6 +215,7 @@ if ($mlServiceUrl !== '') {
     $remoteResponse = @file_get_contents($mlServiceUrl . '/predict', false, $context);
     $remoteResult = $remoteResponse !== false ? json_decode($remoteResponse, true) : null;
     if (is_array($remoteResult)) {
+        recordSuccessfulPrediction($inputs, $remoteResult);
         echo json_encode($remoteResult);
         exit;
     }
@@ -242,5 +303,8 @@ if ($result === null) {
     ]));
 }
 
+if (is_array($result)) {
+    recordSuccessfulPrediction($inputs, $result);
+}
 echo json_encode($result);
 ?>
