@@ -2158,10 +2158,29 @@ body {
 .prediction-detail-section dd { margin: 3px 0 0; color: var(--color-text-main); font-size: 13px; overflow-wrap: anywhere; white-space: pre-wrap; }
 .admin-create-card { margin-top: 22px; }
 .admin-create-card > .form-action-row {
-    margin-top: 0;
+    margin-top: 25px;
     padding-top: 17px;
     border-top: 1px solid var(--border-color);
 }
+.admin-create-modal[hidden] { display: none; }
+.admin-create-modal { overflow-y: auto; }
+.admin-create-dialog {
+    width: min(100%, 760px);
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+}
+.admin-create-dialog .modal-header { padding: 20px 24px 16px; }
+.admin-create-dialog .modal-header h2 { font-size: 20px; }
+.admin-create-dialog form { margin: 0; }
+.admin-create-modal-body { padding: 22px 24px 8px; }
+.admin-create-modal-body .form-grid-2x2 { margin: 0; }
+.admin-create-modal-footer { padding: 16px 24px 22px; }
+.admin-create-modal-footer .btn-primary,
+.admin-create-modal-footer .btn-secondary {
+    min-height: 42px;
+    margin: 0;
+}
+.admin-create-dialog .admin-form-status { margin-top: 12px; }
 .admin-create-form h4 { color: var(--color-text-main); margin: 18px 0 12px; }
 .feedback-voted-note { align-self: center; color: var(--color-text-muted); font-size: 12px; }
 .feedback-helpful-btn:disabled { opacity: .72; cursor: not-allowed; }
@@ -2169,6 +2188,13 @@ body {
     .prediction-filter-row { flex-direction: column; }
     .prediction-filter-row .search-box, .prediction-filter-row input, .prediction-filter-row select, .prediction-filter-row button { width: 100%; }
     .prediction-detail-section dl { grid-template-columns: 1fr; }
+    .admin-create-modal { padding: 12px; }
+    .admin-create-dialog { max-height: calc(100vh - 24px); }
+    .admin-create-modal-body { padding: 18px 16px 6px; }
+    .admin-create-dialog .modal-header { padding: 17px 16px 13px; }
+    .admin-create-modal-footer { padding: 14px 16px 18px; }
+    .admin-create-modal-footer .btn-primary,
+    .admin-create-modal-footer .btn-secondary { flex: 1 1 auto; }
 }
 
 /* ---------- ADMIN ACCOUNT PAGES ---------- */
@@ -2274,6 +2300,7 @@ body {
 }
 
 .admin-email-form {
+    grid-column: 1 / -1;
     min-width: 0;
 }
 

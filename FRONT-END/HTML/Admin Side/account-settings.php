@@ -89,17 +89,30 @@ if (!$account) {
                 </table>
             </div>
             <div class="form-action-row"><button id="showCreateAdmin" class="btn-primary" type="button">+ Create Administrator</button></div>
-            <form id="createAdminForm" class="admin-create-form" hidden novalidate>
-                <h4>Create Administrator</h4>
-                <div class="form-grid-2x2">
-                    <div class="form-field"><label for="newAdminUsername">Username</label><input id="newAdminUsername" name="username" type="text" minlength="3" maxlength="50" pattern="[A-Za-z0-9][A-Za-z0-9._-]{2,49}" required></div>
-                    <div class="form-field"><label for="newAdminEmail">Email</label><input id="newAdminEmail" name="email" type="email" maxlength="254" required></div>
-                    <div class="form-field"><label for="newAdminDisplayName">Display Name</label><input id="newAdminDisplayName" name="display_name" type="text" maxlength="100"></div>
-                    <div class="form-field"><label for="newAdminPassword">Password</label><input id="newAdminPassword" name="password" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></div>
-                    <div class="form-field"><label for="newAdminPasswordConfirmation">Confirm Password</label><input id="newAdminPasswordConfirmation" name="password_confirmation" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></div>
-                </div>
-                <div class="form-action-row"><button class="btn-primary" type="submit">Create Account</button><button class="btn-secondary" id="cancelCreateAdmin" type="button">Cancel</button><p id="createAdminStatus" class="admin-form-status" role="status" aria-live="polite"></p></div>
-            </form>
+            <div class="modal-overlay admin-create-modal" id="createAdminModal" aria-hidden="true" hidden>
+                <section class="modal-dialog admin-create-dialog" role="dialog" aria-modal="true" aria-labelledby="createAdminTitle">
+                    <div class="modal-header">
+                        <h2 id="createAdminTitle">Create Administrator</h2>
+                        <button class="modal-close" id="closeCreateAdmin" type="button" aria-label="Close">&times;</button>
+                    </div>
+                    <form id="createAdminForm" novalidate>
+                        <div class="modal-body admin-create-modal-body">
+                            <div class="form-grid-2x2">
+                                <div class="form-field"><label for="newAdminUsername">Username</label><input id="newAdminUsername" name="username" type="text" minlength="3" maxlength="50" pattern="[A-Za-z0-9][A-Za-z0-9._-]{2,49}" required></div>
+                                <div class="form-field"><label for="newAdminEmail">Email</label><input id="newAdminEmail" name="email" type="email" maxlength="254" required></div>
+                                <div class="form-field"><label for="newAdminDisplayName">Display Name</label><input id="newAdminDisplayName" name="display_name" type="text" maxlength="100"></div>
+                                <div class="form-field"><label for="newAdminPassword">Password</label><input id="newAdminPassword" name="password" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></div>
+                                <div class="form-field"><label for="newAdminPasswordConfirmation">Confirm Password</label><input id="newAdminPasswordConfirmation" name="password_confirmation" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></div>
+                            </div>
+                            <p id="createAdminStatus" class="admin-form-status" role="status" aria-live="polite"></p>
+                        </div>
+                        <div class="modal-footer admin-create-modal-footer">
+                            <button class="btn-primary" type="submit">Create Account</button>
+                            <button class="btn-secondary" id="cancelCreateAdmin" type="button">Cancel</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
         </section>
     </div>
 </main>
@@ -142,8 +155,23 @@ if (!$account) {
     });
 
     const adminAccountsRows = document.getElementById('adminAccountsRows');
+    const createAdminModal = document.getElementById('createAdminModal');
     const createAdminForm = document.getElementById('createAdminForm');
     const createAdminStatus = document.getElementById('createAdminStatus');
+    const createAdminTrigger = document.getElementById('showCreateAdmin');
+    const openCreateAdminModal = () => {
+        setCreateAdminStatus('');
+        createAdminModal.hidden = false;
+        createAdminModal.classList.add('active');
+        createAdminModal.setAttribute('aria-hidden', 'false');
+        document.getElementById('newAdminUsername').focus();
+    };
+    const closeCreateAdminModal = () => {
+        createAdminModal.classList.remove('active');
+        createAdminModal.setAttribute('aria-hidden', 'true');
+        createAdminModal.hidden = true;
+        createAdminTrigger.focus();
+    };
     const setCreateAdminStatus = (message, state = '') => {
         createAdminStatus.textContent = message;
         createAdminStatus.className = `admin-form-status${state ? ` is-${state}` : ''}`;
@@ -177,8 +205,19 @@ if (!$account) {
     function escapeAccountValue(value) {
         return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
     }
-    document.getElementById('showCreateAdmin').addEventListener('click', () => { createAdminForm.hidden = false; });
-    document.getElementById('cancelCreateAdmin').addEventListener('click', () => { createAdminForm.reset(); createAdminForm.hidden = true; setCreateAdminStatus(''); });
+    createAdminTrigger.addEventListener('click', openCreateAdminModal);
+    document.getElementById('cancelCreateAdmin').addEventListener('click', () => {
+        createAdminForm.reset();
+        setCreateAdminStatus('');
+        closeCreateAdminModal();
+    });
+    document.getElementById('closeCreateAdmin').addEventListener('click', closeCreateAdminModal);
+    createAdminModal.addEventListener('click', event => {
+        if (event.target === createAdminModal) closeCreateAdminModal();
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !createAdminModal.hidden) closeCreateAdminModal();
+    });
     createAdminForm.addEventListener('submit', async event => {
         event.preventDefault();
         if (!createAdminForm.reportValidity()) return;
