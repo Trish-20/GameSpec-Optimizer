@@ -2175,15 +2175,24 @@ body {
 .admin-create-dialog .modal-header { padding: 20px 24px 16px; }
 .admin-create-dialog .modal-header h2 { font-size: 20px; }
 .admin-create-dialog form { margin: 0; }
-.admin-create-modal-body { padding: 22px 24px 8px; }
+.admin-create-modal-body { padding: 22px 24px 14px; }
 .admin-create-modal-body .form-grid-2x2 { margin: 0; }
-.admin-create-modal-footer { padding: 16px 24px 22px; }
+.admin-create-modal-footer {
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 0;
+    padding: 14px 24px 22px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.admin-create-modal-footer .admin-form-status:not(:empty) {
+    display: block;
+    margin: 0 auto 0 0;
+}
 .admin-create-modal-footer .btn-primary,
 .admin-create-modal-footer .btn-secondary {
     min-height: 42px;
     margin: 0;
 }
-.admin-create-dialog .admin-form-status { margin-top: 12px; }
 .admin-create-form h4 { color: var(--color-text-main); margin: 18px 0 12px; }
 .feedback-voted-note { align-self: center; color: var(--color-text-muted); font-size: 12px; }
 .feedback-helpful-btn:disabled { opacity: .72; cursor: not-allowed; }
@@ -2193,9 +2202,10 @@ body {
     .prediction-detail-section dl { grid-template-columns: 1fr; }
     .admin-create-modal { padding: 12px; }
     .admin-create-dialog { max-height: calc(100vh - 24px); }
-    .admin-create-modal-body { padding: 18px 16px 6px; }
+    .admin-create-modal-body { padding: 18px 16px 12px; }
     .admin-create-dialog .modal-header { padding: 17px 16px 13px; }
-    .admin-create-modal-footer { padding: 14px 16px 18px; }
+    .admin-create-modal-footer { flex-wrap: wrap; padding: 14px 16px 18px; }
+    .admin-create-modal-footer .admin-form-status:not(:empty) { flex-basis: 100%; }
     .admin-create-modal-footer .btn-primary,
     .admin-create-modal-footer .btn-secondary { flex: 1 1 auto; }
 }

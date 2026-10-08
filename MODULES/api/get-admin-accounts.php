@@ -20,7 +20,13 @@ try {
         'SELECT username, email, role, status, created_at, last_login_at
          FROM users WHERE role = "admin" ORDER BY created_at DESC, username ASC'
     );
-    echo json_encode($statement->fetchAll(), JSON_UNESCAPED_UNICODE);
+    $databaseOffsetMinutes = (int) $database->query(
+        'SELECT TIMESTAMPDIFF(MINUTE, UTC_TIMESTAMP(), NOW())'
+    )->fetchColumn();
+    echo json_encode([
+        'accounts' => $statement->fetchAll(),
+        'database_utc_offset_minutes' => $databaseOffsetMinutes,
+    ], JSON_UNESCAPED_UNICODE);
 } catch (Throwable $error) {
     error_log('Admin account list could not be loaded.');
     http_response_code(500);

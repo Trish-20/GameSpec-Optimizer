@@ -104,9 +104,9 @@ if (!$account) {
                                 <div class="form-field"><label for="newAdminPassword">Password</label><input id="newAdminPassword" name="password" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></div>
                                 <div class="form-field"><label for="newAdminPasswordConfirmation">Confirm Password</label><input id="newAdminPasswordConfirmation" name="password_confirmation" type="password" minlength="12" maxlength="1024" autocomplete="new-password" required></div>
                             </div>
-                            <p id="createAdminStatus" class="admin-form-status" role="status" aria-live="polite"></p>
                         </div>
                         <div class="modal-footer admin-create-modal-footer">
+                            <p id="createAdminStatus" class="admin-form-status" role="status" aria-live="polite"></p>
                             <button class="btn-primary" type="submit">Create Account</button>
                             <button class="btn-secondary" id="cancelCreateAdmin" type="button">Cancel</button>
                         </div>
@@ -181,17 +181,26 @@ if (!$account) {
         try {
             const response = await adminFetch('../../../MODULES/api/get-admin-accounts.php');
             const accounts = await response.json();
-            if (!response.ok || !Array.isArray(accounts)) throw new Error(accounts.message || 'Unable to load administrator accounts.');
-            adminAccountsRows.innerHTML = accounts.length ? accounts.map(account => `<tr>
+            const accountList = Array.isArray(accounts) ? accounts : accounts.accounts;
+            if (!response.ok || !Array.isArray(accountList)) throw new Error(accounts.message || 'Unable to load administrator accounts.');
+            const databaseOffsetMinutes = Number.isFinite(Number(accounts.database_utc_offset_minutes))
+                ? Number(accounts.database_utc_offset_minutes)
+                : 0;
+            adminAccountsRows.innerHTML = accountList.length ? accountList.map(account => `<tr>
                 <td>${escapeAccountValue(account.username)}</td><td>${escapeAccountValue(account.email || '—')}</td>
                 <td>${escapeAccountValue(account.role)}</td><td>${escapeAccountValue(account.status)}</td>
-                <td>${escapeAccountValue(formatAdminDateTime(account.created_at))}</td><td>${escapeAccountValue(formatAdminDateTime(account.last_login_at))}</td>
+                <td>${escapeAccountValue(formatAdminDateTime(account.created_at, databaseOffsetMinutes))}</td><td>${escapeAccountValue(formatAdminDateTime(account.last_login_at, databaseOffsetMinutes))}</td>
             </tr>`).join('') : '<tr><td colspan="6">No administrator accounts found.</td></tr>';
         } catch (error) { adminAccountsRows.innerHTML = `<tr><td colspan="6">${escapeAccountValue(error.message || 'Account list unavailable.')}</td></tr>`; }
     }
-    function formatAdminDateTime(value) {
+    function formatAdminDateTime(value, databaseOffsetMinutes) {
         if (!value) return '—';
-        const date = new Date(String(value).replace(' ', 'T'));
+        const parts = String(value).match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+        if (!parts) return String(value);
+        const date = new Date(Date.UTC(
+            Number(parts[1]), Number(parts[2]) - 1, Number(parts[3]),
+            Number(parts[4]), Number(parts[5]), Number(parts[6] || 0)
+        ) - databaseOffsetMinutes * 60_000);
         if (Number.isNaN(date.getTime())) return String(value);
         return new Intl.DateTimeFormat('en-US', {
             month: 'short',
@@ -200,6 +209,7 @@ if (!$account) {
             hour: 'numeric',
             minute: '2-digit',
             hour12: true,
+            timeZone: 'Asia/Taipei',
         }).format(date);
     }
     function escapeAccountValue(value) {

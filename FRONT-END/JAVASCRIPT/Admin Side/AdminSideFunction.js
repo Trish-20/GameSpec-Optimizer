@@ -487,8 +487,24 @@
             // correct the CPU/GPU spelling and re-save it. get-games.php only
             // honours the flag for an authenticated admin session; users still
             // receive active games only.
-            const response = await adminFetch('../../../MODULES/api/get-games.php?include_inactive=1');
-            adminGames = (await response.json()).map(normalizeAdminGame);
+            const pageSize = 100;
+            const allGames = [];
+            for (let page = 1; ; page += 1) {
+                const query = new URLSearchParams({ include_inactive: '1', page: String(page), limit: String(pageSize) });
+                const response = await adminFetch(`../../../MODULES/api/get-games.php?${query}`);
+                const pageGames = await response.json();
+                if (!response.ok || !Array.isArray(pageGames)) {
+                    throw new Error(pageGames?.error || 'Unable to retrieve the complete game list.');
+                }
+
+                allGames.push(...pageGames);
+                if (pageGames.length < pageSize) break;
+            }
+
+            // The API orders every page alphabetically. Concatenating all pages
+            // retains that order while ensuring search and editing cover every
+            // game, including inactive games admins need to repair.
+            adminGames = allGames.map(normalizeAdminGame);
             populateDatalist('gameTitleOptions', adminGames.map(game => game.title));
             const [cpuResponse, gpuResponse] = await Promise.all([
                 adminFetch('../../../MODULES/api/get-cpus.php'),
