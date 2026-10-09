@@ -2971,7 +2971,7 @@
 
 .prediction-history {
     grid-column: 1 / -1;
-    width: 96%;
+    width: 100%;
     margin-top: -13px;
     box-sizing: border-box;
 }
