@@ -2840,17 +2840,37 @@ function showHardwareDetectionSummary(components, title = 'Hardware Detected') {
     body.replaceChildren(summary);
 }
 
+// Shown when fetch() to the local loopback endpoint fails. A network-level
+// rejection (rather than an HTTP response) means the Windows Hardware Detector
+// is not running, because nothing is listening on 127.0.0.1:43127.
+function showHardwareDetectorNotRunning() {
+    showModal(
+        'Hardware Detector is not running',
+        'Hardware Detector is not running. Please start it and try again.\n\n' +
+        '1. Find Start-GameSpec-Hardware-Detector.bat in the GameSpec Hardware Detector folder.\n' +
+        '2. Double-click it to start the detector and keep the window open.\n' +
+        '3. Come back to this page and click "Detect My Hardware" again.\n\n' +
+        'You can also select your CPU, GPU, and RAM manually below.'
+    );
+}
+
+// Reused message for any detection failure that is not specifically the
+// "detector not running" case.
+const DETECTOR_FAILED_MESSAGE = 'Hardware detection failed. Please try again or select your hardware manually.';
+
 async function detectHardware() {
     if (isDetectingHardware) return;
 
     isDetectingHardware = true;
     showHardwareDetectionLoading();
 
+    const loadingStatus = document.getElementById('hardwareDetectionLoadingStatus');
+    if (loadingStatus) loadingStatus.textContent = 'Detecting hardware...';
+
     try {
         await loadFPSPredictionDropdowns();
         detectedHardwareSelection = { cpu: null, gpu: null, ram: null };
         hardwareDetectionUsed = false;
-        const loadingStatus = document.getElementById('hardwareDetectionLoadingStatus');
         if (loadingStatus) loadingStatus.textContent = 'Connecting to the local detector...';
 
         let response;
@@ -2861,7 +2881,10 @@ async function detectHardware() {
                 cache: 'no-store'
             });
         } catch (error) {
-            throw new Error('Detector unavailable. Start GameSpec Hardware Detector and allow this website to access the local service. You can still select hardware manually.');
+            // fetch() rejecting here means nothing is listening on the loopback
+            // port, i.e. the Windows Hardware Detector is not running.
+            showHardwareDetectorNotRunning();
+            return;
         }
 
         if (loadingStatus) loadingStatus.textContent = 'Reading exact hardware matches...';
@@ -2871,7 +2894,7 @@ async function detectHardware() {
             return;
         }
         if (!response.ok || !result || !['matched', 'no_match'].includes(result.status)) {
-            throw new Error('Detector unavailable or returned an invalid response. Start or restart GameSpec Hardware Detector. You can still select hardware manually.');
+            throw new Error(DETECTOR_FAILED_MESSAGE);
         }
 
         const readMatch = (component, name) => {
@@ -2927,11 +2950,11 @@ async function detectHardware() {
                 componentSummary('GPU', gpuMatch),
                 componentSummary('RAM', ramMatch)
             ],
-            allMatched ? 'Hardware Detected' : 'Hardware Match Incomplete'
+            allMatched ? 'Hardware detected successfully' : 'Hardware Match Incomplete'
         );
     } catch (error) {
         console.error('Hardware detection failed:', error);
-        showModal('Detector Unavailable', error.message || 'Start GameSpec Hardware Detector or select hardware manually.');
+        showModal('Hardware detection failed', error.message || DETECTOR_FAILED_MESSAGE);
     } finally {
         isDetectingHardware = false;
         hideHardwareDetectionLoading();
