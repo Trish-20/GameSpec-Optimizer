@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../db.php';
-require_once __DIR__ . '/admin-auth.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -13,8 +12,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
     echo json_encode(['success' => false, 'message' => 'Method not allowed.']);
     exit;
 }
-requireAdminApi();
 
+// Public read: returns only approved, public-safe feedback fields.
+// The admin panel uses the separately gated get-feedback.php.
 try {
     $database = databaseConnection();
     $databaseOffsetMinutes = databaseUtcOffsetMinutes($database);

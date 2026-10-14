@@ -30,8 +30,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // valid-format request. This is not a security throttle.
             $requestAccepted = true;
             $deliverySucceeded = false;
+            // Fixed stage labels only — never values. Lets the catch block say
+            // how far processing got without leaking secrets.
+            $resetStage = 'start';
             try {
             $database = databaseConnection();
+            $resetStage = 'db_ok';
             $statement = $database->prepare(
                 'SELECT user_id, email
                  FROM users
@@ -56,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'selector' => $selector,
                     'token_hash' => hash('sha256', $validator),
                 ]);
+                $resetStage = 'token_created';
 
                 $environment = loadEnvironment();
                 // Configure APP_BASE_URL in Render, or use Render's service URL.
@@ -127,6 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ],
                     CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
                 ]);
+                $resetStage = 'brevo_attempted';
                 $responseBody = curl_exec($handle);
                 $curlFailed = $responseBody === false;
                 $curlErrno = $curlFailed ? (int) curl_errno($handle) : 0;
@@ -146,12 +152,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // can issue another link if delivery needs to be retried.
                 } else {
                     $deliverySucceeded = true;
+                    error_log('Password reset email accepted by Brevo.');
                 }
             }
         } catch (Throwable $error) {
             // Internal failure only; the public message stays generic.
             // Never include credentials, tokens, or emails in logs.
-            error_log('Admin password reset request could not be completed.');
+            // Stage is a fixed label, safe for diagnostics.
+            error_log('Admin password reset request could not be completed; stage=' . $resetStage . '.');
         }
         // Note: $requestAccepted remains true for any valid-format email so
         // the UI countdown is consistent and does not leak account existence.
@@ -199,7 +207,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <input id="email" name="email" type="email" autocomplete="email" maxlength="254" required value="<?= htmlspecialchars($emailValue, ENT_QUOTES, 'UTF-8') ?>">
                     </div>
                     <button type="submit" class="btn-primary" id="send-reset-link-btn">Send reset link</button>
-                    <a class="admin-login-back-link" href="login.php">Back to sign in</a>
+                    <a class="admin-login-back-link" id="back-to-sign-in" href="login.php">Back to sign in</a>
                 </form>
             </div>
         </section>
@@ -219,6 +227,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             var originalLabel = button.textContent;
             var timerId = null;
             var isSubmitting = false;
+
+            // Leaving for sign-in cancels the resend wait on this device.
+            // Refreshing this page keeps the stored cooldown (see resume block below).
+            var backLink = document.getElementById('back-to-sign-in');
+            if (backLink) {
+                backLink.addEventListener('click', function () {
+                    if (timerId !== null) {
+                        clearInterval(timerId);
+                        timerId = null;
+                    }
+                    try {
+                        localStorage.removeItem(STORAGE_KEY);
+                    } catch (storageError) {
+                        /* Storage unavailable: nothing to clear. */
+                    }
+                    // Do not preventDefault: navigation to login.php proceeds.
+                });
+            }
 
             function isValidEmail(value) {
                 return value.length > 0
