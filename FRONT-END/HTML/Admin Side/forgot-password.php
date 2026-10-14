@@ -8,14 +8,29 @@ require_once __DIR__ . '/../../../MODULES/db.php';
 startApplicationSession();
 
 $message = '';
+$formError = '';
+$requestAccepted = false;
+$emailValue = '';
 $csrf = csrfToken();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && hasValidCsrfToken()) {
-    $message = 'If an account matches that email, a reset link has been sent.';
-    $email = trim((string) ($_POST['email'] ?? ''));
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!hasValidCsrfToken()) {
+        $formError = 'This session has expired. Please refresh the page and try again.';
+    } else {
+        $email = trim((string) ($_POST['email'] ?? ''));
+        $emailValue = $email;
 
-    if ($email !== '' && strlen($email) <= 254 && filter_var($email, FILTER_VALIDATE_EMAIL) !== false) {
-        try {
+        if ($email === '' || strlen($email) > 254 || filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            $formError = 'Please enter a valid email address.';
+        } else {
+            // Generic public response for every valid-format address so the
+            // page never reveals whether an account exists (anti-enumeration).
+            $message = 'If an account matches that email, a reset link has been sent.';
+            // UI convenience only: allow the frontend countdown for any
+            // valid-format request. This is not a security throttle.
+            $requestAccepted = true;
+            $deliverySucceeded = false;
+            try {
             $database = databaseConnection();
             $statement = $database->prepare(
                 'SELECT user_id, email
@@ -114,17 +129,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && hasValidCsrfToken()) {
                 ]);
                 $responseBody = curl_exec($handle);
                 $curlFailed = $responseBody === false;
+                $curlErrno = $curlFailed ? (int) curl_errno($handle) : 0;
                 $httpStatus = (int) curl_getinfo($handle, CURLINFO_HTTP_CODE);
                 curl_close($handle);
 
                 if ($curlFailed || $httpStatus < 200 || $httpStatus >= 300) {
-                    error_log('Password reset email delivery failed; Brevo HTTP status ' . $httpStatus . '.');
+                    // Internal delivery state only. The public message stays
+                    // generic so account existence is never revealed.
+                    // Never log API keys, tokens, emails, or response bodies.
+                    error_log(sprintf(
+                        'Password reset email delivery failed; Brevo HTTP status %d; curl errno %d.',
+                        $httpStatus,
+                        $curlErrno
+                    ));
                     // Keep the hashed token valid for 60 minutes. A new request
                     // can issue another link if delivery needs to be retried.
+                } else {
+                    $deliverySucceeded = true;
                 }
             }
         } catch (Throwable $error) {
+            // Internal failure only; the public message stays generic.
+            // Never include credentials, tokens, or emails in logs.
             error_log('Admin password reset request could not be completed.');
+        }
+        // Note: $requestAccepted remains true for any valid-format email so
+        // the UI countdown is consistent and does not leak account existence.
+        // $deliverySucceeded is the internal Brevo result only.
         }
     }
 }
@@ -157,20 +188,129 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && hasValidCsrfToken()) {
                     <h2>Reset your password</h2>
                 </div>
                 <div class="admin-login-error-slot">
+                    <?php if ($formError !== ''): ?><div class="admin-login-error" role="alert"><?= htmlspecialchars($formError, ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
                     <p class="admin-login-recovery-message"><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></p>
                 </div>
-                <form method="post">
+                <form method="post" id="forgot-password-form" data-reset-accepted="<?= $requestAccepted ? '1' : '0' ?>">
                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
                     <label for="email">Email address</label>
                     <div class="admin-login-input-wrap">
                         <i class="fa-solid fa-envelope" aria-hidden="true"></i>
-                        <input id="email" name="email" type="email" autocomplete="email" maxlength="254" required>
+                        <input id="email" name="email" type="email" autocomplete="email" maxlength="254" required value="<?= htmlspecialchars($emailValue, ENT_QUOTES, 'UTF-8') ?>">
                     </div>
-                    <button type="submit" class="btn-primary">Send reset link</button>
+                    <button type="submit" class="btn-primary" id="send-reset-link-btn">Send reset link</button>
                     <a class="admin-login-back-link" href="login.php">Back to sign in</a>
                 </form>
             </div>
         </section>
     </main>
+    <script>
+        (function () {
+            // 60-second resend cooldown: UI convenience only, not a security
+            // throttle. localStorage lets the countdown survive a refresh.
+            var COOLDOWN_SECONDS = 60;
+            var STORAGE_KEY = 'gamespec_pw_reset_cooldown_until';
+            var form = document.getElementById('forgot-password-form');
+            var button = document.getElementById('send-reset-link-btn');
+            var emailInput = document.getElementById('email');
+            if (!form || !button) {
+                return;
+            }
+            var originalLabel = button.textContent;
+            var timerId = null;
+            var isSubmitting = false;
+
+            function isValidEmail(value) {
+                return value.length > 0
+                    && value.length <= 254
+                    && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+            }
+
+            function clearTimer() {
+                if (timerId !== null) {
+                    clearInterval(timerId);
+                    timerId = null;
+                }
+            }
+
+            function renderCountdown(remaining) {
+                button.disabled = true;
+                button.setAttribute('aria-disabled', 'true');
+                button.textContent = 'Resend link in ' + remaining + ' second' + (remaining === 1 ? '' : 's');
+            }
+
+            function finishCountdown() {
+                clearTimer();
+                try {
+                    localStorage.removeItem(STORAGE_KEY);
+                } catch (storageError) {
+                    /* Storage unavailable: countdown simply does not persist. */
+                }
+                button.disabled = false;
+                button.removeAttribute('aria-disabled');
+                button.textContent = originalLabel;
+            }
+
+            function startCountdown(seconds) {
+                var until = Date.now() + seconds * 1000;
+                try {
+                    localStorage.setItem(STORAGE_KEY, String(until));
+                } catch (storageError) {
+                    /* Storage unavailable: countdown runs for this view only. */
+                }
+                tick(until);
+                clearTimer();
+                timerId = setInterval(function () {
+                    tick(until);
+                }, 1000);
+            }
+
+            function tick(until) {
+                var remaining = Math.ceil((until - Date.now()) / 1000);
+                if (remaining <= 0) {
+                    finishCountdown();
+                    return;
+                }
+                renderCountdown(remaining);
+            }
+
+            // Resume a cooldown started before a refresh.
+            var storedUntil = 0;
+            try {
+                storedUntil = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10) || 0;
+            } catch (storageError) {
+                storedUntil = 0;
+            }
+            if (storedUntil > Date.now()) {
+                clearTimer();
+                timerId = setInterval(function () {
+                    tick(storedUntil);
+                }, 1000);
+                tick(storedUntil);
+            } else if (form.getAttribute('data-reset-accepted') === '1') {
+                // The server accepted a valid-format request on this load.
+                startCountdown(COOLDOWN_SECONDS);
+            }
+
+            form.addEventListener('submit', function (event) {
+                if (isSubmitting || button.disabled) {
+                    // Prevent repeated clicks / duplicate posts during cooldown.
+                    event.preventDefault();
+                    return;
+                }
+                var value = (emailInput && emailInput.value ? emailInput.value : '').trim();
+                if (!isValidEmail(value)) {
+                    event.preventDefault();
+                    if (emailInput) {
+                        emailInput.focus();
+                    }
+                    return;
+                }
+                isSubmitting = true;
+                button.disabled = true;
+                button.setAttribute('aria-disabled', 'true');
+            });
+        })();
+    </script>
 </body>
 </html>

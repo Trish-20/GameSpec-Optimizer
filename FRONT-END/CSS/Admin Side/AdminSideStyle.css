@@ -2071,7 +2071,7 @@ body {
     color: var(--color-text-muted);
     font-size: 13px;
     line-height: 1.5;
-    text-align: left;
+    text-align: center;
 }
 
 .admin-login-recovery-message a,
