@@ -45,16 +45,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             );
             $statement->execute(['email' => $email]);
             $user = $statement->fetch();
+            $resetStage = 'admin_lookup_done';
 
             if ($user) {
                 $selector = bin2hex(random_bytes(16));
                 $validator = bin2hex(random_bytes(32));
+                $resetStage = 'token_generated';
                 $insert = $database->prepare(
                     'INSERT INTO admin_password_resets
                         (user_id, selector, token_hash, expires_at)
                      VALUES
                      (:user_id, :selector, :token_hash, DATE_ADD(NOW(), INTERVAL 60 MINUTE))'
                 );
+                $resetStage = 'token_prepare_ok';
                 $insert->execute([
                     'user_id' => (int) $user['user_id'],
                     'selector' => $selector,
@@ -157,9 +160,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         } catch (Throwable $error) {
             // Internal failure only; the public message stays generic.
-            // Never include credentials, tokens, or emails in logs.
-            // Stage is a fixed label, safe for diagnostics.
-            error_log('Admin password reset request could not be completed; stage=' . $resetStage . '.');
+            // Never include credentials, tokens, emails, messages, or URLs.
+            // Stage is a fixed label; code is a 5-char SQLSTATE or a fixed word.
+            $diagCode = ($error instanceof PDOException) ? (string) $error->getCode() : 'non-pdo';
+            if (!preg_match('/^[0-9A-Z]{5}$/', $diagCode)) {
+                $diagCode = 'non-sqlstate';
+            }
+            error_log('Admin password reset request could not be completed; stage=' . $resetStage . '; code=' . $diagCode . '.');
         }
         // Note: $requestAccepted remains true for any valid-format email so
         // the UI countdown is consistent and does not leak account existence.
