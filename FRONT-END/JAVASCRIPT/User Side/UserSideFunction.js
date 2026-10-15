@@ -2771,7 +2771,12 @@ function detectApproximateRamGb() {
 // score in sync, and fall back to writing the inputs directly.
 function applyCpuSelection(match) {
     if (searchDropdownApis.cpu) {
-        searchDropdownApis.cpu.setItem(match || null);
+        const catalogueMatch = match && Array.isArray(cpus)
+            ? cpus.find(cpu => cpu
+                && String(cpu.model || '').trim().toLowerCase() === String(match.model || '').trim().toLowerCase()
+                && Number(cpu.score) === Number(match.score))
+            : null;
+        searchDropdownApis.cpu.setItem(catalogueMatch || null);
         return;
     }
     const search = document.getElementById('cpuSearch');
@@ -2843,16 +2848,36 @@ function showHardwareDetectionSummary(components, title = 'Hardware Detected') {
 // Shown when fetch() to the local loopback endpoint fails. A network-level
 // rejection (rather than an HTTP response) means the Windows Hardware Detector
 // is not running, because nothing is listening on 127.0.0.1:43127.
+
 function showHardwareDetectorNotRunning() {
+    const downloadUrl =
+        'https://gamespec-optimizer.onrender.com/downloads/GameSpec-Hardware-Detector-win-x64.zip';
+
     showModal(
         'Hardware Detector is not running',
-        'Hardware Detector is not running. Please start it and try again.\n\n' +
-        '1. Find Start-GameSpec-Hardware-Detector.bat in the GameSpec Hardware Detector folder.\n' +
-        '2. Double-click it to start the detector and keep the window open.\n' +
-        '3. Come back to this page and click "Detect My Hardware" again.\n\n' +
+        'The Hardware Detector is not running on your computer.\n\n' +
+        '1. Click the download link below to download the Windows Hardware Detector.\n' +
+        '2. Extract the ZIP file.\n' +
+        '3. Double-click Start-GameSpec-Hardware-Detector.bat and keep its window open.\n' +
+        '4. Return to this page and click "Detect My Hardware" again.\n\n' +
         'You can also select your CPU, GPU, and RAM manually below.'
     );
+
+    const modalBody = document.getElementById('modalBody');
+    if (!modalBody) return;
+
+    const downloadLink = document.createElement('a');
+    downloadLink.href = downloadUrl;
+    downloadLink.download = 'GameSpec-Hardware-Detector-win-x64.zip';
+    downloadLink.textContent = 'Download Windows Hardware Detector';
+    downloadLink.className = 'hardware-detector-download-link';
+    downloadLink.style.display = 'inline-block';
+    downloadLink.style.marginTop = '12px';
+
+    modalBody.appendChild(document.createElement('br'));
+    modalBody.appendChild(downloadLink);
 }
+
 
 // Reused message for any detection failure that is not specifically the
 // "detector not running" case.
@@ -2868,23 +2893,81 @@ async function detectHardware() {
     if (loadingStatus) loadingStatus.textContent = 'Detecting hardware...';
 
     try {
+        const detectorUrl = 'http://127.0.0.1:43127/v1/hardware-match';
+        // Start the loopback request in the button's click task so browsers
+        // that gate local-network access can present their permission prompt.
+        const detectorRequest = fetch(detectorUrl, {
+            method: 'GET',
+            mode: 'cors',
+            cache: 'no-store'
+        }).then(
+            response => ({ response }),
+            error => ({ error })
+        );
         await loadFPSPredictionDropdowns();
         detectedHardwareSelection = { cpu: null, gpu: null, ram: null };
         hardwareDetectionUsed = false;
         if (loadingStatus) loadingStatus.textContent = 'Connecting to the local detector...';
 
-        let response;
-        try {
-            response = await fetch('http://127.0.0.1:43127/v1/hardware-match', {
-                method: 'GET',
-                mode: 'cors',
-                cache: 'no-store'
-            });
-        } catch (error) {
-            // fetch() rejecting here means nothing is listening on the loopback
-            // port, i.e. the Windows Hardware Detector is not running.
-            showHardwareDetectorNotRunning();
-            return;
+        const detectorAttempt = await detectorRequest;
+        let response = detectorAttempt.response;
+        if (detectorAttempt.error) {
+            // A CORS or browser local-network restriction can also reject the
+            // match request even when the detector is listening. Probe its
+            // lightweight endpoint without reading the cross-origin response.
+            let loopbackAccessDenied = false;
+            if (navigator.permissions?.query) {
+                for (const permissionName of ['loopback-network', 'local-network-access']) {
+                    try {
+                        const permission = await navigator.permissions.query({ name: permissionName });
+                        if (permission.state === 'denied') loopbackAccessDenied = true;
+                        break;
+                    } catch (permissionError) {
+                        // Older browsers may not recognize these permission names.
+                    }
+                }
+            }
+
+            if (loopbackAccessDenied) {
+                showModal(
+                    'Local Network Access Blocked',
+                    'Your browser is blocking this website from connecting to the local Hardware Detector. Allow local network or loopback access for gamespec-optimizer.onrender.com in the browser site settings, then try again.'
+                );
+                return;
+            }
+
+            let detectorReachable = false;
+            try {
+                await fetch('http://127.0.0.1:43127/health', {
+                    method: 'GET',
+                    mode: 'no-cors',
+                    cache: 'no-store'
+                });
+                detectorReachable = true;
+            } catch (probeError) {
+                // A failed loopback probe means the detector cannot be reached.
+            }
+
+            if (!detectorReachable) {
+                showHardwareDetectorNotRunning();
+                return;
+            }
+
+            // The health request may have prompted for browser permission. Try
+            // the readable match request again now that reachability is known.
+            try {
+                response = await fetch(detectorUrl, {
+                    method: 'GET',
+                    mode: 'cors',
+                    cache: 'no-store'
+                });
+            } catch (retryError) {
+                showModal(
+                    'Unable to Read Hardware Detector',
+                    'The local Hardware Detector is reachable, but the browser could not read its response. Check the website origin and local network access permission, then try again.'
+                );
+                return;
+            }
         }
 
         if (loadingStatus) loadingStatus.textContent = 'Reading exact hardware matches...';
