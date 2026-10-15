@@ -1256,6 +1256,33 @@ function updateBrowseResultCount(visibleCount, totalCount) {
         : `${visible} of ${total} games`;
 }
 
+// Remove Markdown ATX heading markers only from game descriptions that are
+// shown to users. The original description remains untouched for filtering,
+// API data, and admin editing.
+function formatGameDescriptionForDisplay(description) {
+    const source = String(description ?? '');
+    const withoutHeadingMarkers = source.replace(
+        /(^|\r?\n)([ \t]{0,3})(#{1,6})([ \t]*)([^\r\n]*?)(?:[ \t]+#{1,6}[ \t]*)?(?=\r?\n|$)/g,
+        (line, lineBreak, indentation, markers, spacing, heading) => {
+            const headingText = heading.trimEnd().replace(/#{2,6}$/, '');
+            const hasMarkdownSpacing = spacing.length > 0;
+            const compactHeading = /^[A-Z][a-z]/.test(headingText)
+                && (markers.length > 1 || /^[A-Z][a-z]+(?:[ \t]+[A-Z][a-z]+)*$/.test(headingText));
+            const markerOnlyLine = markers.length > 1 && headingText.trim() === '';
+
+            if (!hasMarkdownSpacing && !compactHeading && !markerOnlyLine) return line;
+            return `${lineBreak}${indentation}${headingText}`;
+        }
+    );
+
+    // Some imported descriptions place section markers directly between
+    // sections or leave a marker run at the end of a section line.
+    return withoutHeadingMarkers
+        .replace(/([.!?])[ \t]*#{1,6}[ \t]*(?=[A-Z][a-z])/g, '$1\n')
+        .replace(/#{2,6}[ \t]*(?=[A-Z][a-z])/g, '\n')
+        .replace(/[ \t]+#{1,6}[ \t]*(?=\r?\n|$)/g, '');
+}
+
 function openGameDetailsModal(titleRaw) {
     const game = games.find(item => item.title_raw === titleRaw);
     const modal = document.getElementById('gameDetailsModal');
@@ -1290,7 +1317,7 @@ function openGameDetailsModal(titleRaw) {
     const badge = document.getElementById('gameModalBadge');
     if (badge) badge.innerHTML = `<span class="req-badge req-${requirement.value}"><i class="fas ${requirement.icon}"></i> ${requirement.label}</span>`;
     const descEl = document.getElementById('gameModalDescription');
-    if (descEl) descEl.textContent = description;
+    if (descEl) descEl.textContent = formatGameDescriptionForDisplay(description);
     const simple = document.getElementById('gameModalSimple');
     if (simple) {
         simple.innerHTML = `<h4>What you'll need</h4><ul><li><i class="fas fa-memory"></i> ${memoryText}</li><li><i class="fas fa-display"></i> ${graphicsText}</li><li><i class="fas fa-microchip"></i> ${processorText}</li></ul>`;
