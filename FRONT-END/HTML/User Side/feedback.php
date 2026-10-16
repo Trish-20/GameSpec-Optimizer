@@ -110,33 +110,25 @@
 
         <form class="modal-body feedback-form" id="feedbackForm" onsubmit="handleFeedbackSubmit(event)">
             <p class="feedback-form-intro">Tell us about your experience with GameSpec Optimizer.</p>
-            <label for="feedbackTitle">Title</label>
+            <p class="feedback-required-note"><span class="required-indicator" aria-hidden="true">*</span> Required fields</p>
+            <label for="feedbackTitle">Title <span class="required-indicator" aria-hidden="true">*</span></label>
             <input id="feedbackTitle" name="title" type="text" placeholder="Short summary" required>
 
-            <label for="feedbackComment">Your feedback</label>
+            <label for="feedbackComment">Your feedback <span class="required-indicator" aria-hidden="true">*</span></label>
             <textarea id="feedbackComment" name="comment" placeholder="Tell us what you think..." required></textarea>
 
-            <label id="ratingLabel">Rating</label>
-                <div class="star-rating" role="radiogroup" aria-labelledby="ratingLabel">
+            <label id="ratingLabel">Rating <span class="required-indicator" aria-hidden="true">*</span></label>
+            <div class="star-rating" role="radiogroup" aria-labelledby="ratingLabel" aria-required="true">
+                <input id="feedbackRatingValue" type="hidden" name="rating" value="">
+                <button class="star" type="button" role="radio" aria-checked="false" aria-label="1 star" data-rating="1" tabindex="0">★</button>
+                <button class="star" type="button" role="radio" aria-checked="false" aria-label="2 stars" data-rating="2" tabindex="-1">★</button>
+                <button class="star" type="button" role="radio" aria-checked="false" aria-label="3 stars" data-rating="3" tabindex="-1">★</button>
+                <button class="star" type="button" role="radio" aria-checked="false" aria-label="4 stars" data-rating="4" tabindex="-1">★</button>
+                <button class="star" type="button" role="radio" aria-checked="false" aria-label="5 stars" data-rating="5" tabindex="-1">★</button>
+            </div>
+            <div class="star-rating-scale" aria-hidden="true"><span>Poor</span><span>Excellent</span></div>
 
-                    <input id="rating5" type="radio" name="rating" value="5">
-                    <label for="rating5" class="star" aria-label="5 stars">★</label>
-
-                    <input id="rating4" type="radio" name="rating" value="4">
-                    <label for="rating4" class="star" aria-label="4 stars">★</label>
-
-                    <input id="rating3" type="radio" name="rating" value="3">
-                    <label for="rating3" class="star" aria-label="3 stars">★</label>
-
-                    <input id="rating2" type="radio" name="rating" value="2">
-                    <label for="rating2" class="star" aria-label="2 stars">★</label>
-
-                    <input id="rating1" type="radio" name="rating" value="1" required>
-                    <label for="rating1" class="star" aria-label="1 star">★</label>
-
-                </div>
-
-            <label for="feedbackUsername">Name</label>
+            <label for="feedbackUsername">Name <span class="optional-indicator">(optional)</span></label>
             <input id="feedbackUsername" name="username" type="text" placeholder="Your name (optional)">
 
             <div class="modal-footer">
@@ -155,6 +147,38 @@ document.querySelector('[data-page="feedback"]')?.classList.add("active");
 
 if (typeof loadFeedbackPage === "function") {
     loadFeedbackPage();
+}
+
+const feedbackRatingGroup = document.querySelector("#feedbackForm .star-rating");
+if (feedbackRatingGroup) {
+    const ratingButtons = [...feedbackRatingGroup.querySelectorAll("button[data-rating]")];
+    const ratingValue = document.getElementById("feedbackRatingValue");
+    const paintRating = (rating) => ratingButtons.forEach((button) => {
+        const value = Number(button.dataset.rating);
+        button.classList.toggle("is-filled", value <= rating);
+        button.setAttribute("aria-checked", String(value === Number(ratingValue.value)));
+        button.tabIndex = value === Number(ratingValue.value || 1) ? 0 : -1;
+    });
+    const selectRating = (rating) => {
+        ratingValue.value = String(rating);
+        paintRating(rating);
+    };
+    ratingButtons.forEach((button, index) => {
+        button.addEventListener("click", () => selectRating(Number(button.dataset.rating)));
+        button.addEventListener("mouseenter", () => paintRating(Number(button.dataset.rating)));
+        button.addEventListener("keydown", (event) => {
+            let nextIndex = index;
+            if (event.key === "ArrowRight" || event.key === "ArrowUp") nextIndex = Math.min(index + 1, ratingButtons.length - 1);
+            else if (event.key === "ArrowLeft" || event.key === "ArrowDown") nextIndex = Math.max(index - 1, 0);
+            else if (event.key === "Home") nextIndex = 0;
+            else if (event.key === "End") nextIndex = ratingButtons.length - 1;
+            else return;
+            event.preventDefault();
+            ratingButtons[nextIndex].focus();
+            selectRating(Number(ratingButtons[nextIndex].dataset.rating));
+        });
+    });
+    feedbackRatingGroup.addEventListener("mouseleave", () => paintRating(Number(ratingValue.value || 0)));
 }
 
 </script>

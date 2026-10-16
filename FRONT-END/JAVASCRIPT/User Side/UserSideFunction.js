@@ -393,7 +393,8 @@ const helpCenterSections = [
         icon: 'fa-search',
         title: 'Hardware Detection',
         content:
-            '<p>GameSpec Optimizer can fill in your hardware from what your browser reports. On the FPS Prediction page, click the <strong>Detect Hardware</strong> button and your CPU, GPU and RAM are suggested. Browsers only share an approximate picture, so always check the suggestions against your own machine before analyzing.</p>' +
+            '<p>On the FPS Prediction page, click <strong>Detect My Hardware</strong> to read your CPU, GPU and RAM with the local Hardware Detector and match them to the benchmark catalogue.</p>' +
+            '<p>If a browser permission prompt appears near the upper-left of the window, choose <strong>Allow</strong> for GameSpec Optimizer to connect to the local Hardware Detector.</p>' +
             '<div class="help-image">' +
                 '<img src="../../RES/Tutorials/hardware-detection/detect_hardware.png" ' +
                     'alt="FPS Prediction page after selecting Can I Run This">' +
@@ -2880,29 +2881,83 @@ function showHardwareDetectorNotRunning() {
     const downloadUrl =
         'https://gamespec-optimizer.onrender.com/downloads/GameSpec-Hardware-Detector-win-x64.zip';
 
-    showModal(
-        'Hardware Detector is not running',
-        'The Hardware Detector is not running on your computer.\n\n' +
-        '1. Click the download link below to download the Windows Hardware Detector.\n' +
-        '2. Extract the ZIP file.\n' +
-        '3. Double-click Start-GameSpec-Hardware-Detector.bat and keep its window open.\n' +
-        '4. Return to this page and click "Detect My Hardware" again.\n\n' +
-        'You can also select your CPU, GPU, and RAM manually below.'
-    );
+    showModal('Hardware Detector is not running', '');
 
     const modalBody = document.getElementById('modalBody');
     if (!modalBody) return;
+    modalBody.replaceChildren();
+
+    const instructions = document.createElement('div');
+    instructions.className = 'hardware-detector-instructions';
+
+    const intro = document.createElement('p');
+    intro.className = 'hardware-detector-intro';
+    intro.textContent = 'The Hardware Detector is not running on your computer.';
+    instructions.appendChild(intro);
+
+    const steps = document.createElement('ol');
+    steps.className = 'hardware-detector-steps';
+    [
+        'Click the download link below to download the Windows Hardware Detector.',
+        'Extract the ZIP file.',
+        'Double-click Start-GameSpec-Hardware-Detector.bat and keep its window open.',
+        'Return to this page and click "Detect My Hardware" again.'
+    ].forEach(text => {
+        const step = document.createElement('li');
+        step.textContent = text;
+        steps.appendChild(step);
+    });
+    instructions.appendChild(steps);
+
+    const fallback = document.createElement('p');
+    fallback.className = 'hardware-detector-fallback';
+    fallback.textContent = 'You can also select your CPU, GPU, and RAM manually below.';
+    instructions.appendChild(fallback);
 
     const downloadLink = document.createElement('a');
     downloadLink.href = downloadUrl;
     downloadLink.download = 'GameSpec-Hardware-Detector-win-x64.zip';
     downloadLink.textContent = 'Download Windows Hardware Detector';
     downloadLink.className = 'hardware-detector-download-link';
-    downloadLink.style.display = 'inline-block';
-    downloadLink.style.marginTop = '12px';
+    instructions.appendChild(downloadLink);
 
-    modalBody.appendChild(document.createElement('br'));
-    modalBody.appendChild(downloadLink);
+    const appendInstructionSection = (headingText, paragraphs, className, emphasisText = null) => {
+        const section = document.createElement('section');
+        section.className = `hardware-detector-section ${className}`;
+
+        const heading = document.createElement('h3');
+        heading.textContent = headingText;
+        section.appendChild(heading);
+
+        paragraphs.forEach(text => {
+            const paragraph = document.createElement('p');
+            paragraph.textContent = text;
+            if (emphasisText && text.includes(emphasisText)) {
+                const [before, after] = text.split(emphasisText);
+                const emphasis = document.createElement('strong');
+                emphasis.textContent = emphasisText;
+                paragraph.replaceChildren(
+                    document.createTextNode(before),
+                    emphasis,
+                    document.createTextNode(after)
+                );
+            }
+            section.appendChild(paragraph);
+        });
+        instructions.appendChild(section);
+    };
+
+    appendInstructionSection('Browser permission (if needed)', [
+        "Some browsers may ask for permission to access your device's local network when connecting to the Hardware Detector. If this prompt appears and clearly relates to GameSpec Optimizer and its local detector, click Allow to continue.",
+        "If you accidentally clicked Block, check your browser's site permissions and allow local-network access if that option is available.",
+        'If no permission prompt appears, no action is needed.'
+    ], 'hardware-detector-permissions', 'Allow');
+
+    appendInstructionSection('Notes', [
+        'The hardware detector only reads your CPU, RAM size, and GPU and nothing else'
+    ], 'hardware-detector-notes');
+
+    modalBody.appendChild(instructions);
 }
 
 
