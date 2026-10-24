@@ -40,6 +40,7 @@ try {
 
     fwrite(STDOUT, "Admin account created.\n");
 } catch (Throwable $error) {
-    fwrite(STDERR, "Unable to create admin account.\n");
+    fwrite(STDERR, "Unable to create admin account: " . $error->getMessage() . "\n");
     exit(1);
 }
+

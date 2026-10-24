@@ -3636,7 +3636,7 @@ async function predictFPS() {
             </div>
         `;
 
-        if (estimatedFPS < 45 && bottlenecks.length > 0) {
+        if (estimatedFPS < 60 && bottlenecks.length > 0) {
             html += `
                 <div class="result-section danger">
                     <h4>Performance Bottlenecks</h4>
