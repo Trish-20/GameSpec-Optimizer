@@ -140,9 +140,9 @@ async function initializeFPSPredictionDropdowns() {
         { label: 'High', value: 'high' }
     ], item => item.label, item => item.value);
     initSearchDropdown('performanceMode', [
-        { label: 'Battery Saver', value: 'battery' },
-        { label: 'Balanced', value: 'balanced' },
-        { label: 'Performance', value: 'performance' }
+        { label: 'Battery Saver - Better Battery Life, Weaker Performance', value: 'battery' },
+        { label: 'Balanced - Good Battery Life, Good Performance', value: 'balanced' },
+        { label: 'Performance - Shorter Battery Life, Maximum Performance', value: 'performance' }
     ], item => item.label, item => item.value);
 
     // The markup already carries default values in the hidden inputs (for
