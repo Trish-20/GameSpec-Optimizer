@@ -362,6 +362,54 @@
     }
 }
 
+/* Browse Games toolbar responsive layout */
+@media (max-width: 1100px) {
+    .browse-top-section .search-filter-container {
+        grid-template-columns: minmax(210px, 1fr) max-content minmax(185px, 210px) 44px;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 1000px) {
+    .browse-top-section .search-filter-container {
+        grid-template-columns: minmax(0, 1fr) 44px;
+        gap: 10px;
+    }
+
+    .browse-top-section .search-box { grid-column: 1 / -1; }
+    .browse-top-section .more-filters-btn { width: 100%; grid-column: 1; }
+    .browse-top-section .sort-filter { grid-column: 1; grid-row: 3; }
+    .browse-top-section .search-filter-container .toolbar-theme-toggle { grid-column: 2; grid-row: 3; justify-self: end; }
+}
+
+@media (max-width: 600px) {
+    .browse-top-section .search-filter-container {
+        grid-template-columns: minmax(0, 1fr);
+        align-items: stretch;
+        gap: 9px;
+        margin-top: 15px;
+    }
+
+    .browse-top-section .search-box,
+    .browse-top-section .more-filters-btn,
+    .browse-top-section .sort-filter { grid-column: 1; width: 100%; }
+    .browse-top-section .sort-filter { grid-row: auto; }
+    .browse-top-section .search-filter-container .toolbar-theme-toggle { grid-column: 1; grid-row: auto; justify-self: end; }
+    .browse-top-section h2 { font-size: 22px; }
+    .browse-top-section .browse-subtitle { font-size: 13px; line-height: 1.45; }
+}
+
+@media (max-width: 600px) {
+    .top-header .app-title {
+        position: absolute;
+        left: 50%;
+        width: calc(100% - 112px);
+        flex: none;
+        transform: translateX(-50%);
+        text-align: center;
+    }
+}
+
 /* ==========================================================
    18) REMAINING POPUP + OVERFLOW SURFACES
    Everything else was already handled:

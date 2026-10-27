@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FPS Prediction - GameSpec Optimizer</title>
+    <script>try { document.documentElement.dataset.theme = localStorage.getItem('gamespec-theme') === 'dark' ? 'dark' : 'light'; } catch (e) {}</script>
     <link rel="stylesheet" href="../../CSS/User Side/UserSideStyle.css">
     <!-- Mobile layout layer: every rule sits inside a max-width media
          query, so desktop rendering is left completely untouched. -->

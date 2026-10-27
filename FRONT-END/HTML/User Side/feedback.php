@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Community Feedback - GameSpec Optimizer</title>
+    <script>try { document.documentElement.dataset.theme = localStorage.getItem('gamespec-theme') === 'dark' ? 'dark' : 'light'; } catch (e) {}</script>
 
     <link rel="stylesheet" href="../../CSS/User Side/UserSideStyle.css">
     <!-- Mobile layout layer: every rule sits inside a max-width media
@@ -28,7 +29,7 @@
             Community Feedback
         </h2>
 
-        <section class="feedback-toolbar">
+        <section class="feedback-toolbar" aria-label="Search and filter community reviews">
 
             <div class="feedback-search">
                 <i class="fas fa-search"></i>
@@ -36,18 +37,19 @@
                     type="text"
                     id="feedbackSearch"
                     placeholder="Search reviews..."
+                    aria-label="Search reviews"
                     oninput="filterFeedback()">
             </div>
 
            
 
-                        <div class="search-dropdown" id="ratingFilterDropdown">
-                <input type="text" class="search-input" id="ratingFilterSearch" placeholder="Filter by rating..." autocomplete="off">
+            <div class="search-dropdown" id="ratingFilterDropdown">
+                <input type="text" class="search-input" id="ratingFilterSearch" placeholder="Filter by rating..." autocomplete="off" aria-label="Filter reviews by rating">
                 <input type="hidden" id="ratingFilter" value="">
                 <div class="dropdown-list" id="ratingFilterDropdownList"></div>
             </div>
 
-             <button class="feedback-add-btn" type="button" onclick="openFeedbackModal()">
+            <button class="feedback-add-btn" type="button" onclick="openFeedbackModal()">
                 <i class="fas fa-plus"></i>
                 Add Feedback
             </button>
@@ -104,32 +106,42 @@
 <div class="modal-overlay" id="feedbackModalOverlay" onclick="if (event.target.id === 'feedbackModalOverlay') closeFeedbackModal();">
     <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="feedbackModalTitle">
         <div class="modal-header">
-            <h2 id="feedbackModalTitle">Share Your Feedback</h2>
+            <div class="feedback-modal-heading">
+                <h2 id="feedbackModalTitle">Share Your Feedback</h2>
+                <p class="feedback-modal-subtitle">Help us make GameSpec Optimizer better.</p>
+            </div>
             <button class="modal-close" type="button" onclick="closeFeedbackModal()" aria-label="Close feedback form">×</button>
         </div>
 
         <form class="modal-body feedback-form" id="feedbackForm" onsubmit="handleFeedbackSubmit(event)">
             <p class="feedback-form-intro">Tell us about your experience with GameSpec Optimizer.</p>
             <p class="feedback-required-note"><span class="required-indicator" aria-hidden="true">*</span> Required fields</p>
-            <label for="feedbackTitle">Title <span class="required-indicator" aria-hidden="true">*</span></label>
-            <input id="feedbackTitle" name="title" type="text" placeholder="Short summary" required>
+            <fieldset class="feedback-form-section">
+                <legend>Review details</legend>
+                <label for="feedbackTitle">Title <span class="required-indicator" aria-hidden="true">*</span></label>
+                <input id="feedbackTitle" name="title" type="text" placeholder="Short summary" required>
+                <label for="feedbackComment">Your feedback <span class="required-indicator" aria-hidden="true">*</span></label>
+                <textarea id="feedbackComment" name="comment" placeholder="Tell us what you think..." required></textarea>
+            </fieldset>
 
-            <label for="feedbackComment">Your feedback <span class="required-indicator" aria-hidden="true">*</span></label>
-            <textarea id="feedbackComment" name="comment" placeholder="Tell us what you think..." required></textarea>
-
-            <label id="ratingLabel">Rating <span class="required-indicator" aria-hidden="true">*</span></label>
-            <div class="star-rating" role="radiogroup" aria-labelledby="ratingLabel" aria-required="true">
+            <fieldset class="feedback-form-section feedback-rating-section">
+                <legend id="ratingLabel">Rating <span class="required-indicator" aria-hidden="true">*</span></legend>
+                <div class="star-rating" role="radiogroup" aria-labelledby="ratingLabel" aria-required="true">
                 <input id="feedbackRatingValue" type="hidden" name="rating" value="">
                 <button class="star" type="button" role="radio" aria-checked="false" aria-label="1 star" data-rating="1" tabindex="0">★</button>
                 <button class="star" type="button" role="radio" aria-checked="false" aria-label="2 stars" data-rating="2" tabindex="-1">★</button>
                 <button class="star" type="button" role="radio" aria-checked="false" aria-label="3 stars" data-rating="3" tabindex="-1">★</button>
                 <button class="star" type="button" role="radio" aria-checked="false" aria-label="4 stars" data-rating="4" tabindex="-1">★</button>
                 <button class="star" type="button" role="radio" aria-checked="false" aria-label="5 stars" data-rating="5" tabindex="-1">★</button>
-            </div>
-            <div class="star-rating-scale" aria-hidden="true"><span>Poor</span><span>Excellent</span></div>
+                </div>
+                <div class="star-rating-scale" aria-hidden="true"><span>Poor</span><span>Excellent</span></div>
+            </fieldset>
 
-            <label for="feedbackUsername">Name <span class="optional-indicator">(optional)</span></label>
-            <input id="feedbackUsername" name="username" type="text" placeholder="Your name (optional)">
+            <fieldset class="feedback-form-section feedback-name-section">
+                <legend>Your name</legend>
+                <label for="feedbackUsername">Name <span class="optional-indicator">(optional)</span></label>
+                <input id="feedbackUsername" name="username" type="text" placeholder="Your name (optional)">
+            </fieldset>
 
             <div class="modal-footer">
                 <button class="modal-btn modal-btn-secondary" type="button" onclick="closeFeedbackModal()">Cancel</button>

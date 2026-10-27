@@ -98,14 +98,24 @@
         return window.innerWidth <= SIDEBAR_OVERLAY_BREAKPOINT;
     }
 
+    function updateAdminSidebarToggle() {
+        const button = document.querySelector('.sidebar-toggle');
+        if (!button) return;
+        const expanded = document.body.classList.contains('sidebar-open');
+        button.setAttribute('aria-expanded', String(expanded));
+        button.setAttribute('aria-label', expanded ? 'Collapse admin navigation' : 'Expand admin navigation');
+    }
+
     function toggleSidebar() {
         document.body.classList.toggle('sidebar-open');
         syncSidebarScrollLock();
+        updateAdminSidebarToggle();
     }
 
     function closeSidebar() {
         document.body.classList.remove('sidebar-open');
         syncSidebarScrollLock();
+        updateAdminSidebarToggle();
     }
 
     // Applied as a class, never as an inline style, so it cannot
@@ -115,6 +125,7 @@
             && document.body.classList.contains('sidebar-open');
         document.body.classList.toggle('sidebar-locked', shouldLock);
     }
+    updateAdminSidebarToggle();
 
     document.addEventListener('keydown', function (event) {
         if (event.key === 'Escape' && document.body.classList.contains('sidebar-open')) {

@@ -847,10 +847,8 @@ function closePageHelp() {
 
 
 // --- SIDEBAR CONTROL ---
-// Below 900px the sidebar overlays the page instead of pushing it
-// sideways, so it needs different handling: a tap-outside backdrop
-// and a background scroll lock. Wider screens keep the original
-// push behaviour untouched.
+// At desktop widths the sidebar can collapse to an icon rail. On
+// narrower screens it becomes a slide-out drawer with a scrim.
 var SIDEBAR_OVERLAY_BREAKPOINT = 900;
 
 function isSidebarOverlayMode() {
@@ -858,13 +856,30 @@ function isSidebarOverlayMode() {
 }
 
 function toggleSidebar() {
-    document.body.classList.toggle('sidebar-open');
+    if (isSidebarOverlayMode()) {
+        document.body.classList.toggle('sidebar-open');
+    } else {
+        document.body.classList.toggle('sidebar-collapsed');
+    }
     syncSidebarScrollLock();
+    syncSidebarToggleState();
 }
 
 function closeSidebar() {
     document.body.classList.remove('sidebar-open');
     syncSidebarScrollLock();
+    syncSidebarToggleState();
+}
+
+function syncSidebarToggleState() {
+    var toggle = document.querySelector('.sidebar-toggle');
+    if (!toggle) return;
+    var expanded = isSidebarOverlayMode()
+        ? document.body.classList.contains('sidebar-open')
+        : !document.body.classList.contains('sidebar-collapsed');
+    toggle.setAttribute('aria-expanded', String(expanded));
+    toggle.setAttribute('aria-label', expanded ? 'Collapse navigation' : 'Expand navigation');
+    toggle.title = expanded ? 'Collapse navigation' : 'Expand navigation';
 }
 
 // Applied as a class, never as an inline style: the help modal also
@@ -877,7 +892,7 @@ function syncSidebarScrollLock() {
 }
 
 document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape' && document.body.classList.contains('sidebar-open')) {
+    if (event.key === 'Escape' && isSidebarOverlayMode() && document.body.classList.contains('sidebar-open')) {
         closeSidebar();
     }
 });
@@ -895,6 +910,8 @@ document.addEventListener('click', function (event) {
 
 // Rotating or resizing past the breakpoint must not strand the lock.
 window.addEventListener('resize', syncSidebarScrollLock);
+window.addEventListener('resize', syncSidebarToggleState);
+document.addEventListener('DOMContentLoaded', syncSidebarToggleState);
 
 // --- SEARCHABLE DROPDOWN FUNCTIONALITY ---
 // Every dropdown on the User Side (FPS Prediction, Browse Games filters,
@@ -1092,11 +1109,15 @@ async function initBrowseGames() {
     ], item => item.label, item => item.value, filterGames);
 
     initSearchDropdown('sortOrder', [
+        { label: 'Most Popular', value: 'popular' },
         { label: 'Newest → Oldest', value: 'newest' },
         { label: 'Oldest → Newest', value: 'oldest' },
         { label: 'A → Z', value: 'az' },
         { label: 'Z → A', value: 'za' }
-    ], item => item.label, item => item.value, filterGames);
+    ], item => item.label, item => item.value, item => {
+        syncBrowseCategoryTabs(item.value);
+        filterGames();
+    });
 
     initSearchDropdown('platformFilter', [
         { label: 'All computers', value: '' },
@@ -1131,6 +1152,8 @@ async function initBrowseGames() {
     };
     applyFilterFromUrl('genreFilter', urlParams.get('genre') || '');
     applyFilterFromUrl('sortOrder', urlParams.get('sort') || '');
+    if (!urlParams.get('sort')) searchDropdownApis.sortOrder?.setValue('popular');
+    syncBrowseCategoryTabs(document.getElementById('sortOrder')?.value || 'popular');
     applyFilterFromUrl('platformFilter', urlParams.get('platform') || '');
     applyFilterFromUrl('yearFilter', urlParams.get('year') || '');
     applyFilterFromUrl('requirementFilter', urlParams.get('requirement') || '');
@@ -1245,16 +1268,40 @@ function getBrowseGenreTags(game) {
 
 function updateBrowseResultCount(visibleCount, totalCount) {
     const counter = document.getElementById('browseResultCount');
-    if (!counter) return;
-    const total = Number(totalCount || 0);
+    const totalCounter = document.getElementById('browseGameTotal');
+    const total = Number(totalCount);
     const visible = Number(visibleCount || 0);
-    if (!total) {
-        counter.textContent = 'Loading games…';
+    if (!Number.isFinite(total)) {
+        if (counter) counter.textContent = 'Loading games...';
+        if (totalCounter) totalCounter.textContent = 'Loading games...';
         return;
     }
-    counter.textContent = visible === total
-        ? `${total} game${total === 1 ? '' : 's'}`
-        : `${visible} of ${total} games`;
+    if (counter) counter.textContent = visible === total
+        ? `Showing all ${total} games`
+        : `Showing ${visible} of ${total} games`;
+    if (totalCounter) totalCounter.textContent = `${total} game${total === 1 ? '' : 's'}`;
+}
+
+function syncBrowseCategoryTabs(sortOrder) {
+    const category = sortOrder === 'newest' ? 'latest' : sortOrder === 'az' ? 'all' : 'popular';
+    document.querySelectorAll('.browse-category-tab').forEach(tab => {
+        const selected = tab.dataset.category === category;
+        tab.classList.toggle('active', selected);
+        tab.setAttribute('aria-selected', String(selected));
+    });
+}
+
+function setBrowseCategory(category) {
+    const sortByCategory = { popular: 'popular', latest: 'newest', all: 'az' };
+    const sortOrder = sortByCategory[category];
+    if (!sortOrder) return;
+    syncBrowseCategoryTabs(sortOrder);
+    const sortInput = document.getElementById('sortOrder');
+    if (sortInput) sortInput.value = sortOrder;
+    if (searchDropdownApis.sortOrder) {
+        searchDropdownApis.sortOrder.setValue(sortOrder);
+    }
+    filterGames();
 }
 
 // Remove Markdown ATX heading markers only from game descriptions that are
@@ -1395,10 +1442,11 @@ function loadGameGrid() {
         'warzone': 2020
     };
 
-    games.forEach(game => {
+    games.forEach((game, catalogIndex) => {
         const card = document.createElement('div');
         card.className = 'game-card game-card-new';
         card.dataset.title = game.title.toLowerCase();
+        card.dataset.catalogOrder = String(catalogIndex);
         card.tabIndex = 0;
         card.setAttribute('role', 'article');
         
@@ -1490,6 +1538,61 @@ function toggleMoreFilters() {
     }
 }
 
+function renderBrowseActiveFacets(visibleCount, totalCount) {
+    const container = document.getElementById('activeFilterFacets');
+    const countBadge = document.getElementById('activeFilterCount');
+    const panelCount = document.getElementById('facetsResultCount');
+    if (!container) return;
+
+    const facets = [
+        { key: 'search', label: 'Search', value: document.getElementById('gameSearch')?.value.trim() || '' },
+        { key: 'genreFilter', label: 'Genre', value: document.getElementById('genreFilter')?.value ? document.getElementById('genreFilterSearch')?.value : '' },
+        { key: 'platformFilter', label: 'Platform', value: document.getElementById('platformFilter')?.value ? document.getElementById('platformFilterSearch')?.value : '' },
+        { key: 'yearFilter', label: 'Release', value: document.getElementById('yearFilter')?.value ? document.getElementById('yearFilterSearch')?.value : '' },
+        { key: 'requirementFilter', label: 'Demand', value: document.getElementById('requirementFilter')?.value ? document.getElementById('requirementFilterSearch')?.value : '' }
+    ].filter(facet => facet.value);
+
+    container.replaceChildren();
+    container.hidden = facets.length === 0;
+    facets.forEach(facet => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'active-filter-chip';
+        chip.dataset.clearFacet = facet.key;
+        chip.setAttribute('aria-label', `Remove ${facet.label} filter: ${facet.value}`);
+        chip.append(document.createTextNode(`${facet.label}: ${facet.value}`));
+        const closeIcon = document.createElement('span');
+        closeIcon.setAttribute('aria-hidden', 'true');
+        closeIcon.textContent = '×';
+        chip.append(closeIcon);
+        container.append(chip);
+    });
+
+    if (countBadge) {
+        countBadge.textContent = String(facets.length);
+        countBadge.hidden = facets.length === 0;
+    }
+    if (panelCount) panelCount.textContent = `${visibleCount} of ${totalCount} games`;
+}
+
+function clearBrowseFacet(key) {
+    if (key === 'search') {
+        const input = document.getElementById('gameSearch');
+        if (input) input.value = '';
+    } else if (['genreFilter', 'platformFilter', 'yearFilter', 'requirementFilter'].includes(key)) {
+        const input = document.getElementById(key);
+        if (input) input.value = '';
+        searchDropdownApis[key]?.setValue('');
+        document.getElementById(`${key}Dropdown`)?.classList.remove('active');
+    }
+    filterGames();
+}
+
+document.addEventListener('click', event => {
+    const chip = event.target.closest?.('[data-clear-facet]');
+    if (chip) clearBrowseFacet(chip.dataset.clearFacet);
+});
+
 function clearGameSearch() {
     const searchInput = document.getElementById('gameSearch');
     const genreFilter = document.getElementById('genreFilter');
@@ -1522,12 +1625,13 @@ function clearGameSearch() {
     resetFilter('requirementFilter', requirementFilter, requirementFilterSearch, 'All levels');
     // Sorting falls back to the default option rather than an empty box, so the
     // visible label always matches the stored value.
-    if (sortOrder) sortOrder.value = 'newest';
+    if (sortOrder) sortOrder.value = 'popular';
     if (searchDropdownApis.sortOrder) {
-        searchDropdownApis.sortOrder.setValue('newest');
+        searchDropdownApis.sortOrder.setValue('popular');
     } else if (sortOrderSearch) {
-        sortOrderSearch.value = 'Newest → Oldest';
+        sortOrderSearch.value = 'Most Popular';
     }
+    syncBrowseCategoryTabs('popular');
     if (noGameMessage) noGameMessage.style.display = 'none';
 
     // Also close any open dropdowns
@@ -1545,7 +1649,7 @@ function filterGames() {
     const platformFilter = document.getElementById('platformFilter')?.value || '';
     const yearFilter = document.getElementById('yearFilter')?.value || '';
     const requirementFilter = document.getElementById('requirementFilter')?.value || '';
-    const sortOrder = document.getElementById('sortOrder')?.value || 'newest';
+    const sortOrder = document.getElementById('sortOrder')?.value || 'popular';
     const noGameMessage = document.getElementById('noGameMessage');
     const grid = document.getElementById('gameGrid');
     const cards = Array.from(document.querySelectorAll('.game-card'));
@@ -1637,9 +1741,11 @@ function filterGames() {
             return titleA.localeCompare(titleB);
         } else if (sortOrder === 'za') {
             return titleB.localeCompare(titleA);
-        } else {
-            // Default: 'newest'
+        } else if (sortOrder === 'newest') {
             return yearA !== yearB ? yearB - yearA : titleA.localeCompare(titleB);
+        } else {
+            // Preserve the catalog's incoming order for the default Popular view.
+            return (parseInt(a.dataset.catalogOrder, 10) || 0) - (parseInt(b.dataset.catalogOrder, 10) || 0);
         }
     });
 
@@ -1652,6 +1758,7 @@ function filterGames() {
     if (noGameMessage) {
         noGameMessage.style.display = isFiltering && !found ? 'block' : 'none';
     }
+    renderBrowseActiveFacets(visibleCards.length, cards.length);
 }
 
 let feedbackState = [];

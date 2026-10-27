@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Browse Games - GameSpec Optimizer</title>
+    <script>try { document.documentElement.dataset.theme = localStorage.getItem('gamespec-theme') === 'dark' ? 'dark' : 'light'; } catch (e) {}</script>
     <link rel="stylesheet" href="../../CSS/User Side/UserSideStyle.css">
     <!-- Mobile layout layer: every rule sits inside a max-width media
          query, so desktop rendering is left completely untouched. -->
@@ -16,43 +17,51 @@
 <div class="content">
     <!-- Fixed Top Section -->
     <div class="browse-top-section">
-        <h2>Browse Games</h2>
-        <p class="browse-subtitle">Find a game you like, see what kind of computer it needs in plain language, then check if your PC can run it.</p>
-
         <div class="search-filter-container">
             <div class="search-box">
-                <input type="text" id="gameSearch" placeholder="Search games — try &quot;Minecraft&quot;..." oninput="filterGames()" aria-label="Search games">
+                <input type="text" id="gameSearch" placeholder="Search games &#8212; try &quot;Minecraft&quot;, &quot;GTA V&quot;, etc..." oninput="filterGames()" aria-label="Search games">
                 <span class="search-icon"><i class="fas fa-magnifying-glass"></i></span>
             </div>
 
-            <div class="genre-filter">
-                <label for="genreFilterSearch" class="visually-hidden">Filter by game type</label>
-                <div class="search-dropdown" id="genreFilterDropdown">
-                    <input type="text" class="search-input" id="genreFilterSearch" placeholder="Filter by genre..." autocomplete="off">
-                    <input type="hidden" id="genreFilter" value="">
-                    <div class="dropdown-list" id="genreFilterDropdownList"></div>
-                </div>
-            </div>
-
             <button type="button" id="moreFiltersBtn" class="more-filters-btn" onclick="toggleMoreFilters()" aria-expanded="false" aria-controls="moreFiltersPanel">
-                <i class="fas fa-sliders"></i>
-                <span>More Filters</span>
-                <i class="fas fa-chevron-down toggle-icon"></i>
+                <i class="fas fa-sliders" aria-hidden="true"></i>
+                <span>Filters</span>
+                <span class="filter-count" id="activeFilterCount" hidden>0</span>
+                <i class="fas fa-chevron-down toggle-icon" aria-hidden="true"></i>
             </button>
 
             <div class="sort-filter">
                 <label for="sortOrderSearch" class="sort-label">Sort:</label>
                 <div class="search-dropdown" id="sortOrderDropdown">
-                    <input type="text" class="search-input" id="sortOrderSearch" placeholder="Sort games..." autocomplete="off">
-                    <input type="hidden" id="sortOrder" value="">
+                    <input type="text" class="search-input" id="sortOrderSearch" placeholder="Most Popular" autocomplete="off" aria-label="Sort games">
+                    <input type="hidden" id="sortOrder" value="popular">
                     <div class="dropdown-list" id="sortOrderDropdownList"></div>
                 </div>
             </div>
+            <button class="theme-toggle toolbar-theme-toggle" type="button" onclick="toggleTheme()" aria-label="Switch color theme" title="Switch Theme" aria-pressed="false">
+                <i class="fas fa-moon" aria-hidden="true"></i><span class="theme-toggle-label">Dark mode</span>
+            </button>
+            <div class="active-filter-facets" id="activeFilterFacets" aria-label="Active filters" hidden></div>
         </div>
 
         <!-- Collapsible More Filters Panel -->
         <div id="moreFiltersPanel" class="more-filters-panel" style="display: none;" aria-hidden="true">
+            <div class="facets-panel-heading">
+                <div><h3>Refine games</h3><p>Combine filters to narrow your results.</p></div>
+                <div class="facets-panel-tools">
+                    <span class="facets-result-count" id="facetsResultCount" aria-live="polite">Loading games</span>
+                    <button type="button" class="clear-filters-btn" onclick="clearGameSearch()"><i class="fas fa-rotate-left" aria-hidden="true"></i> Clear all</button>
+                </div>
+            </div>
             <div class="more-filters-grid">
+                <div class="filter-group">
+                    <label for="genreFilterSearch">Genre</label>
+                    <div class="search-dropdown" id="genreFilterDropdown">
+                        <input type="text" class="search-input" id="genreFilterSearch" placeholder="All genres" autocomplete="off" aria-label="Filter by genre">
+                        <input type="hidden" id="genreFilter" value="">
+                        <div class="dropdown-list" id="genreFilterDropdownList"></div>
+                    </div>
+                </div>
                 <div class="filter-group">
                     <label for="platformFilterSearch">Works on</label>
                     <div class="search-dropdown" id="platformFilterDropdown">
@@ -81,13 +90,27 @@
                     <span class="filter-hint">How powerful a computer the game needs.</span>
                 </div>
 
-                <div class="filter-actions">
-                    <button type="button" class="clear-filters-btn" onclick="clearGameSearch()">
-                        <i class="fas fa-rotate-left"></i> Clear Filters
-                    </button>
-                </div>
             </div>
         </div>
+    </div>
+
+    <section class="browse-hero" aria-labelledby="browseHeroTitle">
+        <div class="browse-hero-copy">
+            <p class="browse-hero-eyebrow">Browse Games</p>
+            <h1 id="browseHeroTitle">Find Your <span>Next Game</span></h1>
+            <p class="browse-hero-description">Explore games, check their system requirements, and see how they may run on your PC.</p>
+        </div>
+        <a class="browse-hero-credit" href="https://commons.wikimedia.org/wiki/File:Renier_Meganck_-_Mountainous_forest_landscape_with_a_view_of_a_castle.jpg" target="_blank" rel="noopener noreferrer" aria-label="Banner artwork: Mountainous forest landscape with a view of a castle by Renier Meganck, public domain">Artwork: Renier Meganck &#183; Public domain</a>
+    </section>
+
+    <div class="browse-category-bar">
+        <div class="browse-category-tabs" role="tablist" aria-label="Game categories">
+            <button type="button" class="browse-category-tab active" role="tab" aria-selected="true" data-category="popular" onclick="setBrowseCategory('popular')"><i class="fas fa-fire" aria-hidden="true"></i><span>Popular</span></button>
+            <button type="button" class="browse-category-tab" role="tab" aria-selected="false" data-category="latest" onclick="setBrowseCategory('latest')"><i class="far fa-clock" aria-hidden="true"></i><span>Latest</span></button>
+            <button type="button" class="browse-category-tab" role="tab" aria-selected="false" data-category="all" onclick="setBrowseCategory('all')"><i class="fas fa-gamepad" aria-hidden="true"></i><span>All Games</span></button>
+        </div>
+        <p class="browse-game-total" id="browseGameTotal" aria-live="polite">Loading games...</p>
+        <p class="visually-hidden" id="browseResultCount" role="status" aria-live="polite">Loading games...</p>
     </div>
 
     <div id="noGameMessage" class="no-results-state" style="display: none;">
@@ -103,10 +126,6 @@
 
     <!-- Scrollable Game Section -->
     <div class="game-section">
-        <div class="browse-result-bar" role="status" aria-live="polite">
-            <p class="result-count" id="browseResultCount">Loading games…</p>
-            <p class="result-hint">Tip: pick <strong>View Details</strong> to see plain-language requirements, or <strong>Can I Run This?</strong> to check your own PC.</p>
-        </div>
         <div id="gameGrid" class="game-grid">
             <!-- Games will be loaded here dynamically -->
         </div>
@@ -149,6 +168,7 @@
 <script>
     // Set active state for current page
     document.querySelector('[data-page="browse"]')?.classList.add('active');
+    updateThemeButton();
     // Initialize the page
     if (typeof initBrowseGames === 'function') {
         initBrowseGames();

@@ -4,6 +4,9 @@
 <div class="top-header">
     <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
     <span class="app-title">GameSpec Optimizer</span>
+    <button class="theme-toggle admin-theme-toggle" type="button" onclick="toggleAdminTheme()" aria-label="Switch color theme" title="Switch Theme" aria-pressed="false">
+        <i class="fas fa-moon" aria-hidden="true"></i><span class="theme-toggle-label">Dark mode</span>
+    </button>
     <form class="admin-logout-form" method="post" action="logout.php">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
         <button type="submit" class="admin-logout-btn">Sign out</button>
@@ -11,7 +14,7 @@
 </div>
 
 <!-- Sidebar Component -->
-<div class="sidebar">
+<nav class="sidebar" id="sidebarNavigation" aria-label="Admin navigation">
     <h2>Admin Panel</h2>
         
    <a href="dashboard-admin.php" class="nav-btn" data-page="dashboard">
@@ -39,13 +42,31 @@
     </a>
         <!-- Hidden user side access -->
         <div class="hidden-user-btn" onclick="handleUserClick()"></div>
-    </div>
+    </nav>
 
 <!-- Tap-to-close backdrop for the sidebar. Only becomes visible below
      900px, where the sidebar overlays the page instead of pushing it. -->
 <div class="sidebar-scrim" onclick="toggleSidebar()" aria-hidden="true"></div>
 
 <script>
+    function updateAdminThemeButton() {
+        const dark = document.documentElement.dataset.theme === 'dark';
+        const button = document.querySelector('.admin-theme-toggle');
+        if (!button) return;
+        button.innerHTML = `<i class="fas fa-${dark ? 'sun' : 'moon'}" aria-hidden="true"></i><span class="theme-toggle-label">${dark ? 'Light mode' : 'Dark mode'}</span>`;
+        button.setAttribute('aria-label', `Switch to ${dark ? 'light' : 'dark'} mode`);
+        button.setAttribute('aria-pressed', String(dark));
+        button.title = 'Switch Theme';
+    }
+
+    function toggleAdminTheme() {
+        const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = theme;
+        try { localStorage.setItem('gamespec-theme', theme); } catch (e) {}
+        updateAdminThemeButton();
+    }
+    updateAdminThemeButton();
+
     window.ADMIN_CSRF_TOKEN = <?= json_encode(csrfToken(), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
     window.adminFetch = function(url, options = {}) {
         const request = { ...options };

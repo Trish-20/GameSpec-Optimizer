@@ -2,22 +2,49 @@
 @import url('../shared/CustomScrollbar.css');
 
 :root {
-    --bg-main: #16161a;         /* Matte dark charcoal panel */
-    --bg-sidebar: #111114;      /* Deep canvas background for sidebar layer */
-    --bg-card: #1e1f25;         /* Elevated dark gray container color */
-    --bg-card-sub: #16161a;     /* Secondary container input fill */
-    --bg-btn-sec: #24252d;      /* High contrast dark secondary button color */
-    --border-color: #2d2e36;    /* Defined line border tone */
-    --color-text-main: #ffffff; /* Clean white header font */
-    --color-text-muted: #8a8b92;/* Soft silver slate secondary font */
-    --color-brand: #b5ff3d;     /* Electric lime accent brand highlight color */
-    --color-brand-hover: #c6ff66;
-    --color-danger: #f43f5e;
+    color-scheme: light;
+    --bg-main: #F7F5EF;
+    --bg-sidebar: #F2F0E8;
+    --bg-card: #FFFFFF;
+    --bg-card-sub: #F8F7F2;
+    --bg-input: #FFFFFF;
+    --bg-btn-sec: #F2F0E8;
+    --border-color: #E4E2D9;
+    --color-brand: #477A4B;
+    --color-brand-hover: #3D6C42;
+    --color-danger: #C25050;
+    --color-text-main: #242A24;
+    --color-text-muted: #6D746B;
+    --accent-green: #477A4B;
+    --accent-green-soft: #6F9962;
+    --accent-green-muted: #E2ECD9;
+    --nav-hover-bg: #E9EFE3;
+    --nav-active-bg: #E2ECD9;
+    --focus-ring: rgba(71, 122, 75, .22);
+    --shadow-soft: 0 12px 32px rgba(39, 49, 35, .07);
+}
 
-    /* Render native form controls (select option panels, scrollbars)
-       in the dark theme so opened dropdown panels match the app's
-       rounded dark UI instead of appearing bright and square. */
+:root[data-theme="dark"] {
     color-scheme: dark;
+    --bg-main: #071211;
+    --bg-sidebar: #0B1716;
+    --bg-card: #101D1F;
+    --bg-card-sub: #0B1719;
+    --bg-input: #0B1719;
+    --bg-btn-sec: #182824;
+    --border-color: #263B38;
+    --color-brand: #B0F34A;
+    --color-brand-hover: #9BDA58;
+    --color-danger: #FF7777;
+    --color-text-main: #F2F5F3;
+    --color-text-muted: #A5B5B8;
+    --accent-green: #B0F34A;
+    --accent-green-soft: #9BDA58;
+    --accent-green-muted: #526B45;
+    --nav-hover-bg: #182824;
+    --nav-active-bg: #263B2B;
+    --focus-ring: rgba(176, 243, 74, .18);
+    --shadow-soft: 0 14px 36px rgba(0, 0, 0, .2);
 }
 
 
@@ -47,14 +74,14 @@ body {
     align-items: center;
     justify-content: center;
     z-index: 100;
-    border-bottom: 1px solid #23242a;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .top-header .app-title {
-    font-size: 25px;
+    font-size: 20px;
     font-weight: 700;
     color: var(--color-text-main);
-    letter-spacing: 1px;
+    letter-spacing: -.35px;
 }
 
 /* ---------- CONTENT AREA ---------- */
@@ -73,10 +100,10 @@ body {
 
 /* ---------- SIDEBAR LAYOUT ---------- */
 .sidebar {
-    width: 254px;
+    width: 240px;
     background-color: var(--bg-sidebar);
-    color: #a0a0a5;
-    padding: 24px 16px;
+    color: var(--color-text-muted);
+    padding: 24px 14px;
     height: calc(100vh - 60px);
     position: fixed;
     left: -280px;
@@ -86,14 +113,14 @@ body {
     z-index: 10;
     display: flex;
     flex-direction: column;
-    border-right: 1px solid #1e1f25;
+    border-right: 1px solid var(--border-color);
     box-sizing: border-box;
 }
 
 .sidebar h2 {
     font-size: 11px;
     font-weight: 700;
-    color: #51525a;
+    color: var(--color-text-muted);
     text-transform: uppercase;
     letter-spacing: 1.5px;
     padding-bottom: 8px;
@@ -118,23 +145,24 @@ body {
 }
 
 .sidebar-open .content {
-    margin-left: 247px;
+    margin-left: 240px;
     width: auto;
 }
 
 /* ---------- SIDEBAR NAVIGATION ELEMENTS ---------- */
 .sidebar .nav-btn {
+    min-height: 46px;
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 12px 16px;
-    margin: 4px 0;
+    padding: 0 12px;
+    margin: 1px 0;
     background: transparent;
     color: var(--color-text-muted);
     border: none;
     border-radius: 10px;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 13.5px;
+    font-weight: 550;
     cursor: pointer;
     transition: all 0.2s ease;
     text-decoration: none;
@@ -144,14 +172,14 @@ body {
 
 .sidebar .nav-btn:hover {
     color: var(--color-text-main);
-    background: #1e1f25;
+    background: var(--nav-hover-bg);
 }
 
 /* Active Pill Highlight Layout */
 .sidebar .nav-btn.active {
-    background: var(--color-brand);
-    color: #000000;
-    font-weight: 600;
+    background: var(--nav-active-bg);
+    color: var(--color-brand);
+    font-weight: 650;
 }
 
 .sidebar .nav-icon {
@@ -169,7 +197,7 @@ body {
 }
 
 .sidebar .nav-btn.active .nav-icon {
-    color: #000000;
+    color: inherit;
 }
 
 /* ---------- SIDEBAR TOGGLE BUTTON ---------- */
@@ -177,12 +205,12 @@ body {
     position: fixed;
     left: 16px;
     z-index: 20;
-    background: #1e1f25;
+    background: var(--bg-card);
     color: var(--color-text-main);
     border: 1px solid var(--border-color);
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-size: 18px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 16px;
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -1718,6 +1746,66 @@ body {
     }
 }
 
+.admin-settings-card {
+    background: var(--bg-card);
+}
+
+.game-cover-dropzone:hover,
+.game-cover-dropzone:focus-within {
+    border-color: var(--accent-green-soft);
+}
+
+.game-cover-dropzone input[type="file"]::file-selector-button:hover {
+    background: var(--nav-hover-bg);
+    border-color: var(--accent-green-soft);
+}
+
+.game-cover-preview {
+    background: color-mix(in srgb, var(--accent-green-muted) 28%, var(--bg-card));
+}
+
+.game-cover-preview img {
+    background: var(--bg-input);
+}
+
+.game-cover-remove {
+    border-color: var(--border-color);
+    background: color-mix(in srgb, var(--bg-main) 88%, transparent);
+    color: var(--color-text-main);
+}
+
+.game-cover-remove:hover {
+    color: var(--bg-main);
+}
+
+.site-footer {
+    color: var(--color-text-muted);
+}
+
+.admin-settings-card input[readonly] {
+    color: var(--color-text-muted);
+    background: var(--bg-card-sub);
+}
+
+.admin-card select option:hover,
+.admin-card select option:focus,
+.admin-card select option:checked {
+    background: var(--accent-green-muted);
+    color: var(--color-text-main);
+}
+
+.table-container th {
+    display: table-cell;
+}
+
+.modal-body input,
+.modal-body select,
+.modal-body textarea {
+    background: var(--bg-input);
+    color: var(--color-text-main);
+    border-color: var(--border-color);
+}
+
 .inventory-search-box {
     margin-top: 12px;
 }
@@ -2448,4 +2536,305 @@ body {
         margin-bottom: 18px;
         padding-bottom: 14px;
     }
+}
+
+/* ---------- SHARED USER/ADMIN THEME FINISH ---------- */
+.admin-card,
+.stat-card,
+.reports-card,
+.feedback-admin-card,
+.table-card-inner .table-container,
+.table-container,
+.hardware-card,
+.admin-settings-card {
+    border-color: var(--border-color);
+    box-shadow: var(--shadow-soft);
+}
+
+.cpus-table,
+.gpus-table,
+.data-item,
+.feedback-admin-stat,
+.feedback-admin-item,
+.table-card-inner .table-container,
+.table-container {
+    background: var(--bg-card);
+    color: var(--color-text-main);
+}
+
+.feedback-admin-stat,
+.feedback-admin-item {
+    border-color: var(--border-color);
+}
+
+.feedback-admin-item:hover {
+    border-color: var(--accent-green-soft);
+    box-shadow: var(--shadow-soft);
+}
+
+.feedback-admin-badge {
+    background: var(--accent-green-muted);
+    color: var(--color-text-main);
+}
+
+.feedback-admin-badge-danger {
+    background: color-mix(in srgb, var(--color-danger) 15%, var(--bg-card));
+    color: var(--color-danger);
+}
+
+.feedback-admin-item .feedback-admin-actions {
+    border-color: var(--border-color);
+}
+
+.feedback-admin-btn {
+    border-color: var(--border-color);
+    background: var(--bg-btn-sec);
+    color: var(--color-text-main);
+}
+
+.feedback-admin-btn:hover,
+.report-btn:hover,
+.btn-secondary:hover,
+.admin-logout-btn:hover {
+    background: var(--nav-hover-bg);
+    border-color: var(--accent-green-soft);
+}
+
+.feedback-admin-btn.secondary {
+    background: var(--accent-green-muted);
+    border-color: var(--accent-green-soft);
+    color: var(--color-text-main);
+}
+
+.feedback-admin-btn.danger {
+    background: color-mix(in srgb, var(--color-danger) 12%, var(--bg-card));
+    border-color: color-mix(in srgb, var(--color-danger) 42%, var(--border-color));
+    color: var(--color-danger);
+}
+
+.feedback-admin-item .feedback-admin-report-reason {
+    background: color-mix(in srgb, var(--color-danger) 9%, var(--bg-card));
+}
+
+.stat-card,
+.stat-icon {
+    border-color: var(--border-color);
+}
+
+.stat-icon {
+    background: var(--accent-green-muted);
+}
+
+.admin-card input,
+.admin-card select,
+.admin-card textarea,
+.search-box input,
+.tables-grid .search-box input,
+.feedback-search-box input,
+.admin-login-form-content input {
+    background: var(--bg-input);
+    color: var(--color-text-main);
+    border-color: var(--border-color);
+}
+
+.admin-card input::placeholder,
+.admin-card textarea::placeholder,
+.search-box input::placeholder,
+.feedback-search-box input::placeholder,
+.admin-login-form-content input::placeholder {
+    color: var(--color-text-muted);
+    opacity: .85;
+}
+
+.admin-card input:focus-visible,
+.admin-card select:focus-visible,
+.admin-card textarea:focus-visible,
+.search-box input:focus-visible,
+.feedback-search-box input:focus-visible,
+.admin-login-form-content input:focus-visible,
+button:focus-visible,
+a:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.table-container {
+    overflow-x: auto;
+    border: 1px solid var(--border-color);
+}
+
+.table-container th {
+    background: var(--bg-sidebar);
+    color: var(--color-text-muted);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table-container tr {
+    border-color: var(--border-color);
+}
+
+.table-container tr:hover,
+.data-item:hover {
+    background: var(--nav-hover-bg);
+}
+
+.table-container td {
+    color: var(--color-text-main);
+}
+
+.report-btn {
+    color: var(--color-text-main);
+    border-color: var(--border-color);
+    background: var(--bg-btn-sec);
+}
+
+.report-btn.primary,
+.report-btn.primary:hover,
+.report-btn.primary .btn-icon,
+.form-action-row button[type="submit"],
+.form-actions-row button[type="submit"],
+.admin-login-form-content .btn-primary {
+    color: var(--bg-main);
+}
+
+.btn-secondary {
+    border: 1px solid var(--border-color);
+    background: var(--bg-btn-sec);
+    color: var(--color-text-main);
+}
+
+.modal-overlay {
+    background: color-mix(in srgb, var(--bg-main) 68%, transparent);
+}
+
+.modal-dialog {
+    background: var(--bg-card);
+    color: var(--color-text-main);
+    border-color: var(--border-color);
+    box-shadow: var(--shadow-soft);
+}
+
+.modal-header,
+.modal-body {
+    border-color: var(--border-color);
+    color: var(--color-text-main);
+}
+
+.modal-close {
+    color: var(--color-text-muted);
+}
+
+.admin-login-layout::before {
+    display: none;
+}
+
+.admin-login-form-content {
+    padding: clamp(22px, 4vw, 38px);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    background: var(--bg-card);
+    box-shadow: var(--shadow-soft);
+}
+
+.admin-login-input-wrap {
+    border-color: var(--border-color);
+}
+
+.admin-login-input-wrap:focus-within {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.admin-login-error {
+    color: var(--color-danger);
+    background: color-mix(in srgb, var(--color-danger) 9%, var(--bg-card));
+}
+
+.admin-form-status.is-success {
+    color: var(--color-text-main);
+    border-color: var(--accent-green-soft);
+    background: var(--accent-green-muted);
+}
+
+.admin-form-status.is-error {
+    color: var(--color-danger);
+    border-color: var(--color-danger);
+    background: color-mix(in srgb, var(--color-danger) 9%, var(--bg-card));
+}
+
+.admin-theme-toggle {
+    position: absolute;
+    right: 95px;
+    top: 13px;
+    z-index: 21;
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--bg-card);
+    color: var(--color-text-main);
+    cursor: pointer;
+    transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+.admin-theme-toggle:hover {
+    background: var(--nav-hover-bg);
+    border-color: var(--accent-green-soft);
+    transform: translateY(-1px);
+}
+
+.admin-theme-toggle i {
+    color: var(--color-brand);
+}
+
+.admin-logout-btn {
+    min-height: 40px;
+    transition: background .18s ease, border-color .18s ease;
+}
+
+@media (max-width: 900px) {
+    .admin-theme-toggle {
+        right: 105px;
+        width: 42px;
+        padding: 7px;
+    }
+
+    .admin-theme-toggle .theme-toggle-label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 600px) {
+    .admin-theme-toggle {
+        right: 91px;
+        top: 11px;
+        width: 38px;
+        min-height: 38px;
+    }
+
+    .top-header .app-title {
+        font-size: 16px;
+    }
+
+    .admin-login-form-content {
+        padding: 22px 18px;
+    }
+}
+
+.admin-settings-card {
+    background: var(--bg-card);
+}
+
+.table-container th {
+    display: table-cell;
 }
