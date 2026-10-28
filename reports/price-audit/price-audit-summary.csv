@@ -1,0 +1,22 @@
+﻿"RecordType","Dataset","SourcePath","Headers","HasPriceColumn","TotalRecords","ValidPriceCount","ValidPricePercent","MissingPriceCount","MissingPricePercent","InvalidPriceCount","InvalidPricePercent","Currency","PriceSource","PriceDate","Notes"
+"dataset_summary","CPU-benchmarks-v4.csv","DATA/CPU-benchmarks-v4.csv","cpuName|price|cpuMark|cpuValue|threadMark|threadValue|TDP|powerPerf|cores|testDate|socket|category","True","3826","1967","51.41","1859","48.59","0","0","Unknown/not specified","Unknown/not specified","testDate column exists, but its relationship to price collection is unspecified","Positive numeric prices are recorded values only; currency, source, and current-market validity are not verified."
+"dataset_summary","GPU-benchmarks-v7.csv","DATA/GPU-benchmarks-v7.csv","gpuName|G3Dmark|G2Dmark|price|gpuValue|TDP|powerPerformance|testDate|category","True","2318","554","23.9","1764","76.1","0","0","Unknown/not specified","Unknown/not specified","testDate column exists, but its relationship to price collection is unspecified","Positive numeric prices are recorded values only; currency, source, and current-market validity are not verified."
+"dataset_summary","RAM-benchmarks.csv","DATA/RAM-benchmarks.csv","ram_capacity_gb|ram_speed_mhz|ram_score","False","6","N/A","N/A","N/A","N/A","N/A","N/A","N/A — no price column","N/A — no price column","N/A — no price column","No price column exists; records are not classified as missing or invalid prices."
+"category_summary","CPU-benchmarks-v4.csv",,,,"1142",,,,,,,,,,
+"category_summary","CPU-benchmarks-v4.csv",,,,"12",,,,,,,,,,
+"category_summary","CPU-benchmarks-v4.csv",,,,"1",,,,,,,,,,
+"category_summary","CPU-benchmarks-v4.csv",,,,"5",,,,,,,,,,
+"category_summary","CPU-benchmarks-v4.csv",,,,"7",,,,,,,,,,
+"category_summary","CPU-benchmarks-v4.csv",,,,"1147",,,,,,,,,,
+"category_summary","CPU-benchmarks-v4.csv",,,,"29",,,,,,,,,,
+"category_summary","CPU-benchmarks-v4.csv",,,,"11",,,,,,,,,,
+"category_summary","CPU-benchmarks-v4.csv",,,,"425",,,,,,,,,,
+"category_summary","CPU-benchmarks-v4.csv",,,,"784",,,,,,,,,,
+"category_summary","CPU-benchmarks-v4.csv",,,,"3",,,,,,,,,,
+"category_summary","CPU-benchmarks-v4.csv",,,,"260",,,,,,,,,,
+"category_summary","GPU-benchmarks-v7.csv",,,,"394",,,,,,,,,,
+"category_summary","GPU-benchmarks-v7.csv",,,,"3",,,,,,,,,,
+"category_summary","GPU-benchmarks-v7.csv",,,,"319",,,,,,,,,,
+"category_summary","GPU-benchmarks-v7.csv",,,,"21",,,,,,,,,,
+"category_summary","GPU-benchmarks-v7.csv",,,,"1351",,,,,,,,,,
+"category_summary","GPU-benchmarks-v7.csv",,,,"230",,,,,,,,,,

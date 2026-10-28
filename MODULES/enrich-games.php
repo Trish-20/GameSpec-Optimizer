@@ -60,7 +60,9 @@ function enrichGames(PDO $database, int $limit = 10): array
         try {
             $details = rawgRequest('games/' . (int) $item['rawg_id']);
             $title = (string) ($details['name'] ?? $item['title']);
-            $steamAppId = findSteamAppId($details) ?? findSteamAppIdByTitle($title);
+            // Only use RAWG's explicit Steam store relationship. A title search
+            // can return a different edition or similarly named game.
+            $steamAppId = findSteamAppId($details);
             $steam = $steamAppId !== null ? steamAppDetailsRequest($steamAppId) : [];
             $steamRequirements = $steam['pc_requirements'] ?? [];
 

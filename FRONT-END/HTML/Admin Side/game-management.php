@@ -21,6 +21,25 @@ require_once __DIR__ . '/admin-guard.php';
 <div class="content">
     <div class="page-container">
         <h2>Game Management</h2>
+               
+        <div class="admin-card rawg-catalog-card">
+            <h3>Search RAWG Game Catalog</h3>
+            <p>Search for older or newly released PC games to add to your catalog.</p>
+
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input
+                    type="text"
+                    id="rawgGameSearch"
+                    placeholder="Search games, e.g. Tekken 8, Elden Ring..."
+                >
+                <button type="button" id="rawgSearchBtn">Search RAWG</button>
+            </div>
+
+            <div id="rawgSearchMessage" aria-live="polite"></div>
+            <div id="rawgSearchResults" class="data-list"></div>
+            <button type="button" id="rawgImportSelectedBtn" disabled>Import Selected Game</button>
+        </div>
         
         <div class="admin-card game-form-card">
             <h3 id="gameFormTitle">Add Game</h3>

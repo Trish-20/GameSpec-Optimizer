@@ -1457,6 +1457,7 @@ function loadGameGrid() {
         const storedYear = parseInt(game.release_year, 10)
             || parseInt(String(game.release_date || '').slice(0, 4), 10);
         const releaseYear = storedYear || knownReleaseYears[rawKey] || knownReleaseYears[game.title_raw] || 2020;
+        const isUpcoming = Boolean(game.upcoming);
         card.dataset.year = releaseYear;
         card.dataset.gpuScore = parseInt(game.gpu_benchmark, 10) || 0;
         card.dataset.cpuScore = parseInt(game.cpu_benchmark, 10) || 0;
@@ -1487,7 +1488,7 @@ function loadGameGrid() {
             </div>
             <div class="game-body">
                 <div class="game-name">${game.title}</div>
-                <div class="game-tags">${genreTags.join(' • ')}</div>
+                <div class="game-tags">${isUpcoming ? `Upcoming · ${releaseYear} • ` : ''}${genreTags.join(' • ')}</div>
                 <p class="game-needs-title">What you'll need</p>
                 <ul class="game-needs">
                     <li><i class="fas fa-memory"></i> ${memoryText}</li>
@@ -3553,6 +3554,73 @@ function hidePredictionLoading() {
     }
 }
 
+async function loadCostEffectiveUpgradeRecommendations(input) {
+    try {
+        const response = await fetch('../../../MODULES/api/get-cost-effective-upgrades.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(input)
+        });
+        if (!response.ok) throw new Error(`Upgrade API returned ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        console.warn('Cost-effective upgrade suggestions are unavailable.', error);
+        return {
+            status: 'unavailable',
+            message: 'Upgrade suggestions could not be loaded. Your FPS prediction and other results are still available.',
+            components: []
+        };
+    }
+}
+
+let costUpgradeRequestId = 0;
+
+function renderCostEffectiveUpgradeSection(result) {
+    const safe = value => escapeHtml(String(value ?? ''));
+    const explanation = '<p class="cost-upgrade-note">Benchmark scores indicate hardware performance, not FPS. Prices may be outdated.</p>';
+
+    if (!result || result.status !== 'ok') {
+        return `<section id="costEffectiveUpgradeSection" class="result-section cost-effective-upgrades" aria-live="polite" aria-labelledby="costUpgradeHeading">
+            <h4 id="costUpgradeHeading">Cost-Effective Hardware Upgrades</h4>
+            ${explanation}<p>${safe(result?.message || 'Reliable upgrade recommendations are unavailable for this result.')}</p>
+        </section>`;
+    }
+
+    const componentCards = (result.components || []).map(component => {
+        if (component.unavailable) {
+            return `<div class="cost-upgrade-component">
+                <h5>${safe(component.type)}</h5>
+                <p>${safe(component.unavailable)}</p>
+            </div>`;
+        }
+
+        const optionMarkup = (option, isPrimary) => `<article class="cost-upgrade-option${isPrimary ? ' recommended' : ''}">
+            <div class="cost-upgrade-option-heading">
+                <strong>${safe(option.model)}</strong>
+                ${isPrimary ? `<span class="cost-upgrade-badge">${option.price === null ? 'Closest available benchmark fit' : 'Best benchmark gain per recorded price'}</span>` : ''}
+            </div>
+            <p class="cost-upgrade-price ${option.price === null ? 'price-unavailable' : 'price-unverified'}">${safe(option.price_label)}</p>
+            <p>${safe(option.reason)}</p>
+            <p class="cost-upgrade-score">Benchmark score: ${Number(option.score).toLocaleString()} (${Number(option.gain).toLocaleString()} above current)</p>
+            ${option.details ? `<p class="cost-upgrade-detail">${safe(option.details)}</p>` : ''}
+            ${option.compatibility ? `<p class="cost-upgrade-compatibility"><strong>Compatibility:</strong> ${safe(option.compatibility)}</p>` : ''}
+        </article>`;
+
+        return `<div class="cost-upgrade-component">
+            <h5>${safe(component.type)} <span>${safe(component.current)} · current score ${Number(component.current_score).toLocaleString()} · requirement ${Number(component.required_score).toLocaleString()}</span></h5>
+            ${optionMarkup(component.recommended, true)}
+            ${(component.alternatives || []).length ? `<div class="cost-upgrade-alternatives"><h6>Other suitable dataset options</h6>${component.alternatives.map(option => optionMarkup(option, false)).join('')}</div>` : ''}
+        </div>`;
+    }).join('');
+
+    return `<section id="costEffectiveUpgradeSection" class="result-section cost-effective-upgrades" aria-live="polite" aria-labelledby="costUpgradeHeading">
+        <h4 id="costUpgradeHeading">Cost-Effective Hardware Upgrades</h4>
+        ${explanation}
+        ${result.message ? `<p>${safe(result.message)}</p>` : ''}
+        ${componentCards}
+    </section>`;
+}
+
 async function predictFPS() {
     if (isPredictingFPS) return;
 
@@ -3743,8 +3811,9 @@ async function predictFPS() {
             </div>
         `;
 
+        let bottleneckHtml = '';
         if (estimatedFPS < 60 && bottlenecks.length > 0) {
-            html += `
+            bottleneckHtml = `
                 <div class="result-section danger">
                     <h4>Performance Bottlenecks</h4>
                     <ul class="bottleneck-list">
@@ -3927,6 +3996,28 @@ async function predictFPS() {
             html += `</div>`;
         }
 
+        const upgradeInput = {
+            cpu_model: cpuName,
+            cpu_score: cpuScoreNum,
+            gpu_model: gpuName,
+            gpu_score: gpuScoreNum,
+            ram_capacity_gb: ramGB,
+            ram_speed_mhz: detectedHardwareSelection.ram?.speedMhz ?? 0,
+            ram_score: ramScoreNum,
+            required_cpu_score: selectedGame.cpu_benchmark,
+            required_gpu_score: selectedGame.gpu_benchmark,
+            required_ram_score: selectedGame.ram_benchmark,
+            required_ram_capacity_gb: selectedGame.ram_capacity_gb
+        };
+        html += renderCostEffectiveUpgradeSection({
+            status: 'loading',
+            message: 'Checking local hardware benchmarks and recorded prices…',
+            components: []
+        });
+        // Keep the existing bottleneck analysis intact and place it after the
+        // new recommendation section as requested.
+        html += bottleneckHtml;
+
         recordPredictionHistory({
             game: selectedGame,
             fps: estimatedFPS,
@@ -3935,6 +4026,12 @@ async function predictFPS() {
         });
 
         document.getElementById("fpsResultsPanel").innerHTML = html;
+        const upgradeRequestId = ++costUpgradeRequestId;
+        loadCostEffectiveUpgradeRecommendations(upgradeInput).then(upgradeResult => {
+            if (upgradeRequestId !== costUpgradeRequestId) return;
+            const section = document.getElementById('costEffectiveUpgradeSection');
+            if (section) section.outerHTML = renderCostEffectiveUpgradeSection(upgradeResult);
+        });
         renderPredictionHistory();
         scheduleSyncFpsTopPanels();
     } catch (error) {

@@ -5935,6 +5935,133 @@ button:hover,
 }
 .result-section.success { background: var(--accent-green-muted); }
 
+/* Cost-effective upgrade recommendations are scoped additions to FPS results. */
+.cost-effective-upgrades {
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--color-brand);
+  background: var(--bg-card);
+}
+
+.cost-effective-upgrades > h4 {
+  margin-bottom: 8px;
+}
+
+.cost-effective-upgrades .cost-upgrade-note {
+  margin: 0 0 16px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.cost-upgrade-component {
+  margin-top: 14px;
+  padding: 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-card-sub);
+}
+
+.cost-upgrade-component > h5 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 14px;
+  margin: 0 0 12px;
+  color: var(--color-text-main);
+  font-size: 15px;
+}
+
+.cost-upgrade-component > h5 span {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.cost-upgrade-option {
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-card);
+}
+
+.cost-upgrade-option.recommended {
+  border-color: var(--accent-green-soft);
+}
+
+.cost-upgrade-option + .cost-upgrade-option,
+.cost-upgrade-alternatives .cost-upgrade-option {
+  margin-top: 9px;
+}
+
+.cost-upgrade-option-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-main);
+}
+
+.cost-upgrade-badge {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--accent-green-muted);
+  color: var(--color-text-main) !important;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.cost-upgrade-option p {
+  margin: 8px 0 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.cost-upgrade-option .cost-upgrade-price {
+  font-weight: 650;
+}
+
+.cost-upgrade-option .price-unverified {
+  color: var(--color-danger);
+}
+
+.cost-upgrade-option .price-unavailable {
+  color: var(--color-text-muted);
+}
+
+.cost-upgrade-option .cost-upgrade-score {
+  color: var(--color-text-main);
+  font-weight: 600;
+}
+
+.cost-upgrade-option .cost-upgrade-compatibility {
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color);
+}
+
+.cost-upgrade-alternatives {
+  margin-top: 14px;
+}
+
+.cost-upgrade-alternatives h6 {
+  margin: 0 0 8px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+@media (max-width: 600px) {
+  .cost-upgrade-component {
+    padding: 11px;
+  }
+
+  .cost-upgrade-option {
+    padding: 11px;
+  }
+}
+
 .feedback-toolbar {
   gap: 12px;
   padding: 16px;

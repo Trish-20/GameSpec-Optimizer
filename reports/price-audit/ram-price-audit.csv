@@ -1,0 +1,7 @@
+﻿"CSVRowNumber","HardwareName","RecordedPrice","Category","BenchmarkScore","PriceStatus","ram_capacity_gb","ram_speed_mhz","ram_score"
+"2","2 GB RAM @ 1600 MHz","","(category not provided)","1700","No price column","2","1600","1700"
+"3","4 GB RAM @ 2200 MHz","","(category not provided)","2200","No price column","4","2200","2200"
+"4","8 GB RAM @ 3200 MHz","","(category not provided)","2800","No price column","8","3200","2800"
+"5","16 GB RAM @ 3200 MHz","","(category not provided)","4000","No price column","16","3200","4000"
+"6","32 GB RAM @ 3600 MHz","","(category not provided)","6000","No price column","32","3600","6000"
+"7","64 GB RAM @ 3600 MHz","","(category not provided)","7500","No price column","64","3600","7500"

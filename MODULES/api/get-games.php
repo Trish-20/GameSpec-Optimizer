@@ -58,7 +58,11 @@ try {
     }
 
     $orderBy = $sortRecent ? 'g.created_at DESC, g.game_id DESC' : 'g.title ASC';
-    $sql = 'SELECT g.* FROM games g WHERE ' . implode(' AND ', $conditions) . ' ORDER BY ' . $orderBy . ' LIMIT :limit OFFSET :offset';
+    $adminJobColumns = $includeInactive
+        ? ', (SELECT j.status FROM sync_jobs j WHERE j.game_id = g.game_id AND j.job_type = "rawg_metadata" ORDER BY j.job_id DESC LIMIT 1) AS metadata_job_status
+           , (SELECT j.last_error FROM sync_jobs j WHERE j.game_id = g.game_id AND j.job_type = "rawg_metadata" ORDER BY j.job_id DESC LIMIT 1) AS metadata_job_error'
+        : '';
+    $sql = 'SELECT g.*' . $adminJobColumns . ' FROM games g WHERE ' . implode(' AND ', $conditions) . ' ORDER BY ' . $orderBy . ' LIMIT :limit OFFSET :offset';
     $statement = $database->prepare($sql);
     foreach ($parameters as $name => $value) {
         $statement->bindValue(':' . $name, $value, PDO::PARAM_STR);
@@ -118,6 +122,8 @@ try {
             // Consumers that filter or label by visibility read this directly;
             // it was always present in g.* but never surfaced before.
             'is_active' => (int) $row['is_active'],
+            'metadata_job_status' => $includeInactive ? ($row['metadata_job_status'] ?? null) : null,
+            'metadata_job_error' => $includeInactive ? ($row['metadata_job_error'] ?? null) : null,
             'rawg_id' => (int) $row['rawg_id'],
             'steam_app_id' => (int) $row['steam_app_id'],
             'title' => $row['title'],
@@ -126,6 +132,7 @@ try {
             'description' => $row['description'],
             'image' => $row['cover_url'],
             'release_date' => $row['release_date'],
+            'upcoming' => !empty($row['release_date']) && $row['release_date'] > date('Y-m-d'),
             'created_at' => $row['created_at'] ?? null,
             'release_year' => $row['release_year'] !== null ? (int) $row['release_year'] : null,
             'genres' => json_decode((string) $row['genres'], true) ?: [],

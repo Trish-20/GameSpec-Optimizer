@@ -173,6 +173,7 @@
             ram_benchmark: benchmarks.ram?.score ?? null,
             genres: Array.isArray(game.genres) ? game.genres : [],
             release_year: game.release_year ?? null,
+            upcoming: Boolean(game.upcoming),
             // Games that failed benchmark resolution come back with
             // is_active = 0 so the list can label them as hidden from users.
             is_active: Number(game.is_active ?? 1)
@@ -581,6 +582,9 @@
         }
 
         adminGames.forEach((game, index) => {
+            const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, character => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[character]);
             const genreText = (Array.isArray(game.genres) ? game.genres : []).join(', ');
             const metaParts = [
                 `CPU: ${game.cpu_model}`,
@@ -589,6 +593,7 @@
             ];
             if (genreText) metaParts.push(`Genre: ${genreText}`);
             if (game.release_year) metaParts.push(`Year: ${game.release_year}`);
+            if (game.upcoming) metaParts.push('UPCOMING');
             const hiddenFromUsers = Number(game.is_active) !== 1;
             if (hiddenFromUsers) {
                 // The game row exists and stays editable here, but the gate
@@ -596,13 +601,18 @@
                 // CPU/GPU/RAM benchmarks all resolve.
                 metaParts.unshift('HIDDEN FROM USERS (benchmark unresolved)');
             }
+            if (game.metadata_job_error) {
+                metaParts.push(`Manual review: ${game.metadata_job_error}`);
+            } else if (game.metadata_job_status === 'queued' || game.metadata_job_status === 'running') {
+                metaParts.push('Metadata enrichment is in progress');
+            }
             const searchIndex = `${game.title} ${game.cpu_model} ${game.gpu_model} ${game.ram_model} ${genreText} ${game.release_year || ''} ${hiddenFromUsers ? 'hidden from users benchmark unresolved' : ''}`.toLowerCase();
 
             listEl.innerHTML += `
-                <div class="data-item" data-search="${searchIndex}">
+                <div class="data-item" data-search="${escapeHtml(searchIndex)}">
                     <div>
-                        <span class="item-name">${game.title}</span>
-                        <br><small>${metaParts.join(' | ')}</small>
+                        <span class="item-name">${escapeHtml(game.title)}</span>
+                        <br><small>${metaParts.map(escapeHtml).join(' | ')}</small>
                     </div>
                     <div class="item-actions">
                         <button class="btn-edit" onclick="editGame(${index})">Edit</button>
@@ -946,7 +956,127 @@
     // ============================================================================
     // 4. FORM SUBMISSIONS
     // ============================================================================
+    let selectedRawgGameId = 0;
+
+    function setRawgMessage(message, isError = false) {
+        const target = document.getElementById('rawgSearchMessage');
+        if (!target) return;
+        target.textContent = message;
+        target.setAttribute('role', isError ? 'alert' : 'status');
+        target.style.color = isError ? '#b91c1c' : '';
+    }
+
+    function renderRawgResults(games) {
+        const container = document.getElementById('rawgSearchResults');
+        if (!container) return;
+        container.replaceChildren();
+        selectedRawgGameId = 0;
+        const importSelectedButton = document.getElementById('rawgImportSelectedBtn');
+        if (importSelectedButton) importSelectedButton.disabled = true;
+
+        games.forEach(game => {
+            const card = document.createElement('article');
+            card.className = 'data-item';
+            const cover = document.createElement('img');
+            cover.alt = `${game.title || 'Game'} cover`;
+            cover.loading = 'lazy';
+            cover.src = game.cover || '';
+            cover.style.cssText = 'width:72px;height:96px;object-fit:cover;border-radius:6px;';
+
+            const detail = document.createElement('div');
+            detail.style.flex = '1';
+            const title = document.createElement('strong');
+            title.textContent = game.title || 'Untitled game';
+            const date = document.createElement('div');
+            const upcoming = Boolean(game.upcoming);
+            date.textContent = game.release_date
+                ? `Release date: ${game.release_date}${upcoming ? ' (upcoming)' : ''}`
+                : 'Release date: unknown';
+            const platform = document.createElement('div');
+            platform.textContent = `Platforms: ${(game.platforms || []).join(', ') || 'PC listing'}`;
+            detail.append(title, date, platform);
+
+            const choose = document.createElement('button');
+            choose.type = 'button';
+            choose.className = 'rawg-result-select';
+            choose.textContent = game.existing ? 'Select existing game' : 'Select';
+            choose.addEventListener('click', () => {
+                selectedRawgGameId = Number(game.rawg_id);
+                if (importSelectedButton) importSelectedButton.disabled = false;
+                container.querySelectorAll('[data-rawg-selected="true"]').forEach(node => node.removeAttribute('data-rawg-selected'));
+                card.setAttribute('data-rawg-selected', 'true');
+                setRawgMessage(game.existing
+                    ? `Selected ${game.title}, already in the catalog (currently ${game.existing.is_active ? 'active' : 'inactive'}). Import will update it safely.`
+                    : `Selected ${game.title}.`);
+            });
+
+            card.append(cover, detail, choose);
+            container.append(card);
+        });
+    }
+
+    async function searchRawgAdmin() {
+        const input = document.getElementById('rawgGameSearch');
+        const query = input?.value.trim() || '';
+        const results = document.getElementById('rawgSearchResults');
+        if (!query) {
+            setRawgMessage('Enter a game title to search.', true);
+            results?.replaceChildren();
+            return;
+        }
+        setRawgMessage('Searching RAWG…');
+        results?.replaceChildren();
+        selectedRawgGameId = 0;
+        const button = document.getElementById('rawgSearchBtn');
+        if (button) button.disabled = true;
+        try {
+            const response = await adminFetch(`../../../MODULES/api/search-rawg-games.php?search=${encodeURIComponent(query)}`);
+            const result = await response.json();
+            if (!response.ok || !result.success) throw new Error(result.message || 'RAWG search failed.');
+            renderRawgResults(result.results || []);
+            setRawgMessage(result.results?.length ? `${result.results.length} result(s). Select the correct edition, then import.` : 'No PC games matched that title. Try another spelling or edition.');
+        } catch (error) {
+            setRawgMessage(error.message || 'RAWG search failed. Try again shortly.', true);
+        } finally {
+            if (button) button.disabled = false;
+        }
+    }
+
+    async function importSelectedRawgGame(rawgId = selectedRawgGameId) {
+        const id = Number(rawgId);
+        if (!Number.isSafeInteger(id) || id <= 0) {
+            setRawgMessage('Select a valid RAWG result before importing.', true);
+            return;
+        }
+        setRawgMessage('Importing the selected game and queueing metadata enrichment…');
+        try {
+            const response = await adminFetch('../../../MODULES/api/import-rawg-game.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ rawg_id: id })
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) throw new Error(result.message || 'Import failed.');
+            await loadAdminGames();
+            const state = result.queued
+                ? 'Metadata enrichment is queued. The game stays inactive until valid requirements and benchmark matches pass.'
+                : result.job_status === 'complete'
+                    ? (result.metadata_job_error || result.already_exists
+                        ? 'Previous enrichment completed. Review the inactive game in the Game List and enter missing requirements manually if needed.'
+                        : 'Metadata enrichment already completed; no duplicate job was queued.')
+                    : 'An enrichment job is already queued or running. The game stays inactive until validation completes.';
+            setRawgMessage(`${result.message} ${state}${result.upcoming ? ' RAWG lists this as upcoming.' : ''}`);
+        } catch (error) {
+            setRawgMessage(error.message || 'Import failed. Check the server logs or retry.', true);
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('rawgSearchBtn')?.addEventListener('click', searchRawgAdmin);
+        document.getElementById('rawgImportSelectedBtn')?.addEventListener('click', () => importSelectedRawgGame());
+        document.getElementById('rawgGameSearch')?.addEventListener('keydown', event => {
+            if (event.key === 'Enter') { event.preventDefault(); searchRawgAdmin(); }
+        });
         ['cpu', 'gpu', 'ram'].forEach(type => {
             const modelInput = document.getElementById(`${type}Model`);
             if (modelInput) {

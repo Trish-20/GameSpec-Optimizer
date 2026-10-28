@@ -214,6 +214,31 @@ function getGameCachePath(string $search): string
     return $cacheDirectory . '/v2-' . hash('sha256', strtolower(trim($search))) . '.json';
 }
 
+function searchRawgGames(string $search): array
+{
+    $search = trim($search);
+
+    if ($search === '') {
+        return [];
+    }
+
+    $response = rawgRequest('games', [
+        'search' => $search,
+        'page_size' => 10,
+        'platforms' => '4',
+    ]);
+
+    return array_map(
+        static fn (array $game): array => [
+            'rawg_id' => (int) ($game['id'] ?? 0),
+            'title' => (string) ($game['name'] ?? ''),
+            'release_date' => $game['released'] ?? null,
+            'cover' => $game['background_image'] ?? null,
+            'platforms' => array_values(array_map(static fn (array $platform): string => (string) ($platform['platform']['name'] ?? ''), $game['platforms'] ?? [])),
+        ],
+        $response['results'] ?? []
+    );
+}
 function getGameFromRawgAndSteam(string $search): array
 {
     $search = trim($search);
@@ -241,8 +266,7 @@ function getGameFromRawgAndSteam(string $search): array
     $rawgDetails = rawgRequest('games/' . (int) $rawgGame['id']);
     $title = (string) ($rawgDetails['name'] ?? $rawgGame['name'] ?? $search);
     $steamAppId = findSteamAppId($rawgDetails)
-        ?? findSteamAppId($rawgGame)
-        ?? findSteamAppIdByTitle($title);
+        ?? findSteamAppId($rawgGame);
     if ($steamAppId === null) {
         throw new RuntimeException('RAWG found the game, but no Steam App ID is available.');
     }

@@ -2715,6 +2715,111 @@ a:focus-visible {
     box-shadow: var(--shadow-soft);
 }
 
+/* RAWG catalog actions follow the same primary/secondary button system as
+   Game Management's save, edit, and cancel controls. */
+.rawg-catalog-card .search-box {
+    gap: 10px;
+}
+
+.rawg-catalog-card .search-box input {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+}
+
+.rawg-catalog-card #rawgSearchBtn,
+.rawg-catalog-card #rawgImportSelectedBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 11px 19px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: var(--color-brand);
+    color: var(--bg-main);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+}
+
+.rawg-catalog-card #rawgSearchBtn:hover:not(:disabled),
+.rawg-catalog-card #rawgImportSelectedBtn:hover:not(:disabled) {
+    background: var(--color-brand-hover);
+    transform: translateY(-1px);
+}
+
+.rawg-catalog-card #rawgImportSelectedBtn {
+    display: flex;
+    width: fit-content;
+    margin: 12px 0 0 auto;
+}
+
+.rawg-catalog-card #rawgSearchBtn:disabled,
+.rawg-catalog-card #rawgImportSelectedBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.rawg-catalog-card .rawg-result-select {
+    flex: 0 0 auto;
+    min-height: 40px;
+    padding: 9px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--bg-btn-sec);
+    color: var(--color-text-main);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.rawg-catalog-card .rawg-result-select:hover {
+    border-color: var(--color-brand);
+    background: var(--nav-hover-bg);
+}
+
+.rawg-catalog-card .data-item[data-rawg-selected="true"] {
+    border-color: var(--color-brand);
+    background: var(--nav-hover-bg);
+}
+
+.rawg-catalog-card button:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--color-brand) 70%, transparent);
+    outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+    .rawg-catalog-card .search-box {
+        flex-wrap: wrap;
+    }
+
+    .rawg-catalog-card .search-box input,
+    .rawg-catalog-card #rawgSearchBtn,
+    .rawg-catalog-card #rawgImportSelectedBtn {
+        width: 100%;
+    }
+
+    .rawg-catalog-card #rawgImportSelectedBtn {
+        margin-left: 0;
+    }
+
+    .rawg-catalog-card #rawgSearchResults .data-item {
+        flex-wrap: wrap;
+    }
+
+    .rawg-catalog-card .rawg-result-select {
+        flex: 1 1 100%;
+    }
+}
+
 .modal-header,
 .modal-body {
     border-color: var(--border-color);
